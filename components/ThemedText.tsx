@@ -1,6 +1,7 @@
 import { StyleSheet, Text, type TextProps } from 'react-native';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useFonts } from 'expo-font';
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
@@ -15,6 +16,17 @@ export function ThemedText({
   type = 'default',
   ...rest
 }: ThemedTextProps) {
+  const [fontsLoaded] = useFonts({
+    'Poppins-Black': require('@/assets/fonts/Poppins/Poppins-Black.ttf'),
+    'Poppins-Regular': require('@/assets/fonts/Poppins/Poppins-Regular.ttf'),
+    'Poppins-SemiBold': require('@/assets/fonts/Poppins/Poppins-SemiBold.ttf'),
+    'Poppins-Bold': require('@/assets/fonts/Poppins/Poppins-Bold.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
   return (
@@ -36,25 +48,27 @@ export function ThemedText({
 const styles = StyleSheet.create({
   default: {
     fontSize: 16,
-    lineHeight: 24,
+    fontFamily: 'Poppins-Regular',
   },
   defaultSemiBold: {
     fontSize: 16,
     lineHeight: 24,
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
     lineHeight: 32,
+    fontFamily: 'Poppins-Bold',
   },
   subtitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Regular',
   },
   link: {
     lineHeight: 30,
     fontSize: 16,
     color: '#0a7ea4',
+    fontFamily: 'Poppins-SemiBold',
   },
 });
