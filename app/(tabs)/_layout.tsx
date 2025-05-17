@@ -9,7 +9,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-
+import { Stack } from 'expo-router';
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const [isLoading, setIsLoading] = useState(true);
@@ -20,6 +20,13 @@ export default function TabLayout() {
       setIsLoading(false);
     }, 2000); // Adjust the time as needed
   }, []);
+
+    // Platform check should be before any return
+  if (Platform.OS === 'web') {
+    return (
+      <div></div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -42,7 +49,7 @@ export default function TabLayout() {
             paddingTop: 10,
           },
           default: {
-            paddingTop: 10,
+            position: 'absolute',
           },
         }),
       }}

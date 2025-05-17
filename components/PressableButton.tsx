@@ -98,6 +98,7 @@ const stylesByType = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
     }, default: {
+        fontFamily: 'Poppins-SemiBold',
 
     },
 });

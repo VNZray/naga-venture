@@ -4,7 +4,7 @@ import PressableButton from '@/components/PressableButton';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { router } from 'expo-router';
 import React from 'react';
-import { Dimensions, Image, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, Platform, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, {
   ICarouselInstance
@@ -31,14 +31,27 @@ const HomeScreen = () => {
   const ref = React.useRef<ICarouselInstance>(null);
   const progress = useSharedValue<number>(0);
 
+  if (Platform.OS === 'web') {
+    // Use a basic custom layout on web.
+    return (
+      <div style={{ flex: 1 }}>
+        <header>
+          <h1 style={{ color: color }}>Welcome to Naga Venture</h1>
+          <p style={{ color: color }}>Explore the best of Naga City</p>
+        </header>
+      </div>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container} edges={['top']}>
         <ScrollView>
-          <View style={{ flex: 1, margin: 20, width: width }}>
+          <View style={{ flex: 1, width: width }}>
             <Carousel
+              style={{ borderRadius: 10 }}
               ref={ref}
-              width={width / 1.1}
+              width={width}
               height={260}
               data={data}
               onProgressChange={progress}
@@ -54,25 +67,27 @@ const HomeScreen = () => {
             />
           </View>
 
-          <CardContainer style={[styles.directories]} width={width / 1.1}>
-            <PressableButton IconSize={24} color={color} direction='column' Title='Place to stay' Icon='hotel' onPress={() => router.navigate('/(tabs)/AccommodationDirectory')}>
-            </PressableButton>
+          <View style={{ flex: 1, paddingLeft: 20, paddingTop: 0, paddingRight: 20, paddingBottom: 0 }}>
+            <CardContainer style={[styles.directories]} height={'auto'}>
+              <PressableButton IconSize={24} color={color} direction='column' Title='Place to stay' Icon='hotel' onPress={() => router.navigate('/(tabs)/AccommodationDirectory')}>
+              </PressableButton>
 
-            <PressableButton IconSize={24} color={color} direction='column' Title='Shops' Icon="shopping-bag"
-              onPress={() => router.navigate('/(tabs)/ShopDirectory')}>
-            </PressableButton>
+              <PressableButton IconSize={24} color={color} direction='column' Title='Shops' Icon="shopping-bag"
+                onPress={() => router.navigate('/(tabs)/ShopDirectory')}>
+              </PressableButton>
 
-            <PressableButton IconSize={24} color={color} direction='column' Title='Tourist Spots' Icon="map-marker"
-              onPress={() => router.navigate('/(tabs)/TouristSpotDirectory')}>
-            </PressableButton>
+              <PressableButton IconSize={24} color={color} direction='column' Title='Tourist Spots' Icon="map-marker"
+                onPress={() => router.navigate('/(tabs)/TouristSpotDirectory')}>
+              </PressableButton>
 
-            <PressableButton IconSize={24} color={color} direction='column' Title='Events' Icon="calendar"
-              onPress={() => router.navigate('/(tabs)/EventDirectory')}>
-            </PressableButton>
-          </CardContainer>
+              <PressableButton IconSize={24} color={color} direction='column' Title='Events' Icon="calendar"
+                onPress={() => router.navigate('/(tabs)/EventDirectory')}>
+              </PressableButton>
+            </CardContainer>
+          </View>
 
-          <View style={{ flex: 1, width: width, marginBottom: 70, padding: 20, paddingTop: 0 }}>
-            <CardView width={width / 1.1} height={400} radius={10} elevation={0}>
+          <View style={{ flex: 1, width: width, marginBottom: 70 }}>
+            <CardView width={width} height={400} radius={10} elevation={0}>
               <View style={{ width: '100%', height: '70%', borderRadius: 10 }}>
                 <Image
                   source={{ uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1' }}
@@ -86,7 +101,7 @@ const HomeScreen = () => {
               </View>
             </CardView>
 
-            <CardView width={width / 1.1} height={400} radius={10} elevation={0}>
+            <CardView width={width} height={400} radius={10} elevation={0}>
               <View style={{ width: '100%', height: '70%', borderRadius: 10 }}>
                 <Image
                   source={{ uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1' }}
@@ -100,7 +115,7 @@ const HomeScreen = () => {
               </View>
             </CardView>
 
-            <CardView width={width / 1.1} height={400} radius={10} elevation={0}>
+            <CardView width={width} height={400} radius={10} elevation={0}>
               <View style={{ width: '100%', height: '70%', borderRadius: 10 }}>
                 <Image
                   source={{ uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1' }}
@@ -114,7 +129,7 @@ const HomeScreen = () => {
               </View>
             </CardView>
 
-            <CardView width={width / 1.1} height={400} radius={10} elevation={0}>
+            <CardView width={width} height={400} radius={10} elevation={0}>
               <View style={{ width: '100%', height: '70%', borderRadius: 10 }}>
                 <Image
                   source={{ uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1' }}
@@ -148,6 +163,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 10,
     overflow: 'hidden',
+    padding: 20,
   },
   image: {
     width: '100%',
@@ -157,8 +173,7 @@ const styles = StyleSheet.create({
 
   directories: {
     flex: 1,
-    marginLeft: 20,
-    marginRight: 20,
+    width: '100%',
     padding: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',

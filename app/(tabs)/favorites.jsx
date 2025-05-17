@@ -1,10 +1,12 @@
-import React from 'react'
-import { Text, View } from 'react-native'
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Text, View } from 'react-native';
 
 const Favorite = () => {
+    const colorScheme = useColorScheme();
+  
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Favorite</Text>
+      <Text style={{ fontSize: 24, color: colorScheme === 'dark' ? '#fff' : '#000', fontWeight: 'bold' }}>Favorites</Text>
     </View>
   )
 }
