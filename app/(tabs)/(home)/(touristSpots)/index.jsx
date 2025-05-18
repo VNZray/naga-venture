@@ -1,60 +1,298 @@
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { router } from 'expo-router';
-import { ScrollView, StatusBar, StyleSheet, View } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import CardContainer from '../../../../components/CardContainer';
-import PressableButton from '../../../../components/PressableButton';
+import CardContainer from "@/components/CardContainer";
+import PressableButton from "@/components/PressableButton";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import {
+    Dimensions,
+    Image,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
+import Carousel from "react-native-reanimated-carousel";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+
+const width = Dimensions.get("window").width;
 
 const TouristSpotDirectory = () => {
+  const colorScheme = useColorScheme();
+  const color = colorScheme === "dark" ? "#fff" : "#000";
+  const backgroundColor = colorScheme === "dark" ? "#0A1B47" : "#F8F8F8";
+  const cardBgColor = colorScheme === "dark" ? "#152A5E" : "#fff";
 
-    const colorScheme = useColorScheme();
-    const color = colorScheme === 'dark' ? '#fff' : '#000';
+  // Featured locations data
+  const featuredLocations = [
+    {
+      id: 1,
+      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",
+      title: "Naga Metropolitan Cathedral",
+    },
+    {
+      id: 2,
+      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Porta-mariae-e1717984426731.jpg?resize=768%2C506&ssl=1",
+      title: "Porta Mariae",
+    },
+    {
+      id: 3,
+      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1",
+      title: "Mary Coredemtrix Church",
+    },
+  ];
 
-    return (
-        <SafeAreaProvider>
-            <SafeAreaView style={styles.container} edges={['top']}>
-                <ScrollView>
-                    <View style={{ flex: 1, paddingLeft: 20, paddingTop: 0, paddingRight: 20, paddingBottom: 0 }}>
-                        <CardContainer style={[styles.directories]} height={'auto'}>
-                            <PressableButton IconSize={24} color={color} direction='column' Title='Historical' Icon='university' onPress={() => router.push('/(tabs)/(home)/(touristSpots)/historical')}>
-                            </PressableButton>
+  // Categories data (for the buttons)
+  const categories = [
+    { id: "historical", name: "Historical", icon: "university" },
+    { id: "natural", name: "Natural", icon: "tree" },
+    { id: "urban", name: "Urban", icon: "building" },
+    { id: "museums", name: "Museums", icon: "landmark" },
+    { id: "resorts", name: "Resorts", icon: "umbrella-beach" },
+  ];
 
-                            <PressableButton IconSize={24} color={color} direction='column' Title='Natural' Icon="tree"
-                                onPress={() => router.push('/(tabs)/(home)/(touristSpots)/natural')}>
-                            </PressableButton>
+  // Destinations data
+  const destinations = [
+    {
+      id: 1,
+      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Porta-mariae-e1717984426731.jpg?resize=768%2C506&ssl=1",
+      name: "The Porta Mariae",
+    },
+    {
+      id: 2,
+      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/11/mt-isarog-national-park.jpg?resize=768%2C576&ssl=1",
+      name: "Mt. Isarog National Park",
+    },
+    {
+      id: 3,
+      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/10/Malabsay-Falls.jpg?resize=768%2C576&ssl=1",
+      name: "Malabsay Falls",
+    },
+    {
+      id: 4,
+      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/09/jmr-coliseum-scaled.jpg?resize=768%2C576&ssl=1",
+      name: "Jesse M. Robredo Coliseum",
+    },
+  ];
 
-                            <PressableButton IconSize={24} color={color} direction='column' Title='Urban' Icon="building"
-                                onPress={() => router.push('/(tabs)/(home)/(touristSpots)/urban')}>
-                            </PressableButton>
+  const handleCategoryPress = (categoryId) => {
+    router.push(`/(tabs)/(home)/(touristSpots)/(categories)/${categoryId}`);
+  };
 
-                            <PressableButton IconSize={24} color={color} direction='column' Title='Museums' Icon="landmark"
-                                onPress={() => router.push('/(tabs)/(home)/(touristSpots)/museum')}>
-                            </PressableButton>
+  const handleDestinationPress = (destinationId) => {
+    console.log(`Viewing destination ${destinationId}`);
+  };
 
-                            <PressableButton IconSize={24} color={color} direction='column' Title='Resorts' Icon="umbrella-beach"
-                                onPress={() => router.push('/(tabs)/(home)/(touristSpots)/resorts')}>
-                            </PressableButton>
-                        </CardContainer>
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['top']}>
+        <StatusBar barStyle={colorScheme === "dark" ? "light-content" : "dark-content"} />
+
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <View style={styles.searchInputContainer}>
+            <TextInput
+              style={[styles.searchInput, { color: color }]}
+              placeholder="Search"
+              placeholderTextColor={colorScheme === "dark" ? "#8E9196" : "#9F9EA1"}
+            />
+            <TouchableOpacity
+              style={[styles.searchButton, { backgroundColor: colorScheme === "dark" ? "#152A5E" : "#0077B6" }]}
+            >
+              <Ionicons name="search" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Featured Locations */}
+          <View style={styles.sectionContainer}>
+            <Text style={[styles.sectionTitle, { color: color }]}>Featured Locations</Text>
+            <View style={{ height: 200 }}>
+              <Carousel
+                loop
+                width={width - 40}
+                height={200}
+                mode="parallax"
+                data={featuredLocations}
+                scrollAnimationDuration={1000}
+                renderItem={({ item }) => (
+                  <View style={styles.carouselItem}>
+                    <Image
+                      source={{ uri: item.image }}
+                      style={styles.carouselImage}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.carouselOverlay} />
+                    <View style={styles.carouselTextContainer}>
+                      <Text style={styles.carouselTitle}>{item.title}</Text>
                     </View>
-                </ScrollView>
-            </SafeAreaView>
-        </SafeAreaProvider >
-    )
-}
+                  </View>
+                )}
+              />
+            </View>
+          </View>
+
+          {/* Categories - Your preferred button style */}
+          <View style={styles.sectionContainer}>
+            <Text style={[styles.sectionTitle, { color: color }]}>Categories</Text>
+            <CardContainer style={styles.directories} height={'auto'}>
+              {categories.map((category) => (
+                <PressableButton
+                  key={category.id}
+                  IconSize={24}
+                  color={color}
+                  direction='column'
+                  Title={category.name}
+                  Icon={category.icon}
+                  onPress={() => handleCategoryPress(category.id)}
+                />
+              ))}
+            </CardContainer>
+          </View>
+
+          {/* Discover More */}
+          <View style={[styles.sectionContainer, { marginBottom: 100 }]}>
+            <Text style={[styles.sectionTitle, { color: color }]}>Discover More</Text>
+            <View style={styles.destinationsGrid}>
+              {destinations.map((destination) => (
+                <TouchableOpacity
+                  key={destination.id}
+                  style={styles.destinationCard}
+                  onPress={() => handleDestinationPress(destination.id)}
+                >
+                  <View style={styles.destinationImageContainer}>
+                    <Image
+                      source={{ uri: destination.image }}
+                      style={styles.destinationImage}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.destinationOverlay} />
+                    <View style={styles.destinationTextContainer}>
+                      <Text style={styles.destinationName} numberOfLines={1}>
+                        {destination.name}
+                      </Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+};
 
 const styles = StyleSheet.create({
-    directories: {
-        flex: 1,
-        width: '100%',
-        padding: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    container: {
-        flex: 1,
-        paddingTop: StatusBar.currentHeight,
-    },
-})
+  container: {
+    flex: 1,
+    paddingTop: 0, // Set paddingTop to 0
+  },
+  directories: {
+    flex: 1,
+    width: '100%',
+    padding: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  searchContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 10, // Reduced vertical padding
+  },
+  searchInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchInput: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 10,
+    paddingHorizontal: 15,
+    fontFamily: "Poppins-Regular",
+    fontSize: 14,
+  },
+  searchButton: {
+    marginLeft: 10,
+    backgroundColor: "#0077B6",
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  sectionContainer: {
+    marginTop: 10, // Reduced top margin
+    paddingHorizontal: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontFamily: "Poppins-SemiBold",
+    marginBottom: 10, // Reduced bottom margin
+  },
+  carouselItem: {
+    borderRadius: 15,
+    overflow: "hidden",
+    height: "100%",
+  },
+  carouselImage: {
+    width: "100%",
+    height: "100%",
+  },
+  carouselOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    borderRadius: 15,
+  },
+  carouselTextContainer: {
+    position: "absolute",
+    bottom: 15,
+    left: 15,
+    right: 15,
+  },
+  carouselTitle: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+  },
+  destinationsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  destinationCard: {
+    width: "48%",
+    marginBottom: 15,
+  },
+  destinationImageContainer: {
+    height: 130,
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  destinationImage: {
+    width: "100%",
+    height: "100%",
+  },
+  destinationOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+  destinationTextContainer: {
+    position: "absolute",
+    bottom: 10,
+    left: 10,
+    right: 10,
+  },
+  destinationName: {
+    color: "#fff",
+    fontSize: 14,
+    fontFamily: "Poppins-SemiBold",
+  },
+});
 
-export default TouristSpotDirectory
-
+export default TouristSpotDirectory;
