@@ -4,9 +4,10 @@ import { useFonts } from 'expo-font';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Button, Dimensions, SafeAreaView, Text, View } from 'react-native';
+import { Dimensions, SafeAreaView, Text, View } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 
 const width = Dimensions.get("screen").width;
 
@@ -63,18 +64,6 @@ const RegistrationPage = () => {
                 style={{ borderRadius: 10 }}
               />
             </View>
-          </View>
-
-          <View>
-            <Text style={{ marginBottom: 10 }}>Birthdate: {birthdate.toDateString()}</Text>
-            <Button title="Pick Date" onPress={() => setDatePickerVisibility(true)} />
-            <DateTimePickerModal
-              isVisible={isDatePickerVisible}
-              mode="date"
-              onConfirm={handleConfirm}
-              onCancel={() => setDatePickerVisibility(false)}
-              maximumDate={new Date()}
-            />
           </View>
 
           <PressableButton

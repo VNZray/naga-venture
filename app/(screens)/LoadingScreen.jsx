@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Image, StyleSheet, Text, View } from 'react-native';
 
 const LoadingScreen = () => {
+
   const [fontsLoaded] = useFonts({
     'Poppins-Black': require('@/assets/fonts/Poppins/Poppins-Black.ttf'),
     'Poppins-SemiBold': require('@/assets/fonts/Poppins/Poppins-SemiBold.ttf'),

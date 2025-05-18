@@ -3,9 +3,10 @@ import { Text, View } from 'react-native'
 
 const AccommodationDirectory = () => {
   return (
+
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>Accommodation Directory</Text>
-      <Link href="/(tabs)/HomeScreen">Home</Link>
+      <Link href="/(tabs)/(home)/">Home</Link>
     </View>
   )
 }
