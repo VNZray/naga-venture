@@ -4,18 +4,20 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import {
-    Dimensions,
-    Image,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  Image,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+// Import the data
+import { featuredLocations, categories, destinations } from './data';
 
 const width = Dimensions.get("window").width;
 
@@ -25,64 +27,12 @@ const TouristSpotDirectory = () => {
   const backgroundColor = colorScheme === "dark" ? "#0A1B47" : "#F8F8F8";
   const cardBgColor = colorScheme === "dark" ? "#152A5E" : "#fff";
 
-  // Featured locations data
-  const featuredLocations = [
-    {
-      id: 1,
-      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",
-      title: "Naga Metropolitan Cathedral",
-    },
-    {
-      id: 2,
-      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Porta-mariae-e1717984426731.jpg?resize=768%2C506&ssl=1",
-      title: "Porta Mariae",
-    },
-    {
-      id: 3,
-      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1",
-      title: "Mary Coredemtrix Church",
-    },
-  ];
-
-  // Categories data (for the buttons)
-  const categories = [
-    { id: "historical", name: "Historical", icon: "university" },
-    { id: "natural", name: "Natural", icon: "tree" },
-    { id: "urban", name: "Urban", icon: "building" },
-    { id: "museums", name: "Museums", icon: "landmark" },
-    { id: "resorts", name: "Resorts", icon: "umbrella-beach" },
-  ];
-
-  // Destinations data
-  const destinations = [
-    {
-      id: 1,
-      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Porta-mariae-e1717984426731.jpg?resize=768%2C506&ssl=1",
-      name: "The Porta Mariae",
-    },
-    {
-      id: 2,
-      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/11/mt-isarog-national-park.jpg?resize=768%2C576&ssl=1",
-      name: "Mt. Isarog National Park",
-    },
-    {
-      id: 3,
-      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/10/Malabsay-Falls.jpg?resize=768%2C576&ssl=1",
-      name: "Malabsay Falls",
-    },
-    {
-      id: 4,
-      image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/09/jmr-coliseum-scaled.jpg?resize=768%2C576&ssl=1",
-      name: "Jesse M. Robredo Coliseum",
-    },
-  ];
-
   const handleCategoryPress = (categoryId) => {
     router.push(`/(tabs)/(home)/(touristSpots)/(categories)/${categoryId}`);
   };
 
   const handleDestinationPress = (destinationId) => {
-    console.log(`Viewing destination ${destinationId}`);
+    router.push(`/(tabs)/(home)/(touristSpots)/spot/${destinationId}`);
   };
 
   return (
@@ -119,7 +69,11 @@ const TouristSpotDirectory = () => {
                 data={featuredLocations}
                 scrollAnimationDuration={1000}
                 renderItem={({ item }) => (
-                  <View style={styles.carouselItem}>
+                  <TouchableOpacity
+                    key={item.id}
+                    style={styles.carouselItem}
+                    onPress={() => handleDestinationPress(item.id)}
+                  >
                     <Image
                       source={{ uri: item.image }}
                       style={styles.carouselImage}
@@ -127,9 +81,9 @@ const TouristSpotDirectory = () => {
                     />
                     <View style={styles.carouselOverlay} />
                     <View style={styles.carouselTextContainer}>
-                      <Text style={styles.carouselTitle}>{item.title}</Text>
+                      <Text style={styles.carouselTitle}>{item.name}</Text>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 )}
               />
             </View>
@@ -189,7 +143,7 @@ const TouristSpotDirectory = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 0, // Set paddingTop to 0
+    paddingTop: 0,
   },
   directories: {
     flex: 1,
@@ -200,7 +154,7 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     paddingHorizontal: 20,
-    paddingVertical: 10, // Reduced vertical padding
+    paddingVertical: 10,
   },
   searchInputContainer: {
     flexDirection: "row",
@@ -225,13 +179,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   sectionContainer: {
-    marginTop: 10, // Reduced top margin
+    marginTop: 10,
     paddingHorizontal: 20,
   },
   sectionTitle: {
     fontSize: 18,
     fontFamily: "Poppins-SemiBold",
-    marginBottom: 10, // Reduced bottom margin
+    marginBottom: 10,
   },
   carouselItem: {
     borderRadius: 15,

@@ -3,6 +3,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+// Import the central data
+import { touristSpotsData } from '../data';
 
 const CategoryPage = () => {
   const { category: categoryId } = useLocalSearchParams();
@@ -30,77 +32,17 @@ const CategoryPage = () => {
     }
   };
 
-  // Mock data for each category
-  const getCategoryData = (id) => {
-    // This would be replaced with actual API calls in a real app
-    switch (id) {
-      case "historical":
-        return [
-          {
-            id: 1,
-            name: "Naga Metropolitan Cathedral",
-            image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",
-            description: "Metropolitan Cathedral and Parish of Saint John the Evangelist, commonly known as the Naga Metropolitan Cathedral.",
-          },
-          {
-            id: 2,
-            name: "The Porta Mariae",
-            image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Porta-mariae-e1717984426731.jpg?resize=768%2C506&ssl=1",
-            description: "The magnificent white archway standing tall as a symbol of devotion to the Virgin Mary in Naga City.",
-          },
-          {
-            id: 3,
-            name: "Old Abella Arch",
-            image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/12/old-abella-arch.jpg?resize=768%2C512&ssl=1",
-            description: "A historical landmark that once served as an entrance to the old Abella residential compound.",
-          },
-          {
-            id: 4,
-            name: "Plaza Rizal",
-            image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/plaza-rizal-naga.jpg?resize=768%2C432&ssl=1",
-            description: "Named after the Philippine national hero, Dr. José Rizal, this plaza is a historical public space in Naga City.",
-          },
-        ];
-      case "natural":
-        return [
-          {
-            id: 1,
-            name: "Mt. Isarog National Park",
-            image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/11/mt-isarog-national-park.jpg?resize=768%2C576&ssl=1",
-            description: "Protected area surrounding the potentially active stratovolcano, Mt. Isarog. Rich in biodiversity and natural beauty.",
-          },
-          {
-            id: 2,
-            name: "Malabsay Falls",
-            image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/10/Malabsay-Falls.jpg?resize=768%2C576&ssl=1",
-            description: "A beautiful waterfall located within Mt. Isarog National Park, offering a refreshing natural swimming area.",
-          },
-          {
-            id: 3,
-            name: "Consocep Mountain Resort",
-            image: "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/07/Consocep-Mountain-Resort.jpg?resize=768%2C480&ssl=1",
-            description: "A mountain resort with refreshing natural springs and beautiful landscape views.",
-          },
-        ];
-      case "urban":
-        return [];
-      case "museums":
-        return [];
-      case "resorts":
-        return [];
-      default:
-        return [];
-    }
-  };
-
-  const categoryItems = getCategoryData(categoryId);
+  // Filter tourist spots based on the categoryId
+  const categoryItems = Object.values(touristSpotsData).filter(
+    (item) => item.category === categoryId
+  );
 
   const handleBackClick = () => {
     router.back();
   };
 
   const handleItemClick = (itemId) => {
-    router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${itemId}`);
+    router.push(`/(tabs)/(home)/(touristSpots)/spot/${itemId}`);
   };
 
   return (
@@ -108,10 +50,7 @@ const CategoryPage = () => {
       <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colorScheme === 'dark' ? '#1E293B' : '#fff', shadowColor }]}>
-        <TouchableOpacity onPress={handleBackClick} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={textColor} />
-        </TouchableOpacity>
-        <Text style={[styles.title, { color: textColor }]}>
+        <Text style={[styles.title, { color: textColor, textAlign: "center"}]}>
           {getCategoryTitle(categoryId)}
         </Text>
       </View>
@@ -142,7 +81,7 @@ const CategoryPage = () => {
         ))}
       </ScrollView>
 
-      {/* Bottom Navigation Placeholder - You'll likely use your Tabs component */}
+      {/* Bottom Navigation Placeholder */}
       <View style={styles.bottomNav}>
         <Text style={{ color: textColor }}>Bottom Navigation Placeholder</Text>
         {/* Integrate your bottom navigation here */}
@@ -174,7 +113,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 10,
-    paddingBottom: 100, // To account for bottom navigation
+    paddingBottom: 100,
   },
   itemContainer: {
     borderRadius: 8,
