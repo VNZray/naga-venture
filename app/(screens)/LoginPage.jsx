@@ -1,5 +1,6 @@
 import logo from '@/assets/images/logo.png';
 import PressableButton from '@/components/PressableButton';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFonts } from 'expo-font';
 import { Image } from 'expo-image';
 import { Link, router } from 'expo-router';
@@ -8,10 +9,12 @@ import { SafeAreaView, Text, View } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-
 const LoginPage = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+
+  const colorScheme = useColorScheme();
+  const color = colorScheme === 'dark' ? '#fff' : '#000';
 
   const [fontsLoaded] = useFonts({
     'Poppins-Black': require('@/assets/fonts/Poppins/Poppins-Black.ttf'),
@@ -34,16 +37,24 @@ const LoginPage = () => {
         <View style={{ display: 'flex', padding: '5%', flexDirection: 'column', gap: 16 }}>
           <View style={styles.logoContainer}>
             <Image source={logo} style={styles.logo} />
-            <Text style={styles.text}>Naga Venture</Text>
+            <Text style={{
+              fontSize: 18,
+              marginLeft: 10,
+              fontFamily: 'Poppins-Bold',
+              color: color,
+            }}>Naga Venture</Text>
           </View>
 
           <View>
-            <Text style={{ fontFamily: 'Poppins-Bold', fontSize: 24 }}>
+            <Text style={{
+              fontFamily: 'Poppins-Bold', fontSize: 24, color: color,
+            }}>
               Sign In
             </Text>
 
             <Text style={{
-              fontFamily: 'Poppins-Medium', fontSize: 16, marginBottom: 20,
+              fontFamily: 'Poppins-Medium', fontSize: 16, marginBottom: 20, color: color,
+
             }}>
               Navigate with Ease - Your Ultimate City Directory
             </Text>
@@ -80,8 +91,18 @@ const LoginPage = () => {
             color={"#DEE3F2"}
             direction="column"
             Title="Login"
-            onPress={() => router.replace('/(tabs)/HomeScreen')}
+            onPress={() => router.replace('/(tabs)/(home)/')}
           ></PressableButton>
+
+          <View style={{ display: 'flex', fontSize: 16, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+            <Text style={{ fontFamily: 'Poppins-Medium' }}>
+              Don't Have an Account?
+            </Text>
+
+            <Link style={{ color: 'blue', fontFamily: 'Poppins-SemiBold', fontSize: 16 }} href={'/(screens)/RegistrationPage'}>
+              Sign Up
+            </Link>
+          </View>
 
         </View>
       </SafeAreaView>
@@ -92,6 +113,7 @@ const LoginPage = () => {
 export default LoginPage
 
 const styles = {
+
   logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -100,10 +122,6 @@ const styles = {
   logo: {
     width: 60,
     height: 60,
-  },
-  text: {
-    fontSize: 18,
-    marginLeft: 10,
-    fontFamily: 'Poppins-Bold',
-  },
+  }
+
 }

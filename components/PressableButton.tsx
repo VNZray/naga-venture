@@ -1,4 +1,4 @@
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import React from 'react';
 import { Pressable, StyleSheet, Text, useColorScheme as useRNColorScheme } from 'react-native';
@@ -16,7 +16,7 @@ type PressableButtonProps = {
     width?: string | number;
     height?: string | number;
     Title?: string;
-    Icon?: keyof typeof FontAwesome.glyphMap;
+    Icon?: keyof typeof FontAwesome5.glyphMap;
     IconSize?: number;
     TextSize?: number | string;
     onPress?: () => void;
@@ -62,7 +62,7 @@ const PressableButton = ({
 
             ]}
         >
-            {Icon && <FontAwesome name={Icon} size={IconSize} color={color} style={styles.icon} />}
+            {Icon && <FontAwesome5 name={Icon} size={IconSize} color={color} style={styles.icon} />}
             {Title && <Text style={[styles.text, {
                 color, fontSize: typeof TextSize === 'string' ? parseFloat(TextSize) : TextSize ?? 10,
             }]}>{Title}</Text>}
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
 
 const stylesByType = StyleSheet.create({
     primary: {
-        backgroundColor: '#007bff',
+        backgroundColor: '#0077B6',
     },
     secondary: {
         backgroundColor: '#DEE3F2',
@@ -97,9 +97,9 @@ const stylesByType = StyleSheet.create({
         backgroundColor: 'transparent',
         borderWidth: 1,
         borderColor: '#ccc',
-    }, default: {
-        fontFamily: 'Poppins-SemiBold',
-
+    },
+    default: {
+        // No fontFamily here; leave empty or add ViewStyle properties if needed
     },
 });
 export default PressableButton;
