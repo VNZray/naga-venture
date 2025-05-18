@@ -1,9 +1,13 @@
 import LoadingScreen from '@/app/(screens)/LoadingScreen'
+import { useColorScheme } from '@/hooks/useColorScheme'
 import { Stack } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 
 const Screens = () => {
+
+    const colorScheme = useColorScheme();
+    const color = colorScheme === 'dark' ? '#fff' : '#000';
 
     const [isLoading, setIsLoading] = useState(true);
 
@@ -26,8 +30,8 @@ const Screens = () => {
         <Stack>
             <Stack.Screen name='index' options={{ headerShown: false }} />
             <Stack.Screen name='LoadingScreen' options={{  headerShown: false }} />
-            <Stack.Screen name='LoginPage' options={{ headerBackTitle: 'Back', headerTitle: '', headerTintColor: 'black', headerShown: true }} />
-            <Stack.Screen name='RegistrationPage' options={{ headerBackTitle: 'Back', headerTintColor: 'black', headerShown: true }} />
+            <Stack.Screen name='LoginPage' options={{ headerBackTitle: 'Back', headerTitle: '', headerTintColor: color, headerShown: true }} />
+            <Stack.Screen name='RegistrationPage' options={{ headerBackTitle: 'Back', headerTintColor: color, headerShown: true }} />
         </Stack>
     )
 }
