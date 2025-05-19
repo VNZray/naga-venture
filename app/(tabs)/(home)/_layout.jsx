@@ -4,9 +4,9 @@ const HomeLayout = () => {
   return (
     <Stack screenOptions={{ headerBackTitle: 'Back', headerShown: true, headerTitle: 'Naga Venture' }} >
       <Stack.Screen
-        name="AccommodationDirectory"
+        name="(accommodations)"
         options={{
-          headerShown: true,
+          headerShown: false,
           animation: 'slide_from_right',
           headerTitleAlign: 'center',
           headerTitle: 'Accommodation Directory',

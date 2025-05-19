@@ -1,10 +1,10 @@
 import logo from '@/assets/images/logo.png';
 import { useFonts } from 'expo-font';
+import { router } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Image, StyleSheet, Text, View } from 'react-native';
 
 const LoadingScreen = () => {
-
   const [fontsLoaded] = useFonts({
     'Poppins-Black': require('@/assets/fonts/Poppins/Poppins-Black.ttf'),
     'Poppins-SemiBold': require('@/assets/fonts/Poppins/Poppins-SemiBold.ttf'),
@@ -13,21 +13,31 @@ const LoadingScreen = () => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1.1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, [scaleAnim]);
+    if (fontsLoaded) {
+      // Start animation
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(scaleAnim, {
+            toValue: 1.1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+
+      // Redirect after delay (e.g., 2.5s)
+      const timer = setTimeout(() => {
+        router.replace('/'); // Or wherever your landing page is
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [fontsLoaded]);
 
   if (!fontsLoaded) {
     return null;
