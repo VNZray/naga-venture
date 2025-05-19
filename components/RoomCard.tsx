@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-    DimensionValue,
-    Platform,
-    StyleProp,
-    StyleSheet,
-    View,
-    ViewStyle,
-    useColorScheme as useRNColorScheme,
+  DimensionValue,
+  Platform,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+  useColorScheme as useRNColorScheme,
 } from 'react-native';
 
 export function useColorScheme() {
@@ -93,7 +93,7 @@ const CardContainer: React.FC<CardContainerProps> = ({
           width,
           height,
           borderRadius: radius,
-          elevation: elevation,
+          elevation: Platform.OS === 'android' ? elevation : 0,
         } as ViewStyle,
         styles.card,
         shadowStyle,

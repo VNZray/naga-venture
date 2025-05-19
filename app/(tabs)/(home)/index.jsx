@@ -2,12 +2,16 @@ import CardContainer from '@/components/CardContainer';
 import CardView from '@/components/CardView';
 import PressableButton from '@/components/PressableButton';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
-import { Dimensions, Image, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+    Dimensions, Image, Platform, ScrollView, StyleSheet, Text, View
+} from 'react-native';
 import { useSharedValue } from "react-native-reanimated";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
 
 
 // const data = [...new Array(6).keys()];
@@ -25,10 +29,11 @@ const width = Dimensions.get("screen").width;
 const HomeScreen = () => {
     const colorScheme = useColorScheme();
     const color = colorScheme === 'dark' ? '#fff' : '#000';
-    const backgroundColor = colorScheme === 'dark' ? '#000' : '#F8F8F8';
+    const backgroundColor = colorScheme === 'dark' ? '#151718' : '#FFFFFF';
+    const isDarkMode = colorScheme === 'dark';
 
     const ref = React.useRef(null);
-const progress = useSharedValue(0);
+    const progress = useSharedValue(0);
 
     const mobilePlatform =
         <SafeAreaProvider>
@@ -55,8 +60,8 @@ const progress = useSharedValue(0);
                     </View>
 
                     <View style={{ flex: 1, paddingLeft: 20, paddingTop: 0, paddingRight: 20, paddingBottom: 0 }}>
-                        <CardContainer style={[styles.directories]} height={'auto'}>
-                            <PressableButton IconSize={24} color={color} direction='column' Title='Place to stay' Icon='hotel' onPress={() => router.push('/(tabs)/(home)/AccommodationDirectory')}>
+                        <CardContainer elevation={2} style={[styles.directories]} height={'auto'}>
+                            <PressableButton IconSize={24} color={color} direction='column' Title='Place to stay' Icon='hotel' onPress={() => router.push('/(tabs)/(home)/(accommodations)/')}>
                             </PressableButton>
 
                             <PressableButton IconSize={24} color={color} direction='column' Title='Shops' Icon="shopping-bag"
@@ -74,59 +79,27 @@ const progress = useSharedValue(0);
                     </View>
 
                     <View style={{ flex: 1, width: width, marginBottom: 70 }}>
-                        <CardView width={width} height={400} radius={10} elevation={0}>
-                            <View style={{ width: '100%', height: '70%', borderRadius: 10 }}>
+                        <CardView width={width} height={350} radius={10} elevation={0}>
+                            <View style={{ width: '100%', height: '85%', borderRadius: 10, position: 'absolute', top: 0, paddingTop: 20 }}>
                                 <Image
                                     source={{ uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1' }}
                                     style={styles.image}
                                     resizeMode="cover"
                                 />
                             </View>
-                            <View style={{ width: '100%', height: '30%', paddingTop: 5, paddingBottom: 5, overflow: 'hidden', }}>
-                                <Text style={{ fontFamily: 'Poppins-Bold', fontSize: 16, color: color }}>Mary Coredemtrix Church</Text>
-                                <Text style={{ fontFamily: 'Poppins-Regular', fontSize: 12, color: color }}>Naga City, Philippines</Text>
-                            </View>
-                        </CardView>
-
-                        <CardView width={width} height={400} radius={10} elevation={0}>
-                            <View style={{ width: '100%', height: '70%', borderRadius: 10 }}>
-                                <Image
-                                    source={{ uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1' }}
-                                    style={styles.image}
-                                    resizeMode="cover"
-                                />
-                            </View>
-                            <View style={{ width: '100%', height: '30%', paddingTop: 5, paddingBottom: 5, overflow: 'hidden' }}>
-                                <Text style={{ fontFamily: 'Poppins-Bold', fontSize: 16, color: color }}>Mary Coredemtrix Church</Text>
-                                <Text style={{ fontFamily: 'Poppins-Regular', fontSize: 12, color: color }}>Naga City, Philippines</Text>
-                            </View>
-                        </CardView>
-
-                        <CardView width={width} height={400} radius={10} elevation={0}>
-                            <View style={{ width: '100%', height: '70%', borderRadius: 10 }}>
-                                <Image
-                                    source={{ uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1' }}
-                                    style={styles.image}
-                                    resizeMode="cover"
-                                />
-                            </View>
-                            <View style={{ width: '100%', height: '30%', paddingTop: 5, paddingBottom: 5, overflow: 'hidden' }}>
-                                <Text style={{ fontFamily: 'Poppins-Bold', fontSize: 16, color: color }}>Mary Coredemtrix Church</Text>
-                                <Text style={{ fontFamily: 'Poppins-Regular', fontSize: 12, color: color }}>Naga City, Philippines</Text>
-                            </View>
-                        </CardView>
-
-                        <CardView width={width} height={400} radius={10} elevation={0}>
-                            <View style={{ width: '100%', height: '70%', borderRadius: 10 }}>
-                                <Image
-                                    source={{ uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1' }}
-                                    style={styles.image}
-                                    resizeMode="cover"
-                                />
-                            </View>
-                            <View style={{ width: '100%', height: '30%', paddingTop: 5, paddingBottom: 5, overflow: 'hidden' }}>
-                                <Text style={{ fontFamily: 'Poppins-Bold', fontSize: 16, color: color }}>Mary Coredemtrix Church</Text>
-                                <Text style={{ fontFamily: 'Poppins-Regular', fontSize: 12, color: color }}>Naga City, Philippines</Text>
+                            <View style={[styles.cardTextContainer, {
+                                backgroundColor: backgroundColor,
+                                shadowColor: isDarkMode ? '#f3f3f3' : '#000000',
+                                shadowOpacity: isDarkMode ? 0 : 0.2,
+                                shadowOffset: { width: 0, height: 0 },
+                                shadowRadius: 6,
+                            }]}>
+                                <Text style={{ fontFamily: 'Poppins-Bold', fontSize: 14, color: color }}>Mary Coredemtrix Church</Text>
+                                <Text style={{ fontFamily: 'Poppins-Regular', fontSize: 10, color: color }}><MaterialCommunityIcons name="map-marker" size={12} color="orange" />
+                                    Naga City, Philippines</Text>
+                                <Text style={{
+                                    fontFamily: 'Poppins-Bold', fontSize: 12, color: 'orange'
+                                }}>PHP 500.00 - PHP 3,500.00</Text>
                             </View>
                         </CardView>
                     </View>
@@ -156,6 +129,17 @@ const progress = useSharedValue(0);
 const styles = StyleSheet.create({
     text: {
 
+    },
+    cardTextContainer: {
+        width: '100%',
+        position: 'absolute',
+        bottom: 0,
+        borderRadius: 10,
+        padding: 16,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 5,
+        justifyContent: 'center'
     },
 
     carouselItem: {

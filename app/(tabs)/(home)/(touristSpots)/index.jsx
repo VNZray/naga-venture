@@ -15,7 +15,7 @@ const TouristSpotDirectory = () => {
             <SafeAreaView style={styles.container} edges={['top']}>
                 <ScrollView>
                     <View style={{ flex: 1, paddingLeft: 20, paddingTop: 0, paddingRight: 20, paddingBottom: 0 }}>
-                        <CardContainer style={[styles.directories]} height={'auto'}>
+                        <CardContainer elevation={2} style={[styles.directories]} height={'auto'}>
                             <PressableButton IconSize={24} color={color} direction='column' Title='Historical' Icon='university' onPress={() => router.push('/(tabs)/(home)/(touristSpots)/historical')}>
                             </PressableButton>
 

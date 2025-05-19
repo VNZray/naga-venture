@@ -26,7 +26,6 @@ const LoginPage = () => {
 
   });
 
-
   if (!fontsLoaded) {
     return null;
   }
@@ -78,7 +77,7 @@ const LoginPage = () => {
             />
 
             <Link href="/forgot-password">
-              <Text style={{ color: 'blue' }}>Forgot Password?</Text>
+              <Text style={{ color: '#0077B6' }}>Forgot Password?</Text>
             </Link>
           </View>
 
@@ -94,12 +93,12 @@ const LoginPage = () => {
             onPress={() => router.replace('/(tabs)/(home)/')}
           ></PressableButton>
 
-          <View style={{ display: 'flex', fontSize: 16, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <View style={{ color: color, display: 'flex', fontSize: 16, flexDirection: 'row', gap: 10, alignItems: 'center', justifyContent: 'center', padding: 20 }}>
             <Text style={{ fontFamily: 'Poppins-Medium' }}>
               Don't Have an Account?
             </Text>
 
-            <Link style={{ color: 'blue', fontFamily: 'Poppins-SemiBold', fontSize: 16 }} href={'/(screens)/RegistrationPage'}>
+            <Link style={{ color: '#0077B6', fontFamily: 'Poppins-SemiBold', fontSize: 16 }} href={'/(screens)/RegistrationPage'}>
               Sign Up
             </Link>
           </View>
