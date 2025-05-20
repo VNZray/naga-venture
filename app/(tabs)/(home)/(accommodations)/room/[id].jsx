@@ -2,21 +2,18 @@ import { ThemedText } from "@/components/ThemedText";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { Link, useLocalSearchParams, useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 
-import TabSwitcher from "../../../../../components/TabSwitcherComponent";
-import Details from "./details";
-import Ratings from "./ratings";
-import Rooms from "./rooms";
-
-import { Link } from "expo-router";
-
 import { accommodations } from "@/app/Controller/AccommodationData";
+import TabSwitcher from "@/components/TabSwitcherComponent";
+import Details from "./details";
+import Photos from "./photos";
+import Ratings from "./ratings";
 
-const AccommodationProfile = () => {
+const RoomProfile = () => {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState("details");
@@ -31,39 +28,38 @@ const AccommodationProfile = () => {
     "Poppins-Bold": require("@/assets/fonts/Poppins/Poppins-Bold.ttf"),
   });
 
-  // Make sure `id` is a number before comparing
-  const accommodation = accommodations.find(
-    (acc) => acc.id.toString() === id?.toString()
-  );
+  // Find the accommodation and room based on room id
+  const roomId = parseInt(id?.toString() ?? "", 10);
+  let foundRoom = null;
+  let parentAccommodation = null;
 
-  const accommodationName = accommodation?.name;
-  const accommodationLocation = accommodation?.location;
-  const accommodationImage = accommodation?.imageUri;
-  const ratings = accommodation?.ratings;
+  for (const accommodation of accommodations) {
+    const room = accommodation.rooms.find((room) => room.id === roomId);
+    if (room) {
+      foundRoom = room;
+      parentAccommodation = accommodation;
+      break;
+    }
+  }
 
   useEffect(() => {
-    navigation.setOptions({
-      headerTitle: accommodationName,
-    });
-  }, [navigation, accommodationName]);
+    if (foundRoom) {
+      navigation.setOptions({
+        headerTitle: `Room ${foundRoom.roomNumber}`,
+      });
+    }
+  }, [navigation, foundRoom]);
 
   if (!fontsLoaded) {
     return <View style={{ flex: 1, backgroundColor: "#fff" }} />;
   }
 
-  if (!accommodation) {
+  if (!foundRoom || !parentAccommodation) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 20,
-        }}
-      >
-        <ThemedText type="profileTitle">Accommodation not found.</ThemedText>
+      <View style={styles.centered}>
+        <ThemedText type="profileTitle">Room not found.</ThemedText>
         <ThemedText type="subtitle2" style={{ textAlign: "center" }}>
-          Please go back and select a valid accommodation.
+          Please go back and select a valid Room.
         </ThemedText>
         <Link href={"/(home)/"}>
           <ThemedText type="link">Go Home</ThemedText>
@@ -73,11 +69,11 @@ const AccommodationProfile = () => {
   }
 
   return (
-    <ScrollView style={{ overflow: "visible" }}>
+    <ScrollView>
       <StatusBar style="light" translucent backgroundColor="transparent" />
       <View style={{ position: "relative" }}>
         <Image
-          source={{ uri: accommodationImage }}
+          source={{ uri: foundRoom.roomImage }}
           style={styles.image}
           resizeMode="cover"
         />
@@ -86,20 +82,20 @@ const AccommodationProfile = () => {
       <View style={styles.content}>
         <View style={styles.header}>
           <View>
-            <ThemedText type="profileTitle">{accommodationName}</ThemedText>
+            <ThemedText type="profileTitle">
+              Room {foundRoom.roomNumber}
+            </ThemedText>
             <ThemedText type="default2">
-              <MaterialCommunityIcons
-                name="map-marker"
-                size={16}
-                color="#FFB007"
-              />{" "}
-              {accommodationLocation}
+              <MaterialCommunityIcons name="star" size={16} color="#FFB007" />{" "}
+              {foundRoom.ratings}
             </ThemedText>
           </View>
           <View>
             <ThemedText type="default">
-              <MaterialCommunityIcons name="star" size={20} color="#FFB007" />{" "}
-              {ratings}
+              ₱ {foundRoom.roomPrice.toFixed(2)}
+            </ThemedText>
+            <ThemedText type="default2">
+              Per Night
             </ThemedText>
           </View>
         </View>
@@ -107,7 +103,7 @@ const AccommodationProfile = () => {
         <TabSwitcher
           tabs={[
             { key: "details", label: "Details" },
-            { key: "rooms", label: "Rooms" },
+            { key: "photos", label: "Photos" },
             { key: "ratings", label: "Ratings" },
           ]}
           activeTab={activeTab}
@@ -118,29 +114,14 @@ const AccommodationProfile = () => {
       </View>
 
       <View style={styles.tabContent}>
-        <View
-          style={{
-            display: activeTab === "details" ? "flex" : "none",
-            overflow: "visible",
-          }}
-        >
-          <Details accommodationId={id} />
+        <View style={{ display: activeTab === "details" ? "flex" : "none" }}>
+          <Details roomId={roomId} />
         </View>
-        <View
-          style={{
-            display: activeTab === "rooms" ? "flex" : "none",
-            overflow: "visible",
-          }}
-        >
-          <Rooms accommodationId={id} />
+        <View style={{ display: activeTab === "photos" ? "flex" : "none" }}>
+          <Photos roomId={roomId} />
         </View>
-        <View
-          style={{
-            display: activeTab === "ratings" ? "flex" : "none",
-            overflow: "visible",
-          }}
-        >
-          <Ratings accommodationId={id} />
+        <View style={{ display: activeTab === "ratings" ? "flex" : "none" }}>
+          <Ratings roomId={roomId} />
         </View>
       </View>
     </ScrollView>
@@ -162,12 +143,15 @@ const styles = StyleSheet.create({
   },
   tabContent: {
     paddingTop: 0,
+    padding: 16,
     marginBottom: 100,
-    overflow: "visible",
   },
-  ratings: {
-    fontSize: 16,
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
 });
 
-export default AccommodationProfile;
+export default RoomProfile;

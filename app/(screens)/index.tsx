@@ -1,4 +1,5 @@
 import PressableButton from "@/components/PressableButton";
+import { ThemedText } from "@/components/ThemedText";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
@@ -42,17 +43,17 @@ const index = () => {
           end={{ x: 0.5, y: 1 }}
           style={{ flex: 1, justifyContent: "center", padding: "5%" }}
         >
-          <Text
+          <ThemedText
+          type="title"
             style={{
               fontSize: 38,
               textAlign: "left",
-              fontFamily: "Poppins-Bold",
-              color: "white",
               marginTop: 250,
+              color: '#fff'
             }}
           >
             Begin Your Journey in the Heart of Naga
-          </Text>
+          </ThemedText>
           <Text
             style={{
               fontSize: 18,

@@ -1,12 +1,12 @@
+import { ThemedView } from '@/components/ThemedView';
 import React from 'react';
 import {
   DimensionValue,
+  Image,
   Platform,
   StyleProp,
-  StyleSheet,
-  View,
   ViewStyle,
-  useColorScheme as useRNColorScheme,
+  useColorScheme as useRNColorScheme
 } from 'react-native';
 
 export function useColorScheme() {
@@ -14,13 +14,15 @@ export function useColorScheme() {
   return scheme === 'dark' ? 'dark' : 'light';
 }
 
-type CardContainerProps = {
+type RoomCardProps = {
   children?: React.ReactNode;
   background?: string;
   elevation?: number;
+  accommodationId?: number;
   width?: DimensionValue;
   height?: DimensionValue;
   radius?: number;
+  imageUri?: string;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -70,45 +72,48 @@ const getShadowStyle = (elevation: number, isDarkMode: boolean): ViewStyle => {
   return shadowStyles[elevation] ?? shadowStyles[1];
 };
 
-const CardContainer: React.FC<CardContainerProps> = ({
+const RoomCard: React.FC<RoomCardProps> = ({
   children,
   background,
   elevation = 1,
   width,
   height,
   radius = 10,
+  imageUri,
   style,
 }) => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
 
+
   const shadowStyle =
     Platform.OS === 'ios' ? getShadowStyle(elevation, isDarkMode) : {};
 
   return (
-    <View
+    <ThemedView
       style={[
         {
-          backgroundColor: background || (isDarkMode ? '#1c1c1e' : '#ffffff'),
           width,
           height,
           borderRadius: radius,
           elevation: Platform.OS === 'android' ? elevation : 0,
+          overflow: 'visible'
         } as ViewStyle,
-        styles.card,
         shadowStyle,
         style,
       ]}
     >
+      {imageUri && (
+        <Image
+          source={{ uri: imageUri }}
+          resizeMode="cover"
+          style={{ width: '100%', height: 150, borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
+        />
+      )}
       {children}
-    </View>
+    </ThemedView>
   );
 };
 
-const styles = StyleSheet.create({
-  card: {
-    padding: 10,
-  },
-});
 
-export default CardContainer;
+export default RoomCard;
