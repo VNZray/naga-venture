@@ -1,18 +1,29 @@
+// app/(tabs)/(home)/(touristSpots)/(categories)/[category].jsx
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
-import { router, useLocalSearchParams } from "expo-router";
-import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
+import { useLayoutEffect } from 'react';
+import {
+  Image,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 // Import the central data
-import { touristSpotsData } from '../data';
+import { touristSpotsData } from "../data";
 
 const CategoryPage = () => {
   const { category: categoryId } = useLocalSearchParams();
+  const navigation = useNavigation();
   const colorScheme = useColorScheme();
-  const textColor = colorScheme === 'dark' ? '#fff' : '#000';
-  const backgroundColor = colorScheme === 'dark' ? '#0A1B47' : '#F8F8F8';
-  const cardBackgroundColor = colorScheme === 'dark' ? '#1E293B' : '#fff';
-  const shadowColor = colorScheme === 'dark' ? '#000' : '#ccc';
+  const textColor = colorScheme === "dark" ? "#fff" : "#000";
+  const backgroundColor = colorScheme === "dark" ? "#0A1B47" : "#F8F8F8";
+  const cardBackgroundColor = colorScheme === "dark" ? "#1E293B" : "#fff";
+  const shadowColor = colorScheme === "dark" ? "#000" : "#ccc";
 
   // Define category title based on categoryId
   const getCategoryTitle = (id) => {
@@ -32,28 +43,27 @@ const CategoryPage = () => {
     }
   };
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: getCategoryTitle(categoryId),
+    });
+  }, [navigation, categoryId]);
+
   // Filter tourist spots based on the categoryId
   const categoryItems = Object.values(touristSpotsData).filter(
     (item) => item.category === categoryId
   );
 
-  const handleBackClick = () => {
-    router.back();
-  };
-
   const handleItemClick = (itemId) => {
-    router.push(`/(tabs)/(home)/(touristSpots)/spot/${itemId}`);
+    router.push(`/(home)/(touristSpots)/(spots)/${itemId}`);
   };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
-      <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: colorScheme === 'dark' ? '#1E293B' : '#fff', shadowColor }]}>
-        <Text style={[styles.title, { color: textColor, textAlign: "center"}]}>
-          {getCategoryTitle(categoryId)}
-        </Text>
-      </View>
+      <StatusBar
+        barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+      />
+      {/* Header (We can remove the inline header now) */}
 
       {/* Content */}
       <ScrollView contentContainerStyle={styles.content}>
@@ -61,12 +71,19 @@ const CategoryPage = () => {
           <TouchableOpacity
             key={item.id}
             onPress={() => handleItemClick(item.id)}
-            style={[styles.itemContainer, { backgroundColor: cardBackgroundColor, shadowColor }]}
+            style={[
+              styles.itemContainer,
+              { backgroundColor: cardBackgroundColor, shadowColor },
+            ]}
           >
             <Image source={{ uri: item.image }} style={styles.itemImage} />
             <View style={styles.itemDetails}>
-              <Text style={[styles.itemName, { color: textColor }]}>{item.name}</Text>
-              <Text style={[styles.itemDescription, { color: textColor }]}>{item.description}</Text>
+              <Text style={[styles.itemName, { color: textColor }]}>
+                {item.name}
+              </Text>
+              <Text style={[styles.itemDescription, { color: textColor }]}>
+                {item.description}
+              </Text>
               <View style={styles.itemFooter}>
                 <View style={styles.location}>
                   <Ionicons name="location" size={16} color="#007AFF" />
@@ -95,12 +112,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
     elevation: 2,
   },
   backButton: {
@@ -108,7 +125,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     flex: 1,
   },
   content: {
@@ -117,7 +134,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     borderRadius: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginBottom: 15,
     elevation: 3,
     shadowOffset: { width: 1, height: 1 },
@@ -125,7 +142,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   itemImage: {
-    width: '100%',
+    width: "100%",
     height: 200,
   },
   itemDetails: {
@@ -133,48 +150,48 @@ const styles = StyleSheet.create({
   },
   itemName: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
   },
   itemDescription: {
     fontSize: 14,
-    color: 'gray',
+    color: "gray",
     marginBottom: 10,
   },
   itemFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   location: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   locationText: {
     marginLeft: 5,
-    color: '#007AFF',
+    color: "#007AFF",
     fontSize: 12,
   },
   detailsButton: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: "#f0f0f0",
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 5,
   },
   detailsButtonText: {
-    color: '#333',
+    color: "#333",
     fontSize: 12,
   },
   bottomNav: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 15,
-    alignItems: 'center',
+    alignItems: "center",
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: "#eee",
   },
 });
 

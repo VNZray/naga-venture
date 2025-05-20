@@ -1,3 +1,4 @@
+// app/(tabs)/(home)/(touristSpots)/index.jsx
 import CardContainer from "@/components/CardContainer";
 import PressableButton from "@/components/PressableButton";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -17,7 +18,7 @@ import {
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 // Import the data
-import { featuredLocations, categories, destinations } from './data';
+import { categories, destinations, featuredLocations } from "./data";
 
 const width = Dimensions.get("window").width;
 
@@ -32,13 +33,18 @@ const TouristSpotDirectory = () => {
   };
 
   const handleDestinationPress = (destinationId) => {
-    router.push(`/(tabs)/(home)/(touristSpots)/spot/${destinationId}`);
+    router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${destinationId}`);
   };
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['top']}>
-        <StatusBar barStyle={colorScheme === "dark" ? "light-content" : "dark-content"} />
+      <SafeAreaView
+        style={[styles.container, { backgroundColor }]}
+        edges={["top"]}
+      >
+        <StatusBar
+          barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+        />
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
@@ -46,10 +52,18 @@ const TouristSpotDirectory = () => {
             <TextInput
               style={[styles.searchInput, { color: color }]}
               placeholder="Search"
-              placeholderTextColor={colorScheme === "dark" ? "#8E9196" : "#9F9EA1"}
+              placeholderTextColor={
+                colorScheme === "dark" ? "#8E9196" : "#9F9EA1"
+              }
             />
             <TouchableOpacity
-              style={[styles.searchButton, { backgroundColor: colorScheme === "dark" ? "#152A5E" : "#0077B6" }]}
+              style={[
+                styles.searchButton,
+                {
+                  backgroundColor:
+                    colorScheme === "dark" ? "#152A5E" : "#0077B6",
+                },
+              ]}
             >
               <Ionicons name="search" size={20} color="#fff" />
             </TouchableOpacity>
@@ -59,7 +73,9 @@ const TouristSpotDirectory = () => {
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Featured Locations */}
           <View style={styles.sectionContainer}>
-            <Text style={[styles.sectionTitle, { color: color }]}>Featured Locations</Text>
+            <Text style={[styles.sectionTitle, { color: color }]}>
+              Featured Locations
+            </Text>
             <View style={{ height: 200 }}>
               <Carousel
                 loop
@@ -91,14 +107,16 @@ const TouristSpotDirectory = () => {
 
           {/* Categories - Your preferred button style */}
           <View style={styles.sectionContainer}>
-            <Text style={[styles.sectionTitle, { color: color }]}>Categories</Text>
-            <CardContainer style={styles.directories} height={'auto'}>
+            <Text style={[styles.sectionTitle, { color: color }]}>
+              Categories
+            </Text>
+            <CardContainer style={styles.directories} height={"auto"}>
               {categories.map((category) => (
                 <PressableButton
                   key={category.id}
                   IconSize={24}
                   color={color}
-                  direction='column'
+                  direction="column"
                   Title={category.name}
                   Icon={category.icon}
                   onPress={() => handleCategoryPress(category.id)}
@@ -109,7 +127,9 @@ const TouristSpotDirectory = () => {
 
           {/* Discover More */}
           <View style={[styles.sectionContainer, { marginBottom: 100 }]}>
-            <Text style={[styles.sectionTitle, { color: color }]}>Discover More</Text>
+            <Text style={[styles.sectionTitle, { color: color }]}>
+              Discover More
+            </Text>
             <View style={styles.destinationsGrid}>
               {destinations.map((destination) => (
                 <TouchableOpacity
@@ -147,10 +167,10 @@ const styles = StyleSheet.create({
   },
   directories: {
     flex: 1,
-    width: '100%',
+    width: "100%",
     padding: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   searchContainer: {
     paddingHorizontal: 20,
