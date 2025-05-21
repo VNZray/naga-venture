@@ -1,13 +1,14 @@
 import React from 'react';
 import {
-    DimensionValue,
-    Platform,
-    StyleProp,
-    StyleSheet,
-    View,
-    ViewStyle,
-    useColorScheme as useRNColorScheme,
+  DimensionValue,
+  Platform,
+  StyleProp,
+  StyleSheet,
+  ViewStyle,
+  useColorScheme as useRNColorScheme
 } from 'react-native';
+
+import { ThemedView } from '@/components/ThemedView';
 
 export function useColorScheme() {
   const scheme = useRNColorScheme();
@@ -16,7 +17,6 @@ export function useColorScheme() {
 
 type CardContainerProps = {
   children?: React.ReactNode;
-  background?: string;
   elevation?: number;
   width?: DimensionValue;
   height?: DimensionValue;
@@ -72,7 +72,6 @@ const getShadowStyle = (elevation: number, isDarkMode: boolean): ViewStyle => {
 
 const CardContainer: React.FC<CardContainerProps> = ({
   children,
-  background,
   elevation = 1,
   width,
   height,
@@ -86,10 +85,9 @@ const CardContainer: React.FC<CardContainerProps> = ({
     Platform.OS === 'ios' ? getShadowStyle(elevation, isDarkMode) : {};
 
   return (
-    <View
+    <ThemedView
       style={[
         {
-          backgroundColor: background || (isDarkMode ? '#1c1c1e' : '#ffffff'),
           width,
           height,
           borderRadius: radius,
@@ -101,7 +99,7 @@ const CardContainer: React.FC<CardContainerProps> = ({
       ]}
     >
       {children}
-    </View>
+    </ThemedView>
   );
 };
 

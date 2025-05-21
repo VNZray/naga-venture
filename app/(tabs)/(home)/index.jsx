@@ -1,166 +1,215 @@
-import CardContainer from '@/components/CardContainer';
-import CardView from '@/components/CardView';
-import PressableButton from '@/components/PressableButton';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React from 'react';
+import CardContainer from "@/components/CardContainer";
+import CardView from "@/components/CardView";
+import PressableButton from "@/components/PressableButton";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { router } from "expo-router";
+import React from "react";
 import {
-    Dimensions, Image, Platform, ScrollView, StyleSheet, Text, View
-} from 'react-native';
+  Dimensions,
+  Image,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel from "react-native-reanimated-carousel";
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
+import { ThemedText } from "@/components/ThemedText";
+import { FeaturedLocation } from "../../Controller/HomeData";
 
-
-// const data = [...new Array(6).keys()];
-
-const data = [
-    { id: 1, uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/11/ateneo-de-naga-university1.jpg?resize=768%2C512&ssl=1' },
-    { id: 2, uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1' },
-    { id: 3, uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Porta-mariae-e1717984426731.jpg?resize=768%2C506&ssl=1' },
-    { id: 4, uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/12/old-abella-arch.jpg?resize=768%2C512&ssl=1' },
-    { id: 5, uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1' },
-    { id: 6, uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/09/jmr-coliseum-scaled.jpg?resize=768%2C576&ssl=1' },
-];
 const width = Dimensions.get("screen").width;
 
 const HomeScreen = () => {
-    const colorScheme = useColorScheme();
-    const color = colorScheme === 'dark' ? '#fff' : '#000';
-    const backgroundColor = colorScheme === 'dark' ? '#151718' : '#FFFFFF';
-    const isDarkMode = colorScheme === 'dark';
+  const colorScheme = useColorScheme();
+  const color = colorScheme === "dark" ? "#fff" : "#000";
+  const backgroundColor = colorScheme === "dark" ? "#151718" : "#FFFFFF";
+  const isDarkMode = colorScheme === "dark";
 
-    const ref = React.useRef(null);
-    const progress = useSharedValue(0);
+  const ref = React.useRef(null);
+  const progress = useSharedValue(0);
 
-    const mobilePlatform =
-        <SafeAreaProvider>
-            <SafeAreaView edges={['top']}>
-                <ScrollView>
-                    <View style={{ flex: 1, width: width }}>
-                        <Carousel
-                            style={{ borderRadius: 10 }}
-                            ref={ref}
-                            width={width}
-                            height={260}
-                            data={data}
-                            onProgressChange={progress}
-                            renderItem={({ item }) => (
-                                <View style={styles.carouselItem}>
-                                    <Image
-                                        source={{ uri: item.uri }}
-                                        style={styles.image}
-                                        resizeMode="cover"
-                                    />
-                                </View>
-                            )}
-                        />
-                    </View>
+  const mobilePlatform = (
+    <SafeAreaProvider>
+      <SafeAreaView>
+        <ScrollView>
+          <View style={{ flex: 1, width: width }}>
+            <Carousel
+              style={{ borderRadius: 10 }}
+              ref={ref}
+              width={width}
+              height={260}
+              data={FeaturedLocation}
+              onProgressChange={progress}
+              renderItem={({ item }) => (
+                <View style={styles.carouselItem}>
+                  <Image
+                    source={{ uri: item.uri }}
+                    style={styles.image}
+                    resizeMode="cover"
+                  />
+                </View>
+              )}
+            />
+          </View>
 
-                    <View style={{ flex: 1, paddingLeft: 20, paddingTop: 0, paddingRight: 20, paddingBottom: 0 }}>
-                        <CardContainer elevation={2} style={[styles.directories]} height={'auto'}>
-                            <PressableButton IconSize={24} color={color} direction='column' Title='Place to stay' Icon='hotel' onPress={() => router.push('/(tabs)/(home)/(accommodations)/')}>
-                            </PressableButton>
+          <View
+            style={{
+              flex: 1,
+              paddingLeft: 16,
+              paddingTop: 0,
+              paddingRight: 16,
+              paddingBottom: 0,
+            }}
+          >
+            <CardContainer
+              elevation={2}
+              style={[styles.directories]}
+              height={"auto"}
+            >
+              <PressableButton
+                IconSize={24}
+                color={color}
+                direction="column"
+                Title="Place to stay"
+                Icon="hotel"
+                onPress={() => router.push("/(tabs)/(home)/(accommodations)/")}
+              ></PressableButton>
 
-                            <PressableButton IconSize={24} color={color} direction='column' Title='Shops' Icon="shopping-bag"
-                                onPress={() => router.push('/(tabs)/(home)/ShopDirectory')}>
-                            </PressableButton>
+              <PressableButton
+                IconSize={24}
+                color={color}
+                direction="column"
+                Title="Shops"
+                Icon="shopping-bag"
+                onPress={() => router.push("/(tabs)/(home)/ShopDirectory")}
+              ></PressableButton>
 
-                            <PressableButton IconSize={24} color={color} direction='column' Title='Tourist Spots' Icon="map-marker"
-                                onPress={() => router.push('/(tabs)/(home)/(touristSpots)')}>
-                            </PressableButton>
+              <PressableButton
+                IconSize={24}
+                color={color}
+                direction="column"
+                Title="Tourist Spots"
+                Icon="map-marker"
+                onPress={() => router.push("/(tabs)/(home)/(touristSpots)")}
+              ></PressableButton>
 
-                            <PressableButton IconSize={24} color={color} direction='column' Title='Events' Icon="calendar"
-                                onPress={() => router.push('/(tabs)/(home)/EventDirectory')}>
-                            </PressableButton>
-                        </CardContainer>
-                    </View>
+              <PressableButton
+                IconSize={24}
+                color={color}
+                direction="column"
+                Title="Events"
+                Icon="calendar"
+                onPress={() => router.push("/(tabs)/(home)/EventDirectory")}
+              ></PressableButton>
+            </CardContainer>
+          </View>
 
-                    <View style={{ flex: 1, width: width, marginBottom: 70 }}>
-                        <CardView width={width} height={350} radius={10} elevation={0}>
-                            <View style={{ width: '100%', height: '85%', borderRadius: 10, position: 'absolute', top: 0, paddingTop: 20 }}>
-                                <Image
-                                    source={{ uri: 'https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1' }}
-                                    style={styles.image}
-                                    resizeMode="cover"
-                                />
-                            </View>
-                            <View style={[styles.cardTextContainer, {
-                                backgroundColor: backgroundColor,
-                                shadowColor: isDarkMode ? '#f3f3f3' : '#000000',
-                                shadowOpacity: isDarkMode ? 0 : 0.2,
-                                shadowOffset: { width: 0, height: 0 },
-                                shadowRadius: 6,
-                            }]}>
-                                <Text style={{ fontFamily: 'Poppins-Bold', fontSize: 14, color: color }}>Mary Coredemtrix Church</Text>
-                                <Text style={{ fontFamily: 'Poppins-Regular', fontSize: 10, color: color }}><MaterialCommunityIcons name="map-marker" size={12} color="orange" />
-                                    Naga City, Philippines</Text>
-                                <Text style={{
-                                    fontFamily: 'Poppins-Bold', fontSize: 12, color: 'orange'
-                                }}>PHP 500.00 - PHP 3,500.00</Text>
-                            </View>
-                        </CardView>
-                    </View>
+          <View
+            style={{
+              displat: "flex",
+              width: width,
+              marginBottom: 70,
+              padding: 16,
+            }}
+          >
+            <CardView height={350} radius={10} elevation={0}>
+              <View
+                style={{
+                  width: "100%",
+                  height: "85%",
+                  borderRadius: 10,
+                  position: "absolute",
+                  top: 0,
+                  paddingTop: 16,
+                }}
+              >
+                <Image
+                  source={{
+                    uri: "https://i0.wp.com/nagayon.com/wp-content/uploads/1624/08/mary-coredemtrix-church.jpg?resize=768%2C432&ssl=1",
+                  }}
+                  style={styles.image}
+                  resizeMode="cover"
+                />
+              </View>
+              <View
+                style={[
+                  styles.cardTextContainer,
+                  {
+                    backgroundColor: backgroundColor,
+                    shadowColor: isDarkMode ? "#f3f3f3" : "#000000",
+                    shadowOpacity: isDarkMode ? 0 : 0.2,
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowRadius: 6,
+                  },
+                ]}
+              >
+                <ThemedText type="cardTitle">
+                  Mary Coredemtrix Church
+                </ThemedText>
+                <ThemedText type="cardSubTitle">
+                  Naga City, Philippines
+                </ThemedText>
+                <ThemedText style={{ color: "#FF5310" }} type="cardSubTitle">
+                  10:00 AM - 10:00 PM
+                </ThemedText>
+              </View>
+            </CardView>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
 
-                </ScrollView>
-            </SafeAreaView>
-        </SafeAreaProvider >
+  const webPlatfrom = (
+    <div style={{ flex: 1 }}>
+      <header>
+        <h1 style={{ color: color }}>Welcome to Naga Venture</h1>
+        <p style={{ color: color }}>Explore the best of Naga City</p>
+      </header>
+    </div>
+  );
 
-    const webPlatfrom =
-        <div style={{ flex: 1 }}>
-            <header>
-                <h1 style={{ color: color }}>Welcome to Naga Venture</h1>
-                <p style={{ color: color }}>Explore the best of Naga City</p>
-            </header>
-        </div>
-
-    if (Platform.OS === 'web') {
-        return (
-            webPlatfrom
-        );
-    }
-    return (
-        mobilePlatform
-    )
+  if (Platform.OS === "web") {
+    return webPlatfrom;
+  }
+  return mobilePlatform;
 };
 
 const styles = StyleSheet.create({
-    text: {
+  text: {},
+  cardTextContainer: {
+    width: "100%",
+    position: "absolute",
+    bottom: 0,
+    borderRadius: 10,
+    padding: 16,
+    display: "flex",
+    flexDirection: "column",
+    gap: 5,
+    justifyContent: "center",
+  },
 
-    },
-    cardTextContainer: {
-        width: '100%',
-        position: 'absolute',
-        bottom: 0,
-        borderRadius: 10,
-        padding: 16,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 5,
-        justifyContent: 'center'
-    },
+  carouselItem: {
+    flex: 1,
+    borderRadius: 10,
+    overflow: "hidden",
+    padding: 16,
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
+  },
 
-    carouselItem: {
-        flex: 1,
-        borderRadius: 10,
-        overflow: 'hidden',
-        padding: 20,
-    },
-    image: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 10,
-    },
-
-    directories: {
-        flex: 1,
-        width: '100%',
-        padding: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    }
+  directories: {
+    flex: 1,
+    width: "100%",
+    padding: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
 });
 
-export default HomeScreen
+export default HomeScreen;

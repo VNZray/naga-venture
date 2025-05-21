@@ -1,5 +1,6 @@
 import logo from '@/assets/images/logo.png';
 import PressableButton from '@/components/PressableButton';
+import { ThemedText } from "@/components/ThemedText";
 import { useFonts } from 'expo-font';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -42,10 +43,12 @@ const RegistrationPage = () => {
             <Text style={styles.text}>Naga Venture</Text>
           </View>
 
-          <Text style={{ fontFamily: 'Poppins-Bold', fontSize: 24 }}>Sign Up</Text>
-          <Text style={{ fontFamily: 'Poppins-Medium', fontSize: 16, marginBottom: 20 }}>
-            Navigate with Ease - Your Ultimate City Directory
-          </Text>
+          <View>
+            <ThemedText type="title">Sign Up</ThemedText>
+            <ThemedText type="default">
+              Navigate with Ease - Your Ultimate City Directory
+            </ThemedText>
+          </View>
 
           <View style={{ flexDirection: 'row', gap: 16 }}>
             <View style={{ flex: 1 }}>

@@ -30,8 +30,8 @@ const Screens = () => {
         <Stack>
             <Stack.Screen name='index' options={{ headerShown: false }} />
             <Stack.Screen name='LoadingScreen' options={{  headerShown: false }} />
-            <Stack.Screen name='LoginPage' options={{ headerBackTitle: 'Back', headerTitle: '', headerTintColor: color, headerShown: true }} />
-            <Stack.Screen name='RegistrationPage' options={{ headerBackTitle: 'Back', headerTintColor: color, headerShown: true }} />
+            <Stack.Screen name='LoginPage' options={{ headerBackTitle: 'Back', headerTitle: 'Login', headerTintColor: color, headerShown: true, title: 'Login' }} />
+            <Stack.Screen name='RegistrationPage' options={{ headerBackTitle: 'Back', headerTintColor: color, headerShown: true, title: 'Sign Up' }} />
         </Stack>
     )
 }
