@@ -83,7 +83,7 @@ const HomeScreen = () => {
                 direction="column"
                 Title="Shops"
                 Icon="shopping-bag"
-                onPress={() => router.push("/(tabs)/(home)/ShopDirectory")}
+                onPress={() => router.push("/(tabs)/(home)/(shops)/")}
               ></PressableButton>
 
               <PressableButton
