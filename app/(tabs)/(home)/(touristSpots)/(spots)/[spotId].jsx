@@ -276,7 +276,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerImageContainer: {
-    height: 200,
+    height: 300,
     width: "100%",
     position: "relative",
   },
@@ -296,8 +296,6 @@ const styles = StyleSheet.create({
   detailsContainer: {
     flex: 1,
     marginTop: -30,
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
     padding: 20,
   },
   titleRow: {

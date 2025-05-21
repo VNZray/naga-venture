@@ -2,13 +2,14 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useMemo, useState } from 'react';
 import {
   Image,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -24,6 +25,7 @@ const CategoryPage = () => {
   const backgroundColor = colorScheme === "dark" ? "#0A1B47" : "#F8F8F8";
   const cardBackgroundColor = colorScheme === "dark" ? "#1E293B" : "#fff";
   const shadowColor = colorScheme === "dark" ? "#000" : "#ccc";
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Define category title based on categoryId
   const getCategoryTitle = (id) => {
@@ -50,12 +52,23 @@ const CategoryPage = () => {
   }, [navigation, categoryId]);
 
   // Filter tourist spots based on the categoryId
-  const categoryItems = Object.values(touristSpotsData).filter(
-    (item) => item.category === categoryId
-  );
+  const allCategoryItems = useMemo(() => {
+    return Object.values(touristSpotsData).filter(
+      (item) => item.category === categoryId
+    );
+  }, [categoryId, touristSpotsData]);
+
+  const filteredCategoryItems = useMemo(() => {
+    if (!searchQuery.trim()) return allCategoryItems;
+
+    const query = searchQuery.toLowerCase().trim();
+    return allCategoryItems.filter(item =>
+      item.name.toLowerCase().includes(query)
+    );
+  }, [searchQuery, allCategoryItems]);
 
   const handleItemClick = (itemId) => {
-    router.push(`/(home)/(touristSpots)/(spots)/${itemId}`);
+    router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${itemId}`);
   };
 
   return (
@@ -63,39 +76,64 @@ const CategoryPage = () => {
       <StatusBar
         barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
       />
-      {/* Header (We can remove the inline header now) */}
+      {/* Search Bar */}
+      <View style={styles.searchContainer}>
+        <View style={styles.searchInputContainer}>
+          <TextInput
+            style={[styles.searchInput, { color: textColor }]}
+            placeholder={`Search ${getCategoryTitle(categoryId).toLowerCase()}...`}
+            placeholderTextColor={
+              colorScheme === "dark" ? "#8E9196" : "#9F9EA1"
+            }
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          <TouchableOpacity style={[styles.searchButton, { backgroundColor: colorScheme === "dark" ? "#152A5E" : "#0077B6" }]}>
+            <Ionicons name="search" size={20} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {/* Content */}
       <ScrollView contentContainerStyle={styles.content}>
-        {categoryItems.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            onPress={() => handleItemClick(item.id)}
-            style={[
-              styles.itemContainer,
-              { backgroundColor: cardBackgroundColor, shadowColor },
-            ]}
-          >
-            <Image source={{ uri: item.image }} style={styles.itemImage} />
-            <View style={styles.itemDetails}>
-              <Text style={[styles.itemName, { color: textColor }]}>
-                {item.name}
-              </Text>
-              <Text style={[styles.itemDescription, { color: textColor }]}>
-                {item.description}
-              </Text>
-              <View style={styles.itemFooter}>
-                <View style={styles.location}>
-                  <Ionicons name="location" size={16} color="#007AFF" />
-                  <Text style={styles.locationText}>Naga City</Text>
-                </View>
-                <View style={styles.detailsButton}>
-                  <Text style={styles.detailsButtonText}>View Details</Text>
+        {filteredCategoryItems.length > 0 ? (
+          filteredCategoryItems.map((item) => (
+            <TouchableOpacity
+              key={item.id}
+              onPress={() => handleItemClick(item.id)}
+              style={[
+                styles.itemContainer,
+                { backgroundColor: cardBackgroundColor, shadowColor },
+              ]}
+            >
+              <Image source={{ uri: item.image }} style={styles.itemImage} />
+              <View style={styles.itemDetails}>
+                <Text style={[styles.itemName, { color: textColor }]}>
+                  {item.name}
+                </Text>
+                <Text style={[styles.itemDescription, { color: textColor }]}>
+                  {item.description}
+                </Text>
+                <View style={styles.itemFooter}>
+                  <View style={styles.location}>
+                    <Ionicons name="location" size={16} color="#007AFF" />
+                    <Text style={styles.locationText}>Naga City</Text>
+                  </View>
+                  <View style={styles.detailsButton}>
+                    <Text style={styles.detailsButtonText}>View Details</Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          ))
+        ) : (
+          <View style={styles.emptyContainer}>
+            <Ionicons name="information-circle-outline" size={40} color="gray" />
+            <Text style={[styles.emptyText, { color: textColor }]}>
+              No {getCategoryTitle(categoryId).toLowerCase()} found matching "{searchQuery}".
+            </Text>
+          </View>
+        )}
       </ScrollView>
 
       {/* Bottom Navigation Placeholder */}
@@ -111,22 +149,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
+  searchContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  searchInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    elevation: 2,
   },
-  backButton: {
-    marginRight: 15,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
+  searchInput: {
     flex: 1,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 10,
+    paddingHorizontal: 15,
+    fontFamily: "Poppins-Regular",
+    fontSize: 14,
+  },
+  searchButton: {
+    marginLeft: 10,
+    backgroundColor: "#0077B6",
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   content: {
     padding: 10,
@@ -192,6 +239,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderTopWidth: 1,
     borderTopColor: "#eee",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  emptyText: {
+    marginTop: 10,
+    fontSize: 16,
+    textAlign: "center",
+    color: "gray",
   },
 });
 
