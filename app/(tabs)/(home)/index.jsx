@@ -106,7 +106,14 @@ const HomeScreen = () => {
             </CardContainer>
           </View>
 
-          <View style={{ displat: "flex", width: width, marginBottom: 70, padding: 16 }}>
+          <View
+            style={{
+              displat: "flex",
+              width: width,
+              marginBottom: 70,
+              padding: 16,
+            }}
+          >
             <CardView height={350} radius={10} elevation={0}>
               <View
                 style={{

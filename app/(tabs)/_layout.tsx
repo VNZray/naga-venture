@@ -6,6 +6,7 @@ import { Platform, View } from 'react-native';
 
 import LoadingScreen from '@/app/(screens)/LoadingScreen';
 import { HapticTab } from '@/components/HapticTab';
+import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
@@ -24,7 +25,11 @@ export default function TabLayout() {
   // Platform check should be before any return
   if (Platform.OS === 'web') {
     return (
-      <div></div>
+      <View>
+        <ThemedText>
+          Hello World
+        </ThemedText>
+      </View>
     );
   }
 

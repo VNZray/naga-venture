@@ -32,23 +32,23 @@ const AccommodationDirectory = () => {
     setFilteredAccommodations(accommodations);
   }, []);
 
-const handleSearch = () => {
-  setLoading(true);
+  const handleSearch = () => {
+    setLoading(true);
 
-  setTimeout(() => {
-    const lowerSearch = search.toLowerCase();
+    setTimeout(() => {
+      const lowerSearch = search.toLowerCase();
 
-    const filtered = accommodations.filter((acc) => {
-      return (
-        acc.name.toLowerCase().includes(lowerSearch) ||
-        acc.location.toLowerCase().includes(lowerSearch)
-      );
-    });
+      const filtered = accommodations.filter((acc) => {
+        return (
+          acc.name.toLowerCase().includes(lowerSearch) ||
+          acc.location.toLowerCase().includes(lowerSearch)
+        );
+      });
 
-    setFilteredAccommodations(filtered);
-    setLoading(false);
-  }, 800); // simulate loading for 800ms
-};
+      setFilteredAccommodations(filtered);
+      setLoading(false);
+    }, 800); // simulate loading for 800ms
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
