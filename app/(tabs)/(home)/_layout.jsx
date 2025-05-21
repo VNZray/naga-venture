@@ -26,7 +26,7 @@ const HomeLayout = () => {
       <Stack.Screen
         name="(shops)"
         options={{
-          headerShown: true,
+          headerShown: false,
           animation: 'slide_from_right',
           headerTitleAlign: 'center',
           headerTitle: 'Shop Directory',
