@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { touristSpotsData } from "../data"; // Corrected import path
 
 const TouristSpotDetails = () => {
@@ -25,6 +25,7 @@ const TouristSpotDetails = () => {
 
   if (!spot) {
     return (
+
       <SafeAreaView
         style={[
           styles.container,
@@ -71,203 +72,205 @@ const TouristSpotDetails = () => {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
-      <ScrollView>
-        {/* Header Image */}
-        <View style={styles.headerImageContainer}>
-          <Image source={{ uri: spot.image }} style={styles.headerImage} />
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backButton}
-          >
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-
-        {/* Details */}
-        <View style={[styles.detailsContainer, { backgroundColor }]}>
-          <View style={styles.titleRow}>
-            <Text style={[styles.spotTitle, { color: textColor }]}>
-              {spot.name}
-            </Text>
-            {/* Favorite Button - Add functionality later */}
-            <TouchableOpacity style={styles.favoriteButton}>
-              <Ionicons name="heart-outline" size={24} color={textColor} />
+    <SafeAreaProvider>
+      <SafeAreaView style={[styles.container, { backgroundColor }]}>
+        <ScrollView>
+          {/* Header Image */}
+          <View style={styles.headerImageContainer}>
+            <Image source={{ uri: spot.image }} style={styles.headerImage} />
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={styles.backButton}
+            >
+              <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
           </View>
 
-          {/* Tabs */}
-          <View style={styles.tabsContainer}>
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                activeTab === "details" && styles.activeTab,
-              ]}
-              onPress={() => setActiveTab("details")}
-            >
-              <Text
-                style={[
-                  styles.tabText,
-                  activeTab === "details" && styles.activeTabText,
-                ]}
-              >
-                Details
+          {/* Details */}
+          <View style={[styles.detailsContainer, { backgroundColor }]}>
+            <View style={styles.titleRow}>
+              <Text style={[styles.spotTitle, { color: textColor }]}>
+                {spot.name}
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.tabButton,
-                activeTab === "reviews" && styles.activeTab,
-              ]}
-              onPress={() => setActiveTab("reviews")}
-            >
-              <Text
+              {/* Favorite Button - Add functionality later */}
+              <TouchableOpacity style={styles.favoriteButton}>
+                <Ionicons name="heart-outline" size={24} color={textColor} />
+              </TouchableOpacity>
+            </View>
+
+            {/* Tabs */}
+            <View style={styles.tabsContainer}>
+              <TouchableOpacity
                 style={[
-                  styles.tabText,
-                  activeTab === "reviews" && styles.activeTabText,
+                  styles.tabButton,
+                  activeTab === "details" && styles.activeTab,
                 ]}
+                onPress={() => setActiveTab("details")}
               >
-                Reviews
-              </Text>
-            </TouchableOpacity>
-          </View>
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "details" && styles.activeTabText,
+                  ]}
+                >
+                  Details
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.tabButton,
+                  activeTab === "reviews" && styles.activeTab,
+                ]}
+                onPress={() => setActiveTab("reviews")}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    activeTab === "reviews" && styles.activeTabText,
+                  ]}
+                >
+                  Reviews
+                </Text>
+              </TouchableOpacity>
+            </View>
 
-          {/* Tab Content */}
-          <View style={styles.tabContent}>
-            {activeTab === "details" && (
-              <View style={styles.detailsTab}>
-                <View style={styles.section}>
-                  <Text style={[styles.sectionTitle, { color: textColor }]}>
-                    Description
-                  </Text>
-                  <Text style={[styles.sectionText, { color: "gray" }]}>
-                    {spot.description}
-                  </Text>
-                </View>
-
-                {spot.contact && (
+            {/* Tab Content */}
+            <View style={styles.tabContent}>
+              {activeTab === "details" && (
+                <View style={styles.detailsTab}>
                   <View style={styles.section}>
                     <Text style={[styles.sectionTitle, { color: textColor }]}>
-                      Contact
+                      Description
                     </Text>
-                    <View style={styles.contactItem}>
-                      <Ionicons name="call-outline" size={20} color="gray" />
-                      <Text style={styles.contactText}>{spot.contact}</Text>
-                    </View>
+                    <Text style={[styles.sectionText, { color: "gray" }]}>
+                      {spot.description}
+                    </Text>
                   </View>
-                )}
 
-                {spot.openingHours && (
-                  <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, { color: textColor }]}>
-                      Opening Hours
-                    </Text>
-                    <View style={styles.contactItem}>
-                      <Ionicons name="time-outline" size={20} color="gray" />
-                      <Text style={styles.contactText}>
-                        {spot.openingHours}
+                  {spot.contact && (
+                    <View style={styles.section}>
+                      <Text style={[styles.sectionTitle, { color: textColor }]}>
+                        Contact
+                      </Text>
+                      <View style={styles.contactItem}>
+                        <Ionicons name="call-outline" size={20} color="gray" />
+                        <Text style={styles.contactText}>{spot.contact}</Text>
+                      </View>
+                    </View>
+                  )}
+
+                  {spot.openingHours && (
+                    <View style={styles.section}>
+                      <Text style={[styles.sectionTitle, { color: textColor }]}>
+                        Opening Hours
+                      </Text>
+                      <View style={styles.contactItem}>
+                        <Ionicons name="time-outline" size={20} color="gray" />
+                        <Text style={styles.contactText}>
+                          {spot.openingHours}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
+
+                  {spot.admissionFee && (
+                    <View style={styles.section}>
+                      <Text style={[styles.sectionTitle, { color: textColor }]}>
+                        Admission Fee
+                      </Text>
+                      <Text style={styles.admissionFee}>{spot.admissionFee}</Text>
+                    </View>
+                  )}
+
+                  {spot.additionalImages && spot.additionalImages.length > 0 && (
+                    <View style={styles.section}>
+                      <Text style={[styles.sectionTitle, { color: textColor }]}>
+                        More Images
+                      </Text>
+                      <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                      >
+                        {spot.additionalImages.map((image, index) => (
+                          <View
+                            key={index}
+                            style={styles.additionalImageContainer}
+                          >
+                            <Image
+                              source={{ uri: image }}
+                              style={styles.additionalImage}
+                            />
+                          </View>
+                        ))}
+                        {spot.additionalImages.length > 3 && (
+                          <TouchableOpacity style={styles.seeAllButton}>
+                            <Text style={styles.seeAllText}>See All</Text>
+                          </TouchableOpacity>
+                        )}
+                      </ScrollView>
+                    </View>
+                  )}
+
+                  {spot.mapLocation && (
+                    <View style={styles.section}>
+                      <Text style={[styles.sectionTitle, { color: textColor }]}>
+                        Location
+                      </Text>
+                      <View style={styles.mapContainer}>
+                        <Ionicons name="map-outline" size={40} color="gray" />
+                        {spot.mapLocation.latitude &&
+                          spot.mapLocation.longitude && (
+                            <Text style={styles.mapText}>Map here</Text>
+                            // You would integrate a MapView component here
+                          )}
+                        {spot.address && (
+                          <Text style={styles.mapAddress}>{spot.address}</Text>
+                        )}
+                      </View>
+                    </View>
+                  )}
+                </View>
+              )}
+
+              {activeTab === "reviews" && (
+                <View style={styles.reviewsTab}>
+                  <View style={styles.ratingSummary}>
+                    <View style={styles.overallRating}>
+                      <Text style={styles.overallRatingValue}>
+                        {spot.rating ? spot.rating.toFixed(1) : "No"}
+                      </Text>
+                      <View>{renderStars(spot.rating)}</View>
+                      <Text style={styles.ratingCount}>
+                        {spot.ratingCount} reviews
                       </Text>
                     </View>
-                  </View>
-                )}
-
-                {spot.admissionFee && (
-                  <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, { color: textColor }]}>
-                      Admission Fee
-                    </Text>
-                    <Text style={styles.admissionFee}>{spot.admissionFee}</Text>
-                  </View>
-                )}
-
-                {spot.additionalImages && spot.additionalImages.length > 0 && (
-                  <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, { color: textColor }]}>
-                      More Images
-                    </Text>
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                    >
-                      {spot.additionalImages.map((image, index) => (
-                        <View
-                          key={index}
-                          style={styles.additionalImageContainer}
-                        >
-                          <Image
-                            source={{ uri: image }}
-                            style={styles.additionalImage}
-                          />
-                        </View>
-                      ))}
-                      {spot.additionalImages.length > 3 && (
-                        <TouchableOpacity style={styles.seeAllButton}>
-                          <Text style={styles.seeAllText}>See All</Text>
-                        </TouchableOpacity>
-                      )}
-                    </ScrollView>
-                  </View>
-                )}
-
-                {spot.mapLocation && (
-                  <View style={styles.section}>
-                    <Text style={[styles.sectionTitle, { color: textColor }]}>
-                      Location
-                    </Text>
-                    <View style={styles.mapContainer}>
-                      <Ionicons name="map-outline" size={40} color="gray" />
-                      {spot.mapLocation.latitude &&
-                        spot.mapLocation.longitude && (
-                          <Text style={styles.mapText}>Map here</Text>
-                          // You would integrate a MapView component here
-                        )}
-                      {spot.address && (
-                        <Text style={styles.mapAddress}>{spot.address}</Text>
-                      )}
+                    <View style={styles.ratingBreakdown}>
+                      {renderRatingBars()}
                     </View>
                   </View>
-                )}
-              </View>
-            )}
-
-            {activeTab === "reviews" && (
-              <View style={styles.reviewsTab}>
-                <View style={styles.ratingSummary}>
-                  <View style={styles.overallRating}>
-                    <Text style={styles.overallRatingValue}>
-                      {spot.rating ? spot.rating.toFixed(1) : "No"}
-                    </Text>
-                    <View>{renderStars(spot.rating)}</View>
-                    <Text style={styles.ratingCount}>
-                      {spot.ratingCount} reviews
-                    </Text>
-                  </View>
-                  <View style={styles.ratingBreakdown}>
-                    {renderRatingBars()}
-                  </View>
+                  {spot.reviews && spot.reviews.length > 0 ? (
+                    <View>
+                      {/* Map through reviews here */}
+                      <Text style={{ color: textColor }}>
+                        Reviews will be listed here
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text style={{ color: "gray" }}>No reviews yet.</Text>
+                  )}
                 </View>
-                {spot.reviews && spot.reviews.length > 0 ? (
-                  <View>
-                    {/* Map through reviews here */}
-                    <Text style={{ color: textColor }}>
-                      Reviews will be listed here
-                    </Text>
-                  </View>
-                ) : (
-                  <Text style={{ color: "gray" }}>No reviews yet.</Text>
-                )}
-              </View>
-            )}
+              )}
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
 
-      {/* Bottom Navigation Placeholder */}
-      <View style={styles.bottomNav}>
-        <Text style={{ color: textColor }}>Bottom Navigation Placeholder</Text>
-        {/* Integrate your bottom navigation here */}
-      </View>
-    </SafeAreaView>
+        {/* Bottom Navigation Placeholder */}
+        <View style={styles.bottomNav}>
+          <Text style={{ color: textColor }}>Bottom Navigation Placeholder</Text>
+          {/* Integrate your bottom navigation here */}
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 };
 

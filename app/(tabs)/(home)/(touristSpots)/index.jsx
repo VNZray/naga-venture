@@ -223,7 +223,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   sectionContainer: {
-    marginTop: 10,
     paddingHorizontal: 20,
   },
   sectionTitle: {
