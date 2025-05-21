@@ -4,6 +4,7 @@ import PressableButton from "@/components/PressableButton";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useMemo, useState } from "react";
 import {
   Dimensions,
   Image,
@@ -17,8 +18,6 @@ import {
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-// Import the data
-import { useMemo, useState } from "react";
 import { categories, destinations, featuredLocations } from "./data";
 
 const width = Dimensions.get("window").width;
@@ -26,8 +25,8 @@ const width = Dimensions.get("window").width;
 const TouristSpotDirectory = () => {
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";
-  const backgroundColor = colorScheme === "dark" ? "#0A1B47" : "#F8F8F8";
-  const cardBgColor = colorScheme === "dark" ? "#152A5E" : "#fff";
+  const backgroundColor = colorScheme === "dark" ? "#fff" : "#F8F8F8";
+  const cardBgColor = colorScheme === "dark" ? "#fff" : "#fff";
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleCategoryPress = (categoryId) => {
