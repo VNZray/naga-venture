@@ -22,7 +22,6 @@ const index = () => {
   const imageBackground =
     "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/oragon-monument-by-colline.jpg";
 
-  // Platform check should be before any return
   if (Platform.OS === 'web') {
     return (
       <div
