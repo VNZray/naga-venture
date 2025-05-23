@@ -9,7 +9,7 @@ export const touristSpotsData = {
       "Metropolitan Cathedral and Parish of Saint John the Evangelist, commonly known as the Naga Metropolitan Cathedral. It is the seat of the Roman Catholic Archdiocese of Caceres.",
     image:
       "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",
-    rating: 4.8,
+    rating: 5,
     ratingCount: 150,
     reviews: [],
     additionalImages: [],

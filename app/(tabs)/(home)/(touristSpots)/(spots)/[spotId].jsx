@@ -16,7 +16,6 @@ import { touristSpotsData } from "../data"; // Corrected import path
 
 const TouristSpotDetails = () => {
   const { spotId } = useLocalSearchParams();
-  console.log("Spot ID received:", spotId);
   const [activeTab, setActiveTab] = useState("details");
   const spot = spotId ? touristSpotsData[String(spotId)] : null;
   const colorScheme = useColorScheme();

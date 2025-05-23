@@ -148,6 +148,7 @@ const CategoryPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 0,
   },
   searchContainer: {
     paddingHorizontal: 20,
