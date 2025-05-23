@@ -56,7 +56,7 @@ const CategoryPage = () => {
     return Object.values(touristSpotsData).filter(
       (item) => item.category === categoryId
     );
-  }, [categoryId, touristSpotsData]);
+  }, [categoryId]);
 
   const filteredCategoryItems = useMemo(() => {
     if (!searchQuery.trim()) return allCategoryItems;

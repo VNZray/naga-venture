@@ -44,7 +44,7 @@ const TouristSpotDirectory = () => {
     return destinations.filter(destination => 
       destination.name.toLowerCase().includes(query)
     );
-  }, [searchQuery, destinations]);
+  }, [searchQuery]);
 
   return (
     <SafeAreaProvider>

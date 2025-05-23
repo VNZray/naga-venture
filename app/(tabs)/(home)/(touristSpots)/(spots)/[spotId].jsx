@@ -25,7 +25,6 @@ const TouristSpotDetails = () => {
 
   if (!spot) {
     return (
-
       <SafeAreaView
         style={[
           styles.container,
@@ -97,6 +96,14 @@ const TouristSpotDetails = () => {
                 <Ionicons name="heart-outline" size={24} color={textColor} />
               </TouchableOpacity>
             </View>
+
+            {spot.location && (
+              <View style={styles.locationContainer}>
+                <Ionicons name="location-outline" size={16} color="gray" />
+                <Text style={styles.locationText}>{spot.location}</Text>
+              </View>
+            )}
+
 
             {/* Tabs */}
             <View style={styles.tabsContainer}>
@@ -178,38 +185,43 @@ const TouristSpotDetails = () => {
                       <Text style={[styles.sectionTitle, { color: textColor }]}>
                         Admission Fee
                       </Text>
-                      <Text style={styles.admissionFee}>{spot.admissionFee}</Text>
+                      <Text style={styles.admissionFee}>
+                        {spot.admissionFee}
+                      </Text>
                     </View>
                   )}
 
-                  {spot.additionalImages && spot.additionalImages.length > 0 && (
-                    <View style={styles.section}>
-                      <Text style={[styles.sectionTitle, { color: textColor }]}>
-                        More Images
-                      </Text>
-                      <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                      >
-                        {spot.additionalImages.map((image, index) => (
-                          <View
-                            key={index}
-                            style={styles.additionalImageContainer}
-                          >
-                            <Image
-                              source={{ uri: image }}
-                              style={styles.additionalImage}
-                            />
-                          </View>
-                        ))}
-                        {spot.additionalImages.length > 3 && (
-                          <TouchableOpacity style={styles.seeAllButton}>
-                            <Text style={styles.seeAllText}>See All</Text>
-                          </TouchableOpacity>
-                        )}
-                      </ScrollView>
-                    </View>
-                  )}
+                  {spot.additionalImages &&
+                    spot.additionalImages.length > 0 && (
+                      <View style={styles.section}>
+                        <Text
+                          style={[styles.sectionTitle, { color: textColor }]}
+                        >
+                          More Images
+                        </Text>
+                        <ScrollView
+                          horizontal
+                          showsHorizontalScrollIndicator={false}
+                        >
+                          {spot.additionalImages.map((image, index) => (
+                            <View
+                              key={index}
+                              style={styles.additionalImageContainer}
+                            >
+                              <Image
+                                source={{ uri: image }}
+                                style={styles.additionalImage}
+                              />
+                            </View>
+                          ))}
+                          {spot.additionalImages.length > 3 && (
+                            <TouchableOpacity style={styles.seeAllButton}>
+                              <Text style={styles.seeAllText}>See All</Text>
+                            </TouchableOpacity>
+                          )}
+                        </ScrollView>
+                      </View>
+                    )}
 
                   {spot.mapLocation && (
                     <View style={styles.section}>
@@ -266,7 +278,9 @@ const TouristSpotDetails = () => {
 
         {/* Bottom Navigation Placeholder */}
         <View style={styles.bottomNav}>
-          <Text style={{ color: textColor }}>Bottom Navigation Placeholder</Text>
+          <Text style={{ color: textColor }}>
+            Bottom Navigation Placeholder
+          </Text>
           {/* Integrate your bottom navigation here */}
         </View>
       </SafeAreaView>
@@ -277,6 +291,7 @@ const TouristSpotDetails = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 0,
   },
   headerImageContainer: {
     height: 360,
@@ -305,13 +320,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 15,
   },
   spotTitle: {
     fontSize: 24,
     fontWeight: "bold",
     flex: 1,
-    // Add color here dynamically if needed
+  },
+  locationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+  locationText: {
+    fontSize: 14,
+    color: "gray",
+    marginLeft: 5,
   },
   favoriteButton: {
     padding: 10,
@@ -352,7 +375,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-    // Add color here dynamically if needed
   },
   sectionText: {
     fontSize: 16,
