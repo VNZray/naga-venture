@@ -117,7 +117,7 @@ const CategoryPage = () => {
                 <View style={styles.itemFooter}>
                   <View style={styles.location}>
                     <Ionicons name="location" size={16} color="#007AFF" />
-                    <Text style={styles.locationText}>Naga City</Text>
+                    <Text style={styles.locationText}>{item.location}</Text>
                   </View>
                   <View style={styles.detailsButton}>
                     <Text style={styles.detailsButtonText}>View Details</Text>

@@ -314,6 +314,7 @@ const styles = StyleSheet.create({
   detailsContainer: {
     flex: 1,
     marginTop: -30,
+    paddingTop: 5,
     padding: 20,
   },
   titleRow: {
