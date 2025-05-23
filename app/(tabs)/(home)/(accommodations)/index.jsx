@@ -1,11 +1,10 @@
-import { accommodations } from "@/app/Controller/AccommodationData";
 import CardView from "@/components/CardView";
 import SearchBar from "@/components/SearchBar";
 import { ThemedText } from "@/components/ThemedText";
+import { useAccommodation } from "@/context/AccommodationContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -23,32 +22,8 @@ const AccommodationDirectory = () => {
   const backgroundColor = colorScheme === "dark" ? "#151718" : "#FFFFFF";
   const isDarkMode = colorScheme === "dark";
 
-  const [search, setSearch] = useState("");
-  const [filteredAccommodations, setFilteredAccommodations] =
-    useState(accommodations);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setFilteredAccommodations(accommodations);
-  }, []);
-
-  const handleSearch = () => {
-    setLoading(true);
-
-    setTimeout(() => {
-      const lowerSearch = search.toLowerCase();
-
-      const filtered = accommodations.filter((acc) => {
-        return (
-          acc.name.toLowerCase().includes(lowerSearch) ||
-          acc.location.toLowerCase().includes(lowerSearch)
-        );
-      });
-
-      setFilteredAccommodations(filtered);
-      setLoading(false);
-    }, 800); // simulate loading for 800ms
-  };
+  const { search, setSearch, handleSearch, filteredAccommodations, loading } =
+    useAccommodation();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -56,12 +31,11 @@ const AccommodationDirectory = () => {
         <SearchBar
           value={search}
           onChangeText={setSearch}
-          onSearch={handleSearch}
+          onSearch={() => handleSearch(search)}
           placeholder={"Search Accommodation or Location"}
         />
       </View>
 
-      {/* Scrollable Accommodation List */}
       <ScrollView
         contentContainerStyle={{ paddingTop: 80, paddingBottom: 100 }}
       >
@@ -69,7 +43,7 @@ const AccommodationDirectory = () => {
           {loading ? (
             <ActivityIndicator
               size="large"
-              color={isDarkMode}
+              color={isDarkMode ? "#fff" : "#000"}
               style={{ marginTop: 40 }}
             />
           ) : filteredAccommodations.length > 0 ? (
@@ -160,9 +134,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     borderRadius: 10,
     padding: 16,
-    display: "flex",
     flexDirection: "column",
-    gap: 5,
     justifyContent: "center",
   },
   image: {

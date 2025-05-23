@@ -1,22 +1,39 @@
-import { accommodations } from "@/app/Controller/AccommodationData";
+import { rooms as allRooms } from "@/app/Controller/AccommodationData";
 import RoomCard from "@/components/RoomCard";
 import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { useAccommodation } from "@/context/AccommodationContext";
 import { Link } from "expo-router";
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 
 const screenWidth = Dimensions.get("window").width;
 
-import { ThemedView } from "@/components/ThemedView";
-
 const Rooms = ({ accommodationId }) => {
-  const selectedAccommodation = accommodations.find(
+  const { filteredAccommodations } = useAccommodation();
+
+  const accommodation = filteredAccommodations.find(
     (acc) => acc.id === Number(accommodationId)
   );
 
-  if (!selectedAccommodation) {
+  if (!accommodation) {
     return (
-      <View style={styles.container}>
-        <Text>Accommodation not found.</Text>
+      <View style={styles.emptyState}>
+        <ThemedText type="subtitle">Accommodation not found.</ThemedText>
+      </View>
+    );
+  }
+
+  // Filter rooms for this accommodation from the global rooms array
+  const rooms = allRooms.filter(
+    (room) => room.accommodationId === accommodation.id
+  );
+
+  if (rooms.length === 0) {
+    return (
+      <View style={styles.emptyState}>
+        <ThemedText type="subtitle">
+          No rooms available for this accommodation.
+        </ThemedText>
       </View>
     );
   }
@@ -24,7 +41,7 @@ const Rooms = ({ accommodationId }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.grid}>
-        {selectedAccommodation.rooms.map((room) => (
+        {rooms.map((room) => (
           <RoomCard
             key={room.id}
             elevation={3}
@@ -63,18 +80,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    gap: 16, // only works with React Native 0.71+
-    overflow: "visible",
     padding: 16,
-    paddingTop: 0
+    paddingTop: 0,
   },
   card: {
-    width: (screenWidth - 48) / 2, // screen width minus paddings & spacing
-    borderRadius: 8,
-        overflow: "visible",
+    width: (screenWidth - 48) / 2,
+    marginBottom: 16, // fallback if gap not supported
+    overflow: "visible",
   },
   info: {
     padding: 10,
+    borderRadius: 16,
+  },
+  emptyState: {
+    padding: 20,
+    alignItems: "center",
   },
 });
 
