@@ -13,4 +13,11 @@ export const users = [
     password: "password",
     token: "token2"
   },
+  {
+    id: 3,
+    name: "Emmanuel Collao",
+    email: "iman@gmail.com",
+    password: "123",
+    token: "token3"
+  },
 ];

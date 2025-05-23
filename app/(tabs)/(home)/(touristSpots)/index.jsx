@@ -1,8 +1,10 @@
 // app/(tabs)/(home)/(touristSpots)/index.jsx
 import CardContainer from "@/components/CardContainer";
 import PressableButton from "@/components/PressableButton";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import {
@@ -11,13 +13,12 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { categories, destinations, featuredLocations } from "./data";
 
 const width = Dimensions.get("window").width;
@@ -26,7 +27,6 @@ const TouristSpotDirectory = () => {
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";
   const backgroundColor = colorScheme === "dark" ? "#fff" : "#F8F8F8";
-  const cardBgColor = colorScheme === "dark" ? "#fff" : "#fff";
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleCategoryPress = (categoryId) => {
@@ -37,21 +37,18 @@ const TouristSpotDirectory = () => {
     router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${destinationId}`);
   };
 
-  const filteredDestinations = useMemo(() => {
+  const filteredSpots = useMemo(() => {
     if (!searchQuery.trim()) return destinations;
-    
+
     const query = searchQuery.toLowerCase().trim();
-    return destinations.filter(destination => 
-      destination.name.toLowerCase().includes(query)
+    return destinations.filter((spot) =>
+      spot.name.toLowerCase().includes(query)
     );
   }, [searchQuery]);
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView
-        style={[styles.container, { backgroundColor }]}
-        edges={["top"]}
-      >
+      <ThemedView style={styles.container}>
         <StatusBar
           barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
         />
@@ -60,7 +57,7 @@ const TouristSpotDirectory = () => {
         <View style={styles.searchContainer}>
           <View style={styles.searchInputContainer}>
             <TextInput
-              style={[styles.searchInput, { color: color }]}
+              style={[styles.searchInput, { color: Colors[colorScheme].text, backgroundColor: Colors[colorScheme].background }]}
               placeholder="Search tourist spots..."
               placeholderTextColor={
                 colorScheme === "dark" ? "#8E9196" : "#9F9EA1"
@@ -68,17 +65,6 @@ const TouristSpotDirectory = () => {
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
-            <TouchableOpacity
-              style={[
-                styles.searchButton,
-                {
-                  backgroundColor:
-                    colorScheme === "dark" ? "#152A5E" : "#0077B6",
-                },
-              ]}
-            >
-              <Ionicons name="search" size={20} color="#fff" />
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -86,9 +72,9 @@ const TouristSpotDirectory = () => {
           {/* Featured Locations - Only show when not searching */}
           {!searchQuery.trim() && (
             <View style={styles.sectionContainer}>
-              <Text style={[styles.sectionTitle, { color: color }]}>
+              <ThemedText type="subtitle" style={styles.sectionTitle}>
                 Featured Locations
-              </Text>
+              </ThemedText>
               <View style={{ height: 200 }}>
                 <Carousel
                   loop
@@ -97,20 +83,20 @@ const TouristSpotDirectory = () => {
                   mode="parallax"
                   data={featuredLocations}
                   scrollAnimationDuration={1000}
-                  renderItem={({ item }) => (
+                  renderItem={({ item: spot }) => (
                     <TouchableOpacity
-                      key={item.id}
+                      key={spot.id}
                       style={styles.carouselItem}
-                      onPress={() => handleDestinationPress(item.id)}
+                      onPress={() => handleDestinationPress(spot.id)}
                     >
                       <Image
-                        source={{ uri: item.image }}
+                        source={{ uri: spot.image }}
                         style={styles.carouselImage}
                         resizeMode="cover"
                       />
                       <View style={styles.carouselOverlay} />
                       <View style={styles.carouselTextContainer}>
-                        <Text style={styles.carouselTitle}>{item.name}</Text>
+                        <ThemedText type="cardTitle" style={styles.carouselTitle}>{spot.name}</ThemedText>
                       </View>
                     </TouchableOpacity>
                   )}
@@ -122,15 +108,15 @@ const TouristSpotDirectory = () => {
           {/* Categories - Only show when not searching */}
           {!searchQuery.trim() && (
             <View style={styles.sectionContainer}>
-              <Text style={[styles.sectionTitle, { color: color }]}>
+              <ThemedText type="subtitle" style={styles.sectionTitle}>
                 Categories
-              </Text>
+              </ThemedText>
               <CardContainer style={styles.directories} height={"auto"}>
                 {categories.map((category) => (
                   <PressableButton
                     key={category.id}
                     IconSize={24}
-                    color={color}
+                    color={Colors[colorScheme].text}
                     direction="column"
                     Title={category.name}
                     Icon={category.icon}
@@ -143,43 +129,42 @@ const TouristSpotDirectory = () => {
 
           {/* Discover More / Search Results */}
           <View style={[styles.sectionContainer, { marginBottom: 100 }]}>
-            <Text style={[styles.sectionTitle, { color: color }]}>
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
               {searchQuery ? "Search Results" : "Discover More"}
-            </Text>
+            </ThemedText>
             <View style={styles.destinationsGrid}>
-              {filteredDestinations.map((destination) => (
+              {filteredSpots.map((spot) => (
                 <TouchableOpacity
-                  key={destination.id}
+                  key={spot.id}
                   style={styles.destinationCard}
-                  onPress={() => handleDestinationPress(destination.id)}
+                  onPress={() => handleDestinationPress(spot.id)}
                 >
                   <View style={styles.destinationImageContainer}>
                     <Image
-                      source={{ uri: destination.image }}
+                      source={{ uri: spot.image }}
                       style={styles.destinationImage}
                       resizeMode="cover"
                     />
                     <View style={styles.destinationOverlay} />
                     <View style={styles.destinationTextContainer}>
-                      <Text style={styles.destinationName} numberOfLines={1}>
-                        {destination.name}
-                      </Text>
-
+                      <ThemedText type="cardTitle" style={styles.destinationName} numberOfLines={1}>
+                        {spot.name}
+                      </ThemedText>
                     </View>
                   </View>
                 </TouchableOpacity>
               ))}
-              {filteredDestinations.length === 0 && (
+              {filteredSpots.length === 0 && (
                 <View style={styles.noResultsContainer}>
-                  <Text style={[styles.noResultsText, { color }]}>
+                  <ThemedText type="default" style={styles.noResultsText}>
                     No tourist spots found matching &quot;{searchQuery}&quot;
-                  </Text>
+                  </ThemedText>
                 </View>
               )}
             </View>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </ThemedView>
     </SafeAreaProvider>
   );
 };

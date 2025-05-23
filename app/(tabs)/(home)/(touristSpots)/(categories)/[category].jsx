@@ -2,27 +2,28 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
-import { useLayoutEffect, useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useState } from "react";
 import {
-  Image,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Image,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 // Import the central data
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { Colors } from "@/constants/Colors";
 import { touristSpotsData } from "../data";
 
 const CategoryPage = () => {
   const { category: categoryId } = useLocalSearchParams();
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
-  const textColor = colorScheme === "dark" ? "#fff" : "#000";
-  const backgroundColor = colorScheme === "dark" ? "#0A1B47" : "#F8F8F8";
+  const textColor = Colors[colorScheme].text;
+  const backgroundColor = Colors[colorScheme].background;
   const cardBackgroundColor = colorScheme === "dark" ? "#1E293B" : "#fff";
   const shadowColor = colorScheme === "dark" ? "#000" : "#ccc";
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,27 +53,27 @@ const CategoryPage = () => {
   }, [navigation, categoryId]);
 
   // Filter tourist spots based on the categoryId
-  const allCategoryItems = useMemo(() => {
+  const allCategorySpots = useMemo(() => {
     return Object.values(touristSpotsData).filter(
-      (item) => item.category === categoryId
+      (spot) => spot.category === categoryId
     );
   }, [categoryId]);
 
-  const filteredCategoryItems = useMemo(() => {
-    if (!searchQuery.trim()) return allCategoryItems;
+  const filteredCategorySpots = useMemo(() => {
+    if (!searchQuery.trim()) return allCategorySpots;
 
     const query = searchQuery.toLowerCase().trim();
-    return allCategoryItems.filter(item =>
-      item.name.toLowerCase().includes(query)
+    return allCategorySpots.filter((spot) =>
+      spot.name.toLowerCase().includes(query)
     );
-  }, [searchQuery, allCategoryItems]);
+  }, [searchQuery, allCategorySpots]);
 
-  const handleItemClick = (itemId) => {
-    router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${itemId}`);
+  const handleSpotClick = (spotId) => {
+    router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${spotId}`);
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+    <ThemedView style={[styles.container]}>
       <StatusBar
         barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
       />
@@ -80,7 +81,7 @@ const CategoryPage = () => {
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <TextInput
-            style={[styles.searchInput, { color: textColor }]}
+            style={[styles.searchInput, { color: textColor, backgroundColor }]}
             placeholder={`Search ${getCategoryTitle(categoryId).toLowerCase()}...`}
             placeholderTextColor={
               colorScheme === "dark" ? "#8E9196" : "#9F9EA1"
@@ -88,7 +89,14 @@ const CategoryPage = () => {
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
-          <TouchableOpacity style={[styles.searchButton, { backgroundColor: colorScheme === "dark" ? "#152A5E" : "#0077B6" }]}>
+          <TouchableOpacity
+            style={[
+              styles.searchButton,
+              {
+                backgroundColor: Colors[colorScheme].tint,
+              },
+            ]}
+          >
             <Ionicons name="search" size={20} color="#fff" />
           </TouchableOpacity>
         </View>
@@ -96,31 +104,31 @@ const CategoryPage = () => {
 
       {/* Content */}
       <ScrollView contentContainerStyle={styles.content}>
-        {filteredCategoryItems.length > 0 ? (
-          filteredCategoryItems.map((item) => (
+        {filteredCategorySpots.length > 0 ? (
+          filteredCategorySpots.map((spot) => (
             <TouchableOpacity
-              key={item.id}
-              onPress={() => handleItemClick(item.id)}
+              key={spot.id}
+              onPress={() => handleSpotClick(spot.id)}
               style={[
                 styles.itemContainer,
                 { backgroundColor: cardBackgroundColor, shadowColor },
               ]}
             >
-              <Image source={{ uri: item.image }} style={styles.itemImage} />
+              <Image source={{ uri: spot.image }} style={styles.itemImage} />
               <View style={styles.itemDetails}>
-                <Text style={[styles.itemName, { color: textColor }]}>
-                  {item.name}
-                </Text>
-                <Text style={[styles.itemDescription, { color: textColor }]}>
-                  {item.description}
-                </Text>
+                <ThemedText type="cardTitle" style={styles.itemName}>
+                  {spot.name}
+                </ThemedText>
+                <ThemedText type="default2" style={styles.itemDescription}>
+                  {spot.description}
+                </ThemedText>
                 <View style={styles.itemFooter}>
                   <View style={styles.location}>
-                    <Ionicons name="location" size={16} color="#007AFF" />
-                    <Text style={styles.locationText}>{item.location}</Text>
+                    <Ionicons name="location" size={16} color={Colors[colorScheme].tint} />
+                    <ThemedText type="default2" style={styles.locationText}>{spot.location}</ThemedText>
                   </View>
                   <View style={styles.detailsButton}>
-                    <Text style={styles.detailsButtonText}>View Details</Text>
+                    <ThemedText type="default2" style={styles.detailsButtonText}>View Details</ThemedText>
                   </View>
                 </View>
               </View>
@@ -128,20 +136,23 @@ const CategoryPage = () => {
           ))
         ) : (
           <View style={styles.emptyContainer}>
-            <Ionicons name="information-circle-outline" size={40} color="gray" />
-            <Text style={[styles.emptyText, { color: textColor }]}>
+            <Ionicons
+              name="information-circle-outline"
+              size={40}
+              color={Colors[colorScheme].icon}
+            />
+            <ThemedText type="default2" style={[styles.emptyText, { color: textColor }]}>
               No {getCategoryTitle(categoryId).toLowerCase()} found matching &quot;{searchQuery}&quot;.
-            </Text>
+            </ThemedText>
           </View>
         )}
       </ScrollView>
 
       {/* Bottom Navigation Placeholder */}
       <View style={styles.bottomNav}>
-        <Text style={{ color: textColor }}>Bottom Navigation Placeholder</Text>
-        {/* Integrate your bottom navigation here */}
+        <ThemedText type="default2">Bottom Navigation Placeholder</ThemedText>
       </View>
-    </SafeAreaView>
+    </ThemedView>
   );
 };
 
