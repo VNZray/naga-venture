@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerImageContainer: {
-    height: 300,
+    height: 360,
     width: "100%",
     position: "relative",
   },

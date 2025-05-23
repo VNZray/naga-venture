@@ -130,7 +130,7 @@ const CategoryPage = () => {
           <View style={styles.emptyContainer}>
             <Ionicons name="information-circle-outline" size={40} color="gray" />
             <Text style={[styles.emptyText, { color: textColor }]}>
-              No {getCategoryTitle(categoryId).toLowerCase()} found matching "{searchQuery}".
+              No {getCategoryTitle(categoryId).toLowerCase()} found matching &quot;{searchQuery}&quot;.
             </Text>
           </View>
         )}
