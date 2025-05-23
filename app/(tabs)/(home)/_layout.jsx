@@ -10,7 +10,7 @@ const HomeLayout = () => {
       }}
     >
       <Stack.Screen
-        name="AccommodationDirectory"
+        name="(accommodations)"
         options={{
           headerShown: true,
           animation: "slide_from_right",
@@ -20,7 +20,7 @@ const HomeLayout = () => {
         }}
       />
       <Stack.Screen
-        name="EventDirectory"
+        name="(events)"
         options={{
           headerShown: true,
           animation: "slide_from_right",
@@ -30,7 +30,7 @@ const HomeLayout = () => {
         }}
       />
       <Stack.Screen
-        name="ShopDirectory"
+        name="(shops)"
         options={{
           headerShown: true,
           animation: "slide_from_right",

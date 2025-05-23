@@ -164,6 +164,7 @@ const TouristSpotDirectory = () => {
                       <Text style={styles.destinationName} numberOfLines={1}>
                         {destination.name}
                       </Text>
+
                     </View>
                   </View>
                 </TouchableOpacity>

@@ -1,26 +1,28 @@
+import { ThemedView } from '@/components/ThemedView';
 import React from 'react';
 import {
   DimensionValue,
+  Image,
   Platform,
   StyleProp,
-  StyleSheet,
   ViewStyle,
   useColorScheme as useRNColorScheme
 } from 'react-native';
-
-import { ThemedView } from '@/components/ThemedView';
 
 export function useColorScheme() {
   const scheme = useRNColorScheme();
   return scheme === 'dark' ? 'dark' : 'light';
 }
 
-type CardContainerProps = {
+type RoomCardProps = {
   children?: React.ReactNode;
+  background?: string;
   elevation?: number;
+  accommodationId?: number;
   width?: DimensionValue;
   height?: DimensionValue;
   radius?: number;
+  imageUri?: string;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -70,16 +72,19 @@ const getShadowStyle = (elevation: number, isDarkMode: boolean): ViewStyle => {
   return shadowStyles[elevation] ?? shadowStyles[1];
 };
 
-const CardContainer: React.FC<CardContainerProps> = ({
+const RoomCard: React.FC<RoomCardProps> = ({
   children,
+  background,
   elevation = 1,
   width,
   height,
   radius = 10,
+  imageUri,
   style,
 }) => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
+
 
   const shadowStyle =
     Platform.OS === 'ios' ? getShadowStyle(elevation, isDarkMode) : {};
@@ -91,22 +96,24 @@ const CardContainer: React.FC<CardContainerProps> = ({
           width,
           height,
           borderRadius: radius,
-          elevation: elevation,
+          elevation: Platform.OS === 'android' ? elevation : 0,
+          overflow: 'visible'
         } as ViewStyle,
-        styles.card,
         shadowStyle,
         style,
       ]}
     >
+      {imageUri && (
+        <Image
+          source={{ uri: imageUri }}
+          resizeMode="cover"
+          style={{ width: '100%', height: 150, borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
+        />
+      )}
       {children}
     </ThemedView>
   );
 };
 
-const styles = StyleSheet.create({
-  card: {
-    padding: 10,
-  },
-});
 
-export default CardContainer;
+export default RoomCard;

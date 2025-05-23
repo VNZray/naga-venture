@@ -4,6 +4,7 @@ import { Stack } from 'expo-router';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { AuthProvider } from '@/context/AuthContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
