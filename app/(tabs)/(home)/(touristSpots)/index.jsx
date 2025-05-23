@@ -52,12 +52,11 @@ const TouristSpotDirectory = () => {
         <StatusBar
           barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
         />
-
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <View style={styles.searchInputContainer}>
             <TextInput
-              style={[styles.searchInput, { color: Colors[colorScheme].text, backgroundColor: Colors[colorScheme].background }]}
+              style={[styles.searchInput, { color: Colors[colorScheme].text}]}
               placeholder="Search tourist spots..."
               placeholderTextColor={
                 colorScheme === "dark" ? "#8E9196" : "#9F9EA1"
@@ -72,13 +71,13 @@ const TouristSpotDirectory = () => {
           {/* Featured Locations - Only show when not searching */}
           {!searchQuery.trim() && (
             <View style={styles.sectionContainer}>
-              <ThemedText type="subtitle" style={styles.sectionTitle}>
+              <ThemedText type="subtitle" style={styles.CarouselTitle}>
                 Featured Locations
               </ThemedText>
               <View style={{ height: 200 }}>
                 <Carousel
                   loop
-                  width={width - 40}
+                  width={width - 50}
                   height={200}
                   mode="parallax"
                   data={featuredLocations}
@@ -178,6 +177,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     padding: 10,
+    marginBottom: 10,
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -197,15 +197,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontFamily: "Poppins-Regular",
     fontSize: 14,
-  },
-  searchButton: {
-    marginLeft: 10,
-    backgroundColor: "#0077B6",
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 5,
   },
   sectionContainer: {
     paddingHorizontal: 20,
@@ -214,6 +210,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "Poppins-SemiBold",
     marginBottom: 10,
+  },
+  CarouselTitle: {
+    fontSize: 18,
+    fontFamily: "Poppins-SemiBold",
+    marginBottom: -10,
   },
   carouselItem: {
     borderRadius: 15,

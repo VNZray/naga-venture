@@ -4,13 +4,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useLayoutEffect, useMemo, useState } from "react";
 import {
-    Image,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    TextInput,
-    TouchableOpacity,
-    View
+  Image,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 // Import the central data
 import { ThemedText } from "@/components/ThemedText";
@@ -81,7 +81,7 @@ const CategoryPage = () => {
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <TextInput
-            style={[styles.searchInput, { color: textColor, backgroundColor }]}
+            style={[styles.searchInput, { color: textColor }]}
             placeholder={`Search ${getCategoryTitle(categoryId).toLowerCase()}...`}
             placeholderTextColor={
               colorScheme === "dark" ? "#8E9196" : "#9F9EA1"
@@ -89,16 +89,6 @@ const CategoryPage = () => {
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
-          <TouchableOpacity
-            style={[
-              styles.searchButton,
-              {
-                backgroundColor: Colors[colorScheme].tint,
-              },
-            ]}
-          >
-            <Ionicons name="search" size={20} color="#fff" />
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -147,11 +137,6 @@ const CategoryPage = () => {
           </View>
         )}
       </ScrollView>
-
-      {/* Bottom Navigation Placeholder */}
-      <View style={styles.bottomNav}>
-        <ThemedText type="default2">Bottom Navigation Placeholder</ThemedText>
-      </View>
     </ThemedView>
   );
 };
@@ -177,6 +162,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontFamily: "Poppins-Regular",
     fontSize: 14,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 5,
   },
   searchButton: {
     marginLeft: 10,
