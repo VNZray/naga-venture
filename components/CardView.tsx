@@ -1,10 +1,11 @@
 import { ThemedView } from '@/components/ThemedView';
 import React from 'react';
-import { StyleSheet, useColorScheme as useRNColorScheme, ViewStyle } from 'react-native';
+import { Image, StyleSheet, useColorScheme as useRNColorScheme, ViewStyle } from 'react-native';
+
 export function useColorScheme() {
     const scheme = useRNColorScheme();
     return scheme === 'dark' ? 'dark' : 'light';
-  }
+}
 
 type CardViewProps = {
     children?: React.ReactNode;
@@ -13,6 +14,8 @@ type CardViewProps = {
     width?: number;
     height?: number;
     radius?: number;
+    style?: ViewStyle;
+    showImage?: boolean;
 };
 
 const CardView: React.FC<CardViewProps> = ({
@@ -22,20 +25,34 @@ const CardView: React.FC<CardViewProps> = ({
     width,
     height,
     radius,
+    style,
+    showImage = false,
 }) => {
+    const colorScheme = useColorScheme();
+    
     return (
         <ThemedView
             style={[
                 styles.card,
                 {
-                    backgroundImage: image ? `url(${image})` : 'https://media.istockphoto.com/id/1147544807/vector/thumbnail-image-vector-graphic.jpg?s=612x612&w=0&k=20&c=rnCKVbdxqkjlcs3xH87-9gocETqpspHFXu5dIGB4wuM=',
                     width,
                     height,
                     borderRadius: radius,
                     elevation,
                 } as ViewStyle,
+                style,
             ]}
         >
+            {showImage && image && (
+                <Image 
+                    source={{ uri: image }}
+                    style={[
+                        styles.backgroundImage,
+                        { borderRadius: radius || 0 }
+                    ]}
+                    resizeMode="cover"
+                />
+            )}
             {children}
         </ThemedView>
     );
@@ -47,6 +64,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flexDirection: 'column',
+        overflow: 'hidden',
+    },
+    backgroundImage: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        top: 0,
+        left: 0,
     },
 });
 

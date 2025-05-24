@@ -3,25 +3,29 @@ import CardView from "@/components/CardView";
 import PressableButton from "@/components/PressableButton";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Dimensions,
   Image,
   Platform,
   ScrollView,
   StyleSheet,
-  View,
+  View
 } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/ThemedText";
+import { useAuth } from "@/context/AuthContext";
 import { FeaturedLocation } from "../../Controller/HomeData";
+
 
 const width = Dimensions.get("screen").width;
 
 const HomeScreen = () => {
+  const { user } = useAuth();
+
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";
   const backgroundColor = colorScheme === "dark" ? "#151718" : "#FFFFFF";
@@ -30,10 +34,22 @@ const HomeScreen = () => {
   const ref = React.useRef(null);
   const progress = useSharedValue(0);
 
+  useEffect(() => {
+    if (!user) {
+      router.replace("/(screens)/LoginPage");
+    }
+  }, [user]);
+
+  if (!user) return null;
+
   const mobilePlatform = (
     <SafeAreaProvider>
       <SafeAreaView>
         <ScrollView>
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+          </View>
           <View style={{ flex: 1, width: width }}>
             <Carousel
               style={{ borderRadius: 10 }}
@@ -106,7 +122,14 @@ const HomeScreen = () => {
             </CardContainer>
           </View>
 
-          <View style={{ displat: "flex", width: width, marginBottom: 70, padding: 16 }}>
+          <View
+            style={{
+              displat: "flex",
+              width: width,
+              marginBottom: 70,
+              padding: 16,
+            }}
+          >
             <CardView height={350} radius={10} elevation={0}>
               <View
                 style={{

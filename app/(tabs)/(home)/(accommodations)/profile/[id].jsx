@@ -1,18 +1,17 @@
-import { ThemedText } from "@/components/ThemedText";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useFonts } from "expo-font";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { Link, useLocalSearchParams, useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 
-import TabSwitcher from "../../../../../components/TabSwitcherComponent";
+import TabSwitcher from "@/components/TabSwitcherComponent";
+import { ThemedText } from "@/components/ThemedText";
+import { useColorScheme } from "@/hooks/useColorScheme";
+
 import Details from "./details";
 import Ratings from "./ratings";
 import Rooms from "./rooms";
-
-import { Link } from "expo-router";
 
 import { accommodations } from "@/app/Controller/AccommodationData";
 
@@ -21,7 +20,7 @@ const AccommodationProfile = () => {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState("details");
   const colorScheme = useColorScheme();
-  const color = colorScheme === "dark" ? "#fff" : "#000";
+  const isDarkMode = colorScheme === "dark";
   const activeBackground = "#0A1B47";
 
   const [fontsLoaded] = useFonts({
@@ -31,21 +30,17 @@ const AccommodationProfile = () => {
     "Poppins-Bold": require("@/assets/fonts/Poppins/Poppins-Bold.ttf"),
   });
 
-  // Make sure `id` is a number before comparing
   const accommodation = accommodations.find(
     (acc) => acc.id.toString() === id?.toString()
   );
 
-  const accommodationName = accommodation?.name;
-  const accommodationLocation = accommodation?.location;
-  const accommodationImage = accommodation?.imageUri;
-  const ratings = accommodation?.ratings;
-
   useEffect(() => {
-    navigation.setOptions({
-      headerTitle: accommodationName,
-    });
-  }, [navigation, accommodationName]);
+    if (accommodation?.name) {
+      navigation.setOptions({
+        headerTitle: accommodation.name,
+      });
+    }
+  }, [navigation, accommodation?.name]);
 
   if (!fontsLoaded) {
     return <View style={{ flex: 1, backgroundColor: "#fff" }} />;
@@ -53,14 +48,7 @@ const AccommodationProfile = () => {
 
   if (!accommodation) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 20,
-        }}
-      >
+      <View style={styles.notFoundContainer}>
         <ThemedText type="profileTitle">Accommodation not found.</ThemedText>
         <ThemedText type="subtitle2" style={{ textAlign: "center" }}>
           Please go back and select a valid accommodation.
@@ -75,31 +63,25 @@ const AccommodationProfile = () => {
   return (
     <ScrollView style={{ overflow: "visible" }}>
       <StatusBar style="light" translucent backgroundColor="transparent" />
-      <View style={{ position: "relative" }}>
-        <Image
-          source={{ uri: accommodationImage }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      </View>
+      <Image
+        source={{ uri: accommodation.imageUri }}
+        style={styles.image}
+        resizeMode="cover"
+      />
 
       <View style={styles.content}>
         <View style={styles.header}>
           <View>
-            <ThemedText type="profileTitle">{accommodationName}</ThemedText>
+            <ThemedText type="profileTitle">{accommodation.name}</ThemedText>
             <ThemedText type="default2">
-              <MaterialCommunityIcons
-                name="map-marker"
-                size={16}
-                color="#FFB007"
-              />{" "}
-              {accommodationLocation}
+              <MaterialCommunityIcons name="map-marker" size={16} color="#FFB007" />{" "}
+              {accommodation.location}
             </ThemedText>
           </View>
           <View>
             <ThemedText type="default">
               <MaterialCommunityIcons name="star" size={20} color="#FFB007" />{" "}
-              {ratings}
+              {accommodation.ratings}
             </ThemedText>
           </View>
         </View>
@@ -112,36 +94,15 @@ const AccommodationProfile = () => {
           ]}
           activeTab={activeTab}
           onTabChange={setActiveTab}
-          color={color}
+          color={isDarkMode ? "#fff" : "#000"}
           active={activeBackground}
         />
       </View>
 
       <View style={styles.tabContent}>
-        <View
-          style={{
-            display: activeTab === "details" ? "flex" : "none",
-            overflow: "visible",
-          }}
-        >
-          <Details accommodationId={id} />
-        </View>
-        <View
-          style={{
-            display: activeTab === "rooms" ? "flex" : "none",
-            overflow: "visible",
-          }}
-        >
-          <Rooms accommodationId={id} />
-        </View>
-        <View
-          style={{
-            display: activeTab === "ratings" ? "flex" : "none",
-            overflow: "visible",
-          }}
-        >
-          <Ratings accommodationId={id} />
-        </View>
+        {activeTab === "details" && <Details accommodationId={id} />}
+        {activeTab === "rooms" && <Rooms accommodationId={id} />}
+        {activeTab === "ratings" && <Ratings accommodationId={id} />}
       </View>
     </ScrollView>
   );
@@ -161,12 +122,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   tabContent: {
-    paddingTop: 0,
     marginBottom: 100,
     overflow: "visible",
   },
-  ratings: {
-    fontSize: 16,
+  notFoundContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
 });
 

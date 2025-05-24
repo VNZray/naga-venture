@@ -7,8 +7,8 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 
-import { accommodations } from "@/app/Controller/AccommodationData";
 import TabSwitcher from "@/components/TabSwitcherComponent";
+import { useAccommodation } from "@/context/AccommodationContext";
 import Details from "./details";
 import Photos from "./photos";
 import Ratings from "./ratings";
@@ -28,12 +28,14 @@ const RoomProfile = () => {
     "Poppins-Bold": require("@/assets/fonts/Poppins/Poppins-Bold.ttf"),
   });
 
-  // Find the accommodation and room based on room id
+  const { filteredAccommodations } = useAccommodation();
+
   const roomId = parseInt(id?.toString() ?? "", 10);
+
   let foundRoom = null;
   let parentAccommodation = null;
 
-  for (const accommodation of accommodations) {
+  for (const accommodation of filteredAccommodations) {
     const room = accommodation.rooms.find((room) => room.id === roomId);
     if (room) {
       foundRoom = room;
@@ -82,21 +84,15 @@ const RoomProfile = () => {
       <View style={styles.content}>
         <View style={styles.header}>
           <View>
-            <ThemedText type="profileTitle">
-              Room {foundRoom.roomNumber}
-            </ThemedText>
+            <ThemedText type="profileTitle">Room {foundRoom.roomNumber}</ThemedText>
             <ThemedText type="default2">
               <MaterialCommunityIcons name="star" size={16} color="#FFB007" />{" "}
               {foundRoom.ratings}
             </ThemedText>
           </View>
           <View>
-            <ThemedText type="default">
-              ₱ {foundRoom.roomPrice.toFixed(2)}
-            </ThemedText>
-            <ThemedText type="default2">
-              Per Night
-            </ThemedText>
+            <ThemedText type="default">₱ {foundRoom.roomPrice.toFixed(2)}</ThemedText>
+            <ThemedText type="default2">Per Night</ThemedText>
           </View>
         </View>
 

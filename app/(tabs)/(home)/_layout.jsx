@@ -1,30 +1,36 @@
-import { Stack } from 'expo-router'
+import { Stack } from "expo-router";
 
 const HomeLayout = () => {
   return (
-    <Stack screenOptions={{ headerBackTitle: 'Back', headerShown: true, headerTitle: 'Naga Venture' }} >
+    <Stack
+      screenOptions={{
+        headerBackTitle: "Back",
+        headerShown: true,
+        headerTitle: "Naga Venture",
+      }}
+    >
       <Stack.Screen
         name="(accommodations)"
         options={{
-          headerShown: false,
-          animation: 'slide_from_right',
-          headerTitleAlign: 'center',
-          headerTitle: 'Accommodation Directory',
-          headerBackTitle: 'Back',
+          headerShown: true,
+          animation: "slide_from_right",
+          headerTitleAlign: "center",
+          headerTitle: "Accommodation Directory",
+          headerBackTitle: "Back",
         }}
       />
       <Stack.Screen
         name="(events)"
         options={{
           headerShown: true,
-          animation: 'slide_from_right',
-          headerTitleAlign: 'center',
-          headerTitle: 'Event Directory',
-          headerBackTitle: 'Back',
+          animation: "slide_from_right",
+          headerTitleAlign: "center",
+          headerTitle: "Event Directory",
+          headerBackTitle: "Back",
         }}
       />
       <Stack.Screen
-        name="(shops)"
+        name="(shops)/index"
         options={{
           headerShown: true,
           animation: 'slide_from_right',
@@ -34,17 +40,47 @@ const HomeLayout = () => {
         }}
       />
       <Stack.Screen
-        name="(touristSpots)"
+        name="(shops)/(details)/[shopId]"
         options={{
           headerShown: false,
           animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen
+        name="(shops)/(categories)/[category]"
+        options={{
+          animation: 'slide_from_right',
           headerTitleAlign: 'center',
-          headerTitle: 'Tourist Spots Directory',
           headerBackTitle: 'Back',
         }}
       />
+      <Stack.Screen
+        name="(touristSpots)/index"
+        options={{
+          headerShown: true,
+          animation: "slide_from_right",
+          headerTitleAlign: "center",
+          headerTitle: "Tourist Spots",
+          headerBackTitle: "Back",
+        }}
+      />
+      <Stack.Screen
+        name="(touristSpots)/(categories)/[category]"
+        options={{
+          headerTitle: "Category",
+          animation: "slide_from_right",
+          headerTitleAlign: "center",
+        }}
+      />
+      <Stack.Screen
+        name="(touristSpots)/(spots)/[spotId]"
+        options={{
+          headerShown: false,
+          animation: "slide_from_right",
+        }}
+      />
     </Stack>
-  )
-}
+  );
+};
 
-export default HomeLayout
+export default HomeLayout;
