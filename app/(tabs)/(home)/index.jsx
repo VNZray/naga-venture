@@ -20,7 +20,6 @@ import { ThemedText } from "@/components/ThemedText";
 import { useAuth } from "@/context/AuthContext";
 import { FeaturedLocation } from "../../Controller/HomeData";
 
-import { useEffect } from "react";
 const width = Dimensions.get("screen").width;
 
 const HomeScreen = () => {

@@ -3,9 +3,13 @@ import Amenities from '@/components/Amenities';
 import CardContainer from '@/components/CardContainer';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { Link } from "expo-router";
 import { View } from 'react-native';
 
 const Details = ({ roomId }) => {
+
+  const colorScheme = useColorScheme();
+  const color = colorScheme === "dark" ? "#fff" : "#000";
 
     const room = rooms.find(
       (acc) => acc.id.toString() === roomId.toString()
@@ -16,14 +20,11 @@ const Details = ({ roomId }) => {
         <View>
           <ThemedText>Room not found.</ThemedText>
           <Link href={"/(home)/"}>
-            <ThemedText type="link">Go Home</ThemedText>
+        <ThemedText type="link">Go Home</ThemedText>
           </Link>
         </View>
       );
     }
-
-  const colorScheme = useColorScheme();
-  const color = colorScheme === "dark" ? "#fff" : "#000";
 
   return (
     <View>

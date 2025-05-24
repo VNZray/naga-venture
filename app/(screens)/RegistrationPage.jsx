@@ -51,13 +51,13 @@ const RegistrationPage = () => {
             </View>
 
             <View style={webStyles.inputRow}>
-              <RNTextInput
+              <TextInput
                 placeholder="First Name"
                 value={firstName}
                 onChangeText={setFirstName}
                 style={webStyles.input}
               />
-              <RNTextInput
+              <TextInput
                 placeholder="Last Name"
                 value={lastName}
                 onChangeText={setLastName}
@@ -157,5 +157,58 @@ const styles = {
     fontSize: 18,
     marginLeft: 10,
     fontFamily: "Poppins-Bold",
+  },
+};
+
+const webStyles = {
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+    minHeight: "100vh",
+  },
+  innerContainer: {
+    width: 400,
+    padding: 32,
+    borderRadius: 16,
+    backgroundColor: "#f7f8fa",
+    boxShadow: "0 2px 16px rgba(0,0,0,0.07)",
+    display: "flex",
+    flexDirection: "column",
+    gap: 24,
+  },
+  logoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+    gap: 12,
+  },
+  logo: {
+    width: 60,
+    height: 60,
+  },
+  logoText: {
+    fontSize: 22,
+    fontFamily: "Poppins-Bold",
+    marginLeft: 10,
+  },
+  header: {
+    marginBottom: 12,
+  },
+  inputRow: {
+    display: "flex",
+    flexDirection: "row",
+    gap: 16,
+    marginBottom: 24,
+  },
+  input: {
+    flex: 1,
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    border: "1px solid #ccc",
+    outline: "none",
   },
 };
