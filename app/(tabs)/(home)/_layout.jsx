@@ -33,10 +33,10 @@ const HomeLayout = () => {
         name="(shops)/index"
         options={{
           headerShown: true,
-          animation: 'slide_from_right',
-          headerTitleAlign: 'center',
-          headerTitle: 'Shop Directory',
-          headerBackTitle: 'Back',
+          animation: "slide_from_right",
+          headerTitleAlign: "center",
+          headerTitle: "Shop Directory",
+          headerBackTitle: "Back",
         }}
       />
       <Stack.Screen
