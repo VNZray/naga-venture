@@ -14,7 +14,6 @@ const LoadingScreen = () => {
 
   useEffect(() => {
     if (fontsLoaded) {
-      // Start animation
       Animated.loop(
         Animated.sequence([
           Animated.timing(scaleAnim, {
@@ -30,9 +29,8 @@ const LoadingScreen = () => {
         ])
       ).start();
 
-      // Redirect after delay (e.g., 2.5s)
       const timer = setTimeout(() => {
-        router.replace('/'); // Or wherever your landing page is
+        router.replace('/');
       }, 2500);
 
       return () => clearTimeout(timer);
