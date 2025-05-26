@@ -3,20 +3,23 @@ import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-nat
 
 export default function SpotMoreImages({ images, onSeeAll }) {
   if (!images || images.length === 0) return null;
+  const showSeeAll = images.length > 3;
   return (
     <View style={styles.section}>
-      <ThemedText type="subtitle" style={styles.sectionTitle}>More Images</ThemedText>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {images.map((image, index) => (
-          <View key={index} style={styles.additionalImageContainer}>
-            <Image source={{ uri: image }} style={styles.additionalImage} />
-          </View>
-        ))}
-        {images.length > 3 && onSeeAll && (
+      <View style={styles.titleRow}>
+        <ThemedText type="subtitle" style={styles.sectionTitle}>More Images</ThemedText>
+        {showSeeAll && (
           <TouchableOpacity style={styles.seeAllButton} onPress={onSeeAll}>
             <ThemedText type="link" style={styles.seeAllText}>See All</ThemedText>
           </TouchableOpacity>
         )}
+      </View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        {images.map((image, index) => (
+          <View key={image + index} style={styles.additionalImageContainer}>
+            <Image source={{ uri: image }} style={styles.additionalImage} />
+          </View>
+        ))}
       </ScrollView>
     </View>
   );
@@ -26,10 +29,15 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 20,
   },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
   },
   additionalImageContainer: {
     width: 100,
@@ -44,7 +52,8 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   seeAllButton: {
-    marginTop: 10,
+    marginTop: 0,
+    marginLeft: 10,
   },
   seeAllText: {
     color: "#007AFF",

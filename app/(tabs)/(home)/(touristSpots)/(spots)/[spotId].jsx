@@ -111,7 +111,10 @@ const TouristSpotDetails = () => {
                       <ThemedText type="defaultSemiBold" style={styles.admissionFee}>{spot.admissionFee}</ThemedText>
                     </SpotDetailsSection>
                   )}
-                  <SpotMoreImages images={spot.additionalImages} />
+                  <SpotMoreImages
+                    images={spot.additionalImages}
+                    onSeeAll={() => router.push({ pathname: "/(tabs)/(home)/(touristSpots)/(spots)/AllImages", params: { images: spot.additionalImages.join(",") } })}
+                  />
                   <SpotMapSection mapLocation={spot.mapLocation} address={spot.address} iconColor={Colors[colorScheme].icon} />
                 </View>
               )}
@@ -172,31 +175,6 @@ const styles = StyleSheet.create({
   },
   reviewsTab: {
     paddingBottom: 20,
-  },
-  ratingSummary: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  overallRating: {
-    alignItems: "center",
-  },
-  overallRatingValue: {
-    fontSize: 36,
-    fontWeight: "bold",
-  },
-  ratingCount: {
-    fontSize: 12,
-    color: "gray",
-    marginTop: 5,
-  },
-  ratingBreakdown: {
-    flex: 1,
-    marginLeft: 20,
-  },
-  reviewsList: {
-    marginTop: 10,
   },
 });
 
