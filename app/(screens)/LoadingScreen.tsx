@@ -14,7 +14,6 @@ const LoadingScreen = () => {
 
   useEffect(() => {
     if (fontsLoaded) {
-      // Start animation
       Animated.loop(
         Animated.sequence([
           Animated.timing(scaleAnim, {

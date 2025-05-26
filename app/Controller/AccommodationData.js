@@ -23,7 +23,6 @@ export const accommodations = [
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed auctor tempor metus, a tincidunt purus vestibulum a. Integer feugiat quam at ante suscipit, a tempor nunc iaculis. Fusce scelerisque nunc velit, ut tempor turpis rhoncus ac. Nulla facilisi. Vivamus volutpat est id ante euismod, at gravida lectus pretium. Donec et vulputate libero. Quisque in augue neque. Fusce hendrerit ex purus, vel aliquam sapien cursus vel. Sed in felis purus. Vivamus euismod nisi at sapien fringilla, non convallis ex cursus.
 
         `,
-
     ratings: 4.5,
   },
   {
@@ -156,3 +155,44 @@ export const rooms = [
     `,
   },
 ];
+
+export const reviews = [
+  {
+    id: 1,
+    accommodationId: 1,
+    roomId: null,
+    userId: 1,
+    message: 'dasdasdasd adad asd asd asd asdas dasd ad asd asd adasd asd wad asd wadawf asf  cf ascac habd abcySYD VCAVSCVYAS CVASCV YASVY VAYC VAYSVC 8YASC8SA ASCASCASG AGSF7 7A98A F8',
+    rating: 3,
+    date: '09-28-2003'
+  },
+  {
+    id: 2,
+    accommodationId: null,
+    roomId: 1,
+    userId: 1,
+    message: 'dasdasdasd adad asd asd asd asdas dasd ad asd asd adasd asd wad asd wadawf asf  cf ascac habd abcySYD VCAVSCVYAS CVASCV YASVY VAYC VAYSVC 8YASC8SA ASCASCASG AGSF7 7A98A F8',
+    rating: 3,
+    date: '09-28-2003'
+
+  },
+  {
+    id: 3,
+    accommodationId: 1,
+    roomId: null,
+    userId: 2,
+    message: 'dasdasdasd adad asd asd asd asdas dasd ad asd asd adasd asd wad asd wadawf asf  cf ascac habd abcySYD VCAVSCVYAS CVASCV YASVY VAYC VAYSVC 8YASC8SA ASCASCASG AGSF7 7A98A F8',
+    rating: 3,
+    date: '09-28-2003'
+
+  },
+  {
+    id: 4,
+    accommodationId: null,
+    roomId: 1,
+    userId: 2,
+    message: 'dasdasdasd adad asd asd asd asdas dasd ad asd asd adasd asd wad asd wadawf asf  cf ascac habd abcySYD VCAVSCVYAS CVASCV YASVY VAYC VAYSVC 8YASC8SA ASCASCASG AGSF7 7A98A F8',
+    rating: 3,
+    date: '09-28-2003'
+  }
+]

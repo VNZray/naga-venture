@@ -1,6 +1,10 @@
 import { Text, View } from 'react-native'
 
-const Photos = ({ roomId }) => {
+type PhotosProps = {
+  roomId: string | number;
+};
+
+const Photos = ({ roomId }: PhotosProps) => {
   return (
     <View>
       <Text>Photos</Text>

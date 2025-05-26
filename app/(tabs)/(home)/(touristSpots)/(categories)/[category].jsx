@@ -9,12 +9,12 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 // Import the central data
+import SearchBar from "@/components/SearchBar";
 import { touristSpotsData } from "../data";
 
 const CategoryPage = () => {
@@ -72,25 +72,18 @@ const CategoryPage = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+    <SafeAreaView style={[styles.container]}>
       <StatusBar
         barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
       />
-      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
-          <TextInput
-            style={[styles.searchInput, { color: textColor }]}
-            placeholder={`Search ${getCategoryTitle(categoryId).toLowerCase()}...`}
-            placeholderTextColor={
-              colorScheme === "dark" ? "#8E9196" : "#9F9EA1"
-            }
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          <TouchableOpacity style={[styles.searchButton, { backgroundColor: colorScheme === "dark" ? "#152A5E" : "#0077B6" }]}>
-            <Ionicons name="search" size={20} color="#fff" />
-          </TouchableOpacity>
+            <SearchBar
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              onSearch={() => handleSearch(searchQuery)}
+              placeholder={"Search"}
+            />
         </View>
       </View>
 

@@ -1,11 +1,11 @@
 import { Text, View } from 'react-native'
 
-const index = () => {
+const ShopDirectory = () => {
   return (
     <View>
-      <Text>index</Text>
+      <Text>Shop Directory</Text>
     </View>
   )
 }
 
-export default index
+export default ShopDirectory

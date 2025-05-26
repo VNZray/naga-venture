@@ -1,8 +1,8 @@
 // app/(tabs)/(home)/(touristSpots)/index.jsx
 import CardContainer from "@/components/CardContainer";
 import PressableButton from "@/components/PressableButton";
+import SearchBar from "@/components/SearchBar";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import {
@@ -12,14 +12,12 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { categories, destinations, featuredLocations } from "./data";
-
 const width = Dimensions.get("window").width;
 
 const TouristSpotDirectory = () => {
@@ -39,9 +37,9 @@ const TouristSpotDirectory = () => {
 
   const filteredDestinations = useMemo(() => {
     if (!searchQuery.trim()) return destinations;
-    
+
     const query = searchQuery.toLowerCase().trim();
-    return destinations.filter(destination => 
+    return destinations.filter((destination) =>
       destination.name.toLowerCase().includes(query)
     );
   }, [searchQuery]);
@@ -49,7 +47,7 @@ const TouristSpotDirectory = () => {
   return (
     <SafeAreaProvider>
       <SafeAreaView
-        style={[styles.container, { backgroundColor }]}
+        style={[styles.container,]}
         edges={["top"]}
       >
         <StatusBar
@@ -59,26 +57,12 @@ const TouristSpotDirectory = () => {
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <View style={styles.searchInputContainer}>
-            <TextInput
-              style={[styles.searchInput, { color: color }]}
-              placeholder="Search tourist spots..."
-              placeholderTextColor={
-                colorScheme === "dark" ? "#8E9196" : "#9F9EA1"
-              }
+            <SearchBar
               value={searchQuery}
               onChangeText={setSearchQuery}
+              onSearch={() => handleSearch(searchQuery)}
+              placeholder={"Search"}
             />
-            <TouchableOpacity
-              style={[
-                styles.searchButton,
-                {
-                  backgroundColor:
-                    colorScheme === "dark" ? "#152A5E" : "#0077B6",
-                },
-              ]}
-            >
-              <Ionicons name="search" size={20} color="#fff" />
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -164,7 +148,6 @@ const TouristSpotDirectory = () => {
                       <Text style={styles.destinationName} numberOfLines={1}>
                         {destination.name}
                       </Text>
-
                     </View>
                   </View>
                 </TouchableOpacity>

@@ -1,11 +1,11 @@
 import { Text, View } from 'react-native'
 
-const index = () => {
+const EventDirectory = () => {
   return (
     <View>
-      <Text>index</Text>
+      <Text>Event Directory</Text>
     </View>
   )
 }
 
-export default index
+export default EventDirectory

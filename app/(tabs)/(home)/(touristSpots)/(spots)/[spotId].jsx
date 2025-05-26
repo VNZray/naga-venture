@@ -2,7 +2,7 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Image,
   ScrollView,
@@ -27,7 +27,7 @@ const TouristSpotDetails = () => {
       <SafeAreaView
         style={[
           styles.container,
-          { backgroundColor, justifyContent: "center", alignItems: "center" },
+          { justifyContent: "center", alignItems: "center" },
         ]}
       >
         <Text
@@ -71,9 +71,8 @@ const TouristSpotDetails = () => {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      <SafeAreaView style={[styles.container]}>
         <ScrollView>
-          {/* Header Image */}
           <View style={styles.headerImageContainer}>
             <Image source={{ uri: spot.image }} style={styles.headerImage} />
             <TouchableOpacity
