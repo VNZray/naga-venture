@@ -22,15 +22,15 @@ import {
   View
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { touristSpotsData } from "../data"; // Corrected import path
+import { getSpotWithRatings } from "../data";
 
 const TouristSpotDetails = () => {
   const { spotId } = useLocalSearchParams();
   const [activeTab, setActiveTab] = useState("details");
-  const spot = spotId ? touristSpotsData[String(spotId)] : null;
+  const spot = spotId ? getSpotWithRatings(String(spotId)) : null;
   const colorScheme = useColorScheme();
   const textColor = Colors[colorScheme].text;
-  const backgroundColor = Colors[colorScheme].background;
+  const activeBackground = "#0A1B47";
 
   if (!spot) {
     return (
@@ -82,7 +82,7 @@ const TouristSpotDetails = () => {
               activeTab={activeTab}
               onTabChange={setActiveTab}
               color={textColor}
-              active={Colors[colorScheme].tint}
+              active={activeBackground}
             />
             <View style={styles.tabContent}>
               {activeTab === "details" && (
@@ -120,11 +120,10 @@ const TouristSpotDetails = () => {
               )}
               {activeTab === "reviews" && (
                 <SpotReviewsSection
+                  spotId={spotId}
                   rating={spot.rating}
                   ratingCount={spot.ratingCount}
-                  reviews={spot.reviews}
                   renderStars={renderStars}
-                  renderRatingBars={renderRatingBars}
                   iconColor={Colors[colorScheme].icon}
                 />
               )}

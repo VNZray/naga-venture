@@ -1,32 +1,44 @@
 import { ThemedView } from "@/components/ThemedView";
 import { useLocalSearchParams } from "expo-router";
-import { Image, ScrollView, StyleSheet } from "react-native";
+import { Dimensions, FlatList, Image, StyleSheet, View } from "react-native";
 
 export default function AllImagesScreen() {
   const { images } = useLocalSearchParams();
   const imageList = typeof images === "string" ? images.split(",") : [];
+  const screenWidth = Dimensions.get("window").width;
+  const gap = 8;
+  const imageWidth = (screenWidth - gap * 3) / 2; // 2 gaps between, 1 gap for padding
 
   return (
     <ThemedView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.grid}>
-        {imageList.map((img, idx) => (
-          <Image key={img + idx} source={{ uri: img }} style={styles.image} />
-        ))}
-      </ScrollView>
+      <FlatList
+        data={imageList}
+        keyExtractor={(item, idx) => item + idx}
+        numColumns={2}
+        contentContainerStyle={styles.container}
+        renderItem={({ item }) => (
+          <View style={[styles.imageContainer, { width: imageWidth, height: imageWidth, margin: gap / 2 }]}>
+            <Image source={{ uri: item }} style={styles.image} />
+          </View>
+        )}
+      />
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  grid: {
-    flexDirection: "column",
-    alignItems: "center",
-    gap: 1,
+  container: {
+    padding: 8,
+  },
+  imageContainer: {
+    borderRadius: 16,
+    overflow: "hidden",
+    backgroundColor: "#eee",
   },
   image: {
     width: "100%",
-    height: 360, 
-    borderRadius: 10,
-    marginBottom: 10,
+    height: "100%",
+    resizeMode: "cover",
+    borderRadius: 16,
   },
 });
