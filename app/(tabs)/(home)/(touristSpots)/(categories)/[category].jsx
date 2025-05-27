@@ -1,15 +1,15 @@
 // app/(tabs)/(home)/(touristSpots)/(categories)/[category].jsx
 import EmptyState from "@/components/EmptyState";
-import SearchBar from "@/components/TouristSearchBar";
 import { ThemedView } from "@/components/ThemedView";
+import SearchBar from "@/components/TouristSearchBar";
 import TouristSpotCard from "@/components/TouristSpotCard";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useLayoutEffect, useMemo, useState } from "react";
 import {
-    ScrollView,
-    StatusBar,
-    StyleSheet
+  ScrollView,
+  StatusBar,
+  StyleSheet
 } from "react-native";
 import { touristSpotsData } from "../data";
 
@@ -72,7 +72,7 @@ const CategoryPage = () => {
       <SearchBar
         value={searchQuery}
         onChangeText={setSearchQuery}
-        placeholder={`Search ${getCategoryTitle(categoryId).toLowerCase()}...`}
+        placeholder={`Searcha ${getCategoryTitle(categoryId).toLowerCase()}...`}
       />
 
       {/* Content */}
