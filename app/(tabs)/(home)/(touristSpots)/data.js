@@ -12,7 +12,7 @@ export const touristSpotsData = {
     rating: 5,
     ratingCount: 150,
     reviews: [],
-    additionalImages: [],
+    additionalImages: ["https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1","https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1","https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1","https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",],
     location: "Somewhere in the Philippines",
     mapLocation: { latitude: 13.6276, longitude: 123.1917 },
     contact: "+63 (54) 473-8022",
