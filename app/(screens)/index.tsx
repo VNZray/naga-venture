@@ -6,7 +6,7 @@ import { router } from "expo-router";
 import React from "react";
 import { ImageBackground, Platform, Text, View } from "react-native";
 import { PaperProvider } from "react-native-paper";
-
+import 'react-native-url-polyfill/auto';
 const index = () => {
   const [fontsLoaded] = useFonts({
     "Poppins-Black": require("@/assets/fonts/Poppins/Poppins-Black.ttf"),
@@ -22,7 +22,6 @@ const index = () => {
   const imageBackground =
     "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/oragon-monument-by-colline.jpg";
 
-  // Platform check should be before any return
   if (Platform.OS === 'web') {
     return (
       <div
@@ -120,6 +119,7 @@ const index = () => {
     );
   }
 
+
   return (
     <PaperProvider>
       <ImageBackground
@@ -172,7 +172,7 @@ const index = () => {
               TextSize={16}
               width={"100%"}
               height={55}
-              type="primary"
+              type="secondary"
               color={"#DEE3F2"}
               direction="column"
               Title="Login"
@@ -182,7 +182,7 @@ const index = () => {
               TextSize={16}
               width={"100%"}
               height={55}
-              type="secondary"
+              type="tertiary"
               color={"#000"}
               direction="column"
               Title="Register"

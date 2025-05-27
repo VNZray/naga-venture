@@ -3,9 +3,14 @@ import Amenities from '@/components/Amenities';
 import CardContainer from '@/components/CardContainer';
 import { ThemedText } from '@/components/ThemedText';
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { Link } from "expo-router";
 import { View } from 'react-native';
 
-const Details = ({ roomId }) => {
+interface DetailsProps {
+  roomId: string | number;
+}
+
+const Details = ({ roomId }: DetailsProps) => {
 
     const room = rooms.find(
       (acc) => acc.id.toString() === roomId.toString()

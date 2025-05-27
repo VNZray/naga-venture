@@ -3,19 +3,18 @@ import SearchBar from "@/components/SearchBar";
 import { ThemedText } from "@/components/ThemedText";
 import { useAccommodation } from "@/context/AccommodationContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import {
   ActivityIndicator,
   Dimensions,
-  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  View,
+  View
 } from "react-native";
 
 const width = Dimensions.get("screen").width;
+
 
 const AccommodationDirectory = () => {
   const colorScheme = useColorScheme();
@@ -30,14 +29,17 @@ const AccommodationDirectory = () => {
       <View style={styles.SearchContainer}>
         <SearchBar
           value={search}
-          onChangeText={setSearch}
+          onChangeText={(text) => {
+            setSearch(text);
+            handleSearch(text);
+          }}
           onSearch={() => handleSearch(search)}
           placeholder={"Search Accommodation or Location"}
         />
       </View>
 
       <ScrollView
-        contentContainerStyle={{ paddingTop: 80, paddingBottom: 100 }}
+        contentContainerStyle={{ paddingTop: 86, paddingBottom: 100 }}
       >
         <View style={styles.cardWrapper}>
           {loading ? (
@@ -54,48 +56,15 @@ const AccommodationDirectory = () => {
                   height={320}
                   radius={10}
                   elevation={0}
-                >
-                  <View style={styles.imageWrapper}>
-                    <Image
-                      source={{ uri: acc.imageUri }}
-                      style={styles.image}
-                      resizeMode="cover"
-                    />
-                  </View>
-                  <View
-                    style={[
-                      styles.cardTextContainer,
-                      {
-                        backgroundColor,
-                        shadowColor: isDarkMode ? "#f3f3f3" : "#000000",
-                        shadowOpacity: isDarkMode ? 0 : 0.2,
-                        shadowOffset: { width: 0, height: 0 },
-                        shadowRadius: 6,
-                      },
-                    ]}
-                  >
-                    <ThemedText type="cardTitle">{acc.name}</ThemedText>
-                    <ThemedText type="cardSubTitle">
-                      <MaterialCommunityIcons
-                        name="map-marker"
-                        size={14}
-                        color="#FFB007"
-                      />{" "}
-                      {acc.location}
-                    </ThemedText>
-                    <ThemedText
-                      type="cardBoldSubTitle"
-                      style={{ color: "#FFB007" }}
-                    >
-                      {acc.priceRange}
-                    </ThemedText>
-                  </View>
-                </CardView>
+                  imageUri={acc.imageUri}
+                  title={acc.name}
+                  subtitle={acc.location}
+                  price={acc.priceRange}
+                />
               </Link>
             ))
           ) : (
             <ThemedText
-              type="body"
               style={{ textAlign: "center", marginTop: 40 }}
             >
               No results found.
@@ -142,6 +111,17 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 10,
   },
+
+  favoriteIcon: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    margin: 0,
+    borderRadius: '50%',
+  },
 });
+
 
 export default AccommodationDirectory;
