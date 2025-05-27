@@ -5,7 +5,7 @@ import { useFonts } from "expo-font";
 import { Link, useLocalSearchParams, useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { Dimensions, Image, Platform, ScrollView, StyleSheet, View } from "react-native";
 
 import PressableButton from "@/components/PressableButton";
 import TabSwitcher from "@/components/TabSwitcherComponent";
@@ -13,6 +13,8 @@ import { useAccommodation } from "@/context/AccommodationContext";
 import Details from "./details";
 import Photos from "./photos";
 import Ratings from "./ratings";
+
+const { width, height } = Dimensions.get("window");
 
 const RoomProfile = () => {
   const { id } = useLocalSearchParams();
@@ -58,6 +60,14 @@ const RoomProfile = () => {
     return <View style={{ flex: 1, backgroundColor: "#fff" }} />;
   }
 
+  const statusBar = () => {
+    if (Platform.OS === "ios") {
+      return <StatusBar style="light" translucent backgroundColor="transparent" />;
+    } else {
+      return <></>;
+    }
+  };
+
   if (!foundRoom || !parentAccommodation) {
     return (
       <View style={styles.centered}>
@@ -75,7 +85,7 @@ const RoomProfile = () => {
   return (
     <View style={{ height: "100%" }}>
       <ScrollView style={{ marginBottom: 40 }}>
-        <StatusBar style="light" translucent backgroundColor="transparent" />
+        {statusBar()}
         <View style={{ position: "relative" }}>
           <Image
             source={{ uri: foundRoom.roomImage }}
@@ -126,7 +136,7 @@ const RoomProfile = () => {
       </ScrollView>
 
       {activeTab !== "ratings" && (
-        <View style={styles.buttonContainer}>
+        <View style={[styles.buttonContainer, Platform.OS === "android" && { marginBottom: 46 },]}>
           <PressableButton
             Title="Book Now"
             type="primary"
@@ -154,8 +164,8 @@ const styles = StyleSheet.create({
     marginBottom: 80,
   },
   image: {
-    width: "100%",
-    height: 360,
+    width: width * 1,
+    height: height * 0.40
   },
   header: {
     flexDirection: "row",

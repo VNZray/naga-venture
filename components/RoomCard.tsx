@@ -82,8 +82,6 @@ const RoomCard: React.FC<RoomCardProps> = ({
   capacity,
   roomPrice,
   elevation = 1,
-  width,
-  height,
   radius = 10,
   imageUri,
   style,
@@ -98,22 +96,23 @@ const RoomCard: React.FC<RoomCardProps> = ({
     <ThemedView
       style={[
         {
-          width,
-          height,
+          width: '100%',
           borderRadius: radius,
           elevation: Platform.OS === 'android' ? elevation : 0,
+          display: 'flex',
+          flexDirection: 'row',
         } as ViewStyle,
         shadowStyle,
         style,
       ]}
     >
       {imageUri && (
-        <View style={{ overflow: 'hidden', borderTopLeftRadius: radius, borderTopRightRadius: radius }}>
+        <View style={{ overflow: 'hidden', borderRadius: radius }}>
           <Image
             source={{ uri: imageUri }}
             resizeMode="cover"
             style={{
-              width: '100%',
+              width: 150,
               height: 150,
             }}
           />
