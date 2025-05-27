@@ -23,6 +23,7 @@ type RoomCardProps = {
   roomPrice: number;
   background?: string;
   elevation?: number;
+  ratings?: number;
   width?: DimensionValue;
   height?: DimensionValue;
   radius?: number;
@@ -81,6 +82,7 @@ const RoomCard: React.FC<RoomCardProps> = ({
   status,
   capacity,
   roomPrice,
+  ratings,
   elevation = 1,
   radius = 10,
   imageUri,
@@ -107,7 +109,7 @@ const RoomCard: React.FC<RoomCardProps> = ({
       ]}
     >
       {imageUri && (
-        <View style={{ overflow: 'hidden', borderRadius: radius }}>
+        <View style={{ overflow: 'hidden', borderEndStartRadius: radius, borderTopLeftRadius: radius }}>
           <Image
             source={{ uri: imageUri }}
             resizeMode="cover"
@@ -118,12 +120,23 @@ const RoomCard: React.FC<RoomCardProps> = ({
           />
         </View>
       )}
-      <ThemedView style={{ padding: 10, borderRadius: 16 }}>
-        <ThemedText type="cardBoldSubTitle">Room {roomNumber}</ThemedText>
-        <ThemedText type="cardSubTitle">Status: {status}</ThemedText>
-        <ThemedText type="cardSubTitle">Capacity: {capacity}</ThemedText>
-        <ThemedText type="cardSubTitle">Price: ₱{roomPrice.toFixed(2)}</ThemedText>
+      <ThemedView style={{ borderRadius: radius, position: 'relative', flex: 1, height: 150, justifyContent: 'space-between' }}>
+        <View style={{ padding: 10, borderRadius: radius, }}>
+          <ThemedText type="cardBoldSubTitle">Room {roomNumber}</ThemedText>
+          <ThemedText type="cardSubTitle">Status: {status}</ThemedText>
+          <ThemedText type="cardSubTitle">Capacity: {capacity}</ThemedText>
+          <ThemedText type="cardSubTitle">Ratings: {ratings}</ThemedText>
+
+        </View>
+
+        <View style={{
+          backgroundColor: isDarkMode ? '#0A1B47' : '#0A1B47',
+          width: '100%', position: 'relative', borderBottomEndRadius: radius, display: 'flex', alignItems: 'center', paddingVertical: 10
+        }}>
+          <ThemedText lightColor='#fff' type="cardSubTitle">Price: ₱{roomPrice.toFixed(2)}</ThemedText>
+        </View>
       </ThemedView>
+
     </ThemedView>
   );
 };

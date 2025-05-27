@@ -51,6 +51,7 @@ const Rooms = ({ accommodationId }: RoomsProps) => {
               status={room.status}
               capacity={room.capacity}
               roomPrice={room.roomPrice}
+              ratings={room.ratings}
               elevation={3}
               background="#fff"
               imageUri={room.roomImage}

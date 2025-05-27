@@ -71,7 +71,7 @@ const AccommodationProfile = () => {
   }
 
   return (
-    <ScrollView style={{ overflow: "visible" }}>
+    <ScrollView style={{ overflow: "visible" }} nestedScrollEnabled={true}>
       {statusBar()}
       <Image
         source={{ uri: accommodation.imageUri }}

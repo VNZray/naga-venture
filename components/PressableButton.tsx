@@ -21,8 +21,7 @@ type PressableButtonProps = {
   color?: string;
   width?: string | number;
   height?: string | number;
-  Title?: string;
-  Icon?: keyof typeof FontAwesome5.glyphMap;
+  Title?: string | React.ReactNode; Icon?: keyof typeof FontAwesome5.glyphMap;
   IconSize?: number;
   TextSize?: number | string;
   onPress?: () => void;
