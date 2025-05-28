@@ -1,7 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
-export default function SpotHeaderImage({ image, onBack }) {
+interface SpotHeaderImageProps {
+  image: string;
+  onBack: () => void;
+}
+
+export default function SpotHeaderImage({ image, onBack }: SpotHeaderImageProps) {
   return (
     <View style={styles.headerImageContainer}>
       <Image source={{ uri: image }} style={styles.headerImage} />

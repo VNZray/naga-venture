@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
+import { FC } from "react";
 
-const TouristSpotsLayout = () => {
+const TouristSpotsLayout: FC = () => {
   return (
     <Stack
       screenOptions={{

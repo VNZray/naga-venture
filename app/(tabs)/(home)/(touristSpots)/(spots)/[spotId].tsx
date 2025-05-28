@@ -1,4 +1,4 @@
-// app/(tabs)/(home)/(touristSpots)/(spots)/[spotId].jsx
+// app/(tabs)/(home)/(touristSpots)/(spots)/[spotId].tsx
 import TabSwitcher from "@/components/TabSwitcherComponent";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -13,7 +13,7 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
+import React, { JSX, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -22,15 +22,20 @@ import {
   View
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { touristSpotsData } from "../data"; // Corrected import path
+import { getSpotWithRatings } from "../data";
 
-const TouristSpotDetails = () => {
-  const { spotId } = useLocalSearchParams();
-  const [activeTab, setActiveTab] = useState("details");
-  const spot = spotId ? touristSpotsData[String(spotId)] : null;
+interface Tab {
+  key: string;
+  label: string;
+}
+
+const TouristSpotDetails: React.FC = () => {
+  const { spotId } = useLocalSearchParams<{ spotId: string }>();
+  const [activeTab, setActiveTab] = useState<string>("details");
+  const spot = spotId ? getSpotWithRatings(spotId) : null;
   const colorScheme = useColorScheme();
   const textColor = Colors[colorScheme].text;
-  const backgroundColor = Colors[colorScheme].background;
+  const activeBackground = "#0A1B47";
 
   if (!spot) {
     return (
@@ -45,7 +50,7 @@ const TouristSpotDetails = () => {
     );
   }
 
-  const renderStars = (rating) => {
+  const renderStars = (rating: number): JSX.Element => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
@@ -60,11 +65,16 @@ const TouristSpotDetails = () => {
     return <View style={{ flexDirection: "row" }}>{stars}</View>;
   };
 
-  const renderRatingBars = () => (
+  const renderRatingBars = (): JSX.Element => (
     <View>
       <Text style={{ color: textColor }}>Rating bars will go here</Text>
     </View>
   );
+
+  const tabs: Tab[] = [
+    { key: "details", label: "Details" },
+    { key: "reviews", label: "Reviews" },
+  ];
 
   return (
     <SafeAreaProvider>
@@ -75,14 +85,11 @@ const TouristSpotDetails = () => {
             <SpotTitleRow name={spot.name} onFavorite={() => {}} isFavorite={false} textColor={textColor} />
             <SpotLocationRow location={spot.location} iconColor={Colors[colorScheme].icon} />
             <TabSwitcher
-              tabs={[
-                { key: "details", label: "Details" },
-                { key: "reviews", label: "Reviews" },
-              ]}
+              tabs={tabs}
               activeTab={activeTab}
               onTabChange={setActiveTab}
               color={textColor}
-              active={Colors[colorScheme].tint}
+              active={activeBackground}
             />
             <View style={styles.tabContent}>
               {activeTab === "details" && (
@@ -120,11 +127,10 @@ const TouristSpotDetails = () => {
               )}
               {activeTab === "reviews" && (
                 <SpotReviewsSection
+                  spotId={spotId}
                   rating={spot.rating}
                   ratingCount={spot.ratingCount}
-                  reviews={spot.reviews}
                   renderStars={renderStars}
-                  renderRatingBars={renderRatingBars}
                   iconColor={Colors[colorScheme].icon}
                 />
               )}

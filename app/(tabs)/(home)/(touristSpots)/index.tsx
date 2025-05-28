@@ -1,4 +1,4 @@
-// app/(tabs)/(home)/(touristSpots)/index.jsx
+// app/(tabs)/(home)/(touristSpots)/index.tsx
 import CardContainer from "@/components/CardContainer";
 import EmptyState from "@/components/EmptyState";
 import PressableButton from "@/components/PressableButton";
@@ -23,16 +23,28 @@ import { categories, destinations, featuredLocations } from "./data";
 
 const width = Dimensions.get("window").width;
 
-const TouristSpotDirectory = () => {
+interface Category {
+  id: string;
+  name: string;
+  icon: string;
+}
+
+interface Destination {
+  id: string;
+  name: string;
+  image: string;
+}
+
+const TouristSpotDirectory: React.FC = () => {
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleCategoryPress = (categoryId) => {
+  const handleCategoryPress = (categoryId: string) => {
     router.push(`/(tabs)/(home)/(touristSpots)/(categories)/${categoryId}`);
   };
 
-  const handleDestinationPress = (destinationId) => {
+  const handleDestinationPress = (destinationId: string) => {
     router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${destinationId}`);
   };
 
