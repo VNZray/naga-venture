@@ -6,7 +6,7 @@ interface MapLocation {
   longitude: number;
 }
 
-interface TouristSpot {
+export interface TouristSpot {
   id: string;
   name: string;
   category: string;
