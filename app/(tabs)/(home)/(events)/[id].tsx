@@ -13,7 +13,12 @@ const { width } = Dimensions.get('window');
 
 const PREVIEW_IMAGE_WIDTH = width * 0.3;
 
-const EventImage = ({ source, style }) => {
+type EventImageProps = {
+    source: any; // You can replace 'any' with ImageSourcePropType for stricter typing
+    style?: object;
+};
+
+const EventImage: React.FC<EventImageProps> = ({ source, style }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
 
@@ -48,8 +53,10 @@ const EventDetails = () => {
     const backgroundColor = colorScheme === 'dark' ? '#1c1c1c' : '#fff';
     const router = useRouter();
 
-    const event = events.find(e => e.id.toString() === id);
-    const eventReviews = reviews[id];
+    // Ensure id is a string and not an array
+    const eventId = Array.isArray(id) ? id[0] : id;
+    const event = events.find(e => e.id.toString() === eventId);
+    const eventReviews = reviews[eventId as unknown as keyof typeof reviews];
 
     if (!event) {
         return (
@@ -113,7 +120,12 @@ const EventDetails = () => {
         </View>
     );
 
-    const renderRatingBar = (rating, percentage) => (
+    interface RatingBarProps {
+        rating: string | number;
+        percentage: number;
+    }
+
+    const renderRatingBar = (rating: RatingBarProps['rating'], percentage: RatingBarProps['percentage']) => (
         <View style={styles.ratingBarContainer}>
             <ThemedText style={styles.ratingNumber}>{rating}</ThemedText>
             <View style={styles.ratingBarWrapper}>

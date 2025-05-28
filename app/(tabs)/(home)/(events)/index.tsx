@@ -11,7 +11,12 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
-const EventImage = ({ source, style }) => {
+type EventImageProps = {
+    source: { uri: string };
+    style?: any;
+};
+
+const EventImage: React.FC<EventImageProps> = ({ source, style }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
 
@@ -37,17 +42,29 @@ const EventImage = ({ source, style }) => {
     );
 };
 
-const getDaysInMonth = (year, month) => {
+interface GetDaysInMonth {
+    (year: number, month: number): number;
+}
+
+const getDaysInMonth: GetDaysInMonth = (year, month) => {
     return new Date(year, month + 1, 0).getDate();
 };
 
-const getFirstDayOfMonth = (year, month) => {
+interface GetFirstDayOfMonth {
+    (year: number, month: number): number;
+}
+
+const getFirstDayOfMonth: GetFirstDayOfMonth = (year, month) => {
     return new Date(year, month, 1).getDay();
 };
 
-const getDaysInWeek = (date) => {
+interface GetDaysInWeek {
+    (date: Date): Date[];
+}
+
+const getDaysInWeek: GetDaysInWeek = (date) => {
     const curr = new Date(date);
-    const week = [];
+    const week: Date[] = [];
     
     // Get Monday
     curr.setDate(curr.getDate() - curr.getDay() + 1);
@@ -117,23 +134,53 @@ const EventsDirectory = () => {
         'July', 'August', 'September', 'October', 'November', 'December'
     ];
 
-    const navigateMonth = (direction) => {
+    interface NavigateMonth {
+        (direction: number): void;
+    }
+
+    const navigateMonth: NavigateMonth = (direction) => {
         const newDate = new Date(selectedDate);
         newDate.setMonth(newDate.getMonth() + direction);
         setSelectedDate(newDate);
     };
 
-    const navigateWeek = (direction) => {
+    interface NavigateWeek {
+        (direction: number): void;
+    }
+
+    const navigateWeek: NavigateWeek = (direction) => {
         const newDate = new Date(selectedDate);
         newDate.setDate(newDate.getDate() + (direction * 7));
         setSelectedDate(newDate);
     };
 
-    const handleDateSelect = (date) => {
+    interface HandleDateSelect {
+        (date: Date): void;
+    }
+
+    const handleDateSelect: HandleDateSelect = (date) => {
         setSelectedDate(date);
     };
 
-    const handleSearch = (text) => {
+    interface EventType {
+        id: number;
+        name: string;
+        location: string;
+        description: string;
+        date: string;
+        type?: string;
+        isNearby?: boolean;
+        isUpcoming?: boolean;
+        image: {
+            src: string;
+        };
+    }
+
+    interface HandleSearch {
+        (text: string) : void;
+    }
+
+    const handleSearch: HandleSearch = (text) => {
         setSearch(text);
         if (!text.trim()) {
             setFilteredEvents(events);
@@ -141,7 +188,7 @@ const EventsDirectory = () => {
         }
 
         const searchQuery = text.toLowerCase().trim();
-        const filtered = events.filter(event => {
+        const filtered = events.filter((event: EventType) => {
             const nameMatch = event.name?.toLowerCase().includes(searchQuery);
             const locationMatch = event.location?.toLowerCase().includes(searchQuery);
             const descriptionMatch = event.description?.toLowerCase().includes(searchQuery);
@@ -150,7 +197,11 @@ const EventsDirectory = () => {
         setFilteredEvents(filtered);
     };
 
-    const handleEventPress = (eventId) => {
+    interface HandleEventPress {
+        (eventId: number): void;
+    }
+
+    const handleEventPress: HandleEventPress = (eventId) => {
         router.push(`/(tabs)/(home)/(events)/${eventId}`);
     };
 
@@ -306,7 +357,7 @@ const EventsDirectory = () => {
                         <SearchBar
                             value={search}
                             onChangeText={handleSearch}
-                            onSearch={handleSearch}
+                            onSearch={() => handleSearch(search)}
                             placeholder="Search events by name, location..."
                         />
                         {renderDateSelector()}

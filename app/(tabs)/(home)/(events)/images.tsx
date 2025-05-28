@@ -12,7 +12,14 @@ const COLUMN_COUNT = 2;
 const GAP = 8;
 const IMAGE_WIDTH = (width - 32 - GAP * (COLUMN_COUNT - 1)) / COLUMN_COUNT;
 
-const EventImage = ({ source, style }) => {
+import { ImageStyle, StyleProp } from 'react-native';
+
+type EventImageProps = {
+    source: any;
+    style?: StyleProp<ImageStyle>;
+};
+
+const EventImage: React.FC<EventImageProps> = ({ source, style }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
 
