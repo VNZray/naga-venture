@@ -24,12 +24,26 @@ import { shopsData } from "../../../../Controller/ShopData";
  * - Composing the shop category layout components together
  */
 const CategoryPage = () => {
-  const { category: categoryId } = useLocalSearchParams();
+  const { category: rawCategoryId } = useLocalSearchParams();
+  const categoryId = Array.isArray(rawCategoryId) ? rawCategoryId[0] : rawCategoryId;
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
 
   // Define category title based on categoryId
-  const getCategoryTitle = (id) => {
+  interface CategoryIdParam {
+    category?: string;
+  }
+
+  interface ShopItem {
+    id: string;
+    name: string;
+    description: string;
+    location: string;
+    category: string;
+    [key: string]: any;
+  }
+
+  const getCategoryTitle = (id?: string): string => {
     switch (id) {
       case "bars":
         return "Bars & Nightlife";
@@ -69,7 +83,11 @@ const CategoryPage = () => {
   }, [searchQuery, allCategoryItems]);
 
   // Navigation handlers
-  const handleShopPress = (shopId) => {
+  interface HandleShopPress {
+    (shopId: string | number): void;
+  }
+
+  const handleShopPress: HandleShopPress = (shopId) => {
     router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
   };
 
