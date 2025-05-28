@@ -4,7 +4,20 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 
-const TouristSpotCard = ({ spot, onPress, variant = "grid" }) => {
+interface TouristSpot {
+  image: string;
+  name: string;
+  description: string;
+  location: string;
+}
+
+interface TouristSpotCardProps {
+  spot: TouristSpot;
+  onPress: () => void;
+  variant?: "grid" | "carousel" | "list";
+}
+
+const TouristSpotCard: React.FC<TouristSpotCardProps> = ({ spot, onPress, variant = "grid" }) => {
   const colorScheme = useColorScheme();
   const cardBackgroundColor = colorScheme === "dark" ? "#1E293B" : "#fff";
   const shadowColor = colorScheme === "dark" ? "#000" : "#ccc";

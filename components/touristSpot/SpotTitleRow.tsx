@@ -2,7 +2,14 @@ import { ThemedText } from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
-export default function SpotTitleRow({ name, onFavorite, isFavorite, textColor }) {
+interface SpotTitleRowProps {
+  name: string;
+  onFavorite: () => void;
+  isFavorite: boolean;
+  textColor: string;
+}
+
+export default function SpotTitleRow({ name, onFavorite, isFavorite, textColor }: SpotTitleRowProps) {
   return (
     <View style={styles.titleRow}>
       <ThemedText type="title" style={styles.spotTitle}>{name}</ThemedText>

@@ -1,14 +1,27 @@
 import { reviewsData } from "@/app/(tabs)/(home)/(touristSpots)/reviewsData";
 import ReviewCard from "@/components/ReviewCard";
 import { ThemedText } from "@/components/ThemedText";
+import { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
-export default function SpotReviewsSection({ spotId, rating, ratingCount, renderStars, iconColor }) {
+interface RatingDistribution {
+  [key: number]: number;
+}
+
+interface SpotReviewsSectionProps {
+  spotId: string;
+  rating: number;
+  ratingCount: number;
+  renderStars: (rating: number) => ReactNode;
+  iconColor: string;
+}
+
+export default function SpotReviewsSection({ spotId, rating, ratingCount, renderStars, iconColor }: SpotReviewsSectionProps) {
   // Get reviews for this spot
   const spotReviews = reviewsData.filter(review => review.spotId === spotId);
 
   // Calculate rating distribution
-  const ratingDistribution = {
+  const ratingDistribution: RatingDistribution = {
     5: 0,
     4: 0,
     3: 0,

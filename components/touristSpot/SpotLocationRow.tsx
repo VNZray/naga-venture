@@ -2,7 +2,12 @@ import { ThemedText } from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
 
-export default function SpotLocationRow({ location, iconColor }) {
+interface SpotLocationRowProps {
+  location: string;
+  iconColor: string;
+}
+
+export default function SpotLocationRow({ location, iconColor }: SpotLocationRowProps) {
   if (!location) return null;
   return (
     <View style={styles.locationContainer}>
