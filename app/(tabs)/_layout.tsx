@@ -56,6 +56,8 @@ export default function TabLayout() {
           },
           default: {
             position: 'absolute',
+            paddingTop: 8,
+            height: 70,
           },
         }),
       }}

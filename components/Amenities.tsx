@@ -3,13 +3,12 @@ import { useFonts } from 'expo-font';
 import React from 'react';
 import { Text, View } from 'react-native';
 
-
 type AmenitiesProps = {
     direction?: 'row' | 'column';
     gap?: number;
     color?: string;
     title?: string;
-    icon?: undefined;
+    icon?: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
     iconSize?: number;
     textSize?: number;
 }

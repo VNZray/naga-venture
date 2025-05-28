@@ -1,12 +1,12 @@
 import React, {
-    createContext,
-    ReactNode,
-    useContext,
-    useEffect,
-    useState,
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 
-import { accommodations as staticAccommodationsData, rooms as staticRoomsData } from "@/app/Controller/AccommodationData";
+import { rooms as roomData, accommodations as staticAccommodationsData } from "@/app/Controller/AccommodationData";
 
 // Types
 type Room = {
@@ -54,7 +54,7 @@ export const AccommodationProvider = ({ children }: ProviderProps) => {
   // Combine accommodations with their rooms
   const combinedAccommodations: Accommodation[] = staticAccommodationsData.map((acc) => ({
     ...acc,
-    rooms: staticRoomsData.filter((room) => room.accommodationId === acc.id),
+    rooms: roomData.filter((room) => room.accommodationId === acc.id),
   }));
 
   useEffect(() => {

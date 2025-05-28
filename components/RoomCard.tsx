@@ -5,9 +5,11 @@ import {
   Image,
   Platform,
   StyleProp,
+  View,
   ViewStyle,
-  useColorScheme as useRNColorScheme
+  useColorScheme as useRNColorScheme,
 } from 'react-native';
+import { ThemedText } from './ThemedText';
 
 export function useColorScheme() {
   const scheme = useRNColorScheme();
@@ -15,10 +17,13 @@ export function useColorScheme() {
 }
 
 type RoomCardProps = {
-  children?: React.ReactNode;
+  roomNumber: string | number;
+  status: string;
+  capacity: number;
+  roomPrice: number;
   background?: string;
   elevation?: number;
-  accommodationId?: number;
+  ratings?: number;
   width?: DimensionValue;
   height?: DimensionValue;
   radius?: number;
@@ -73,18 +78,18 @@ const getShadowStyle = (elevation: number, isDarkMode: boolean): ViewStyle => {
 };
 
 const RoomCard: React.FC<RoomCardProps> = ({
-  children,
-  background,
+  roomNumber,
+  status,
+  capacity,
+  roomPrice,
+  ratings,
   elevation = 1,
-  width,
-  height,
   radius = 10,
   imageUri,
   style,
 }) => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
-
 
   const shadowStyle =
     Platform.OS === 'ios' ? getShadowStyle(elevation, isDarkMode) : {};
@@ -93,27 +98,47 @@ const RoomCard: React.FC<RoomCardProps> = ({
     <ThemedView
       style={[
         {
-          width,
-          height,
+          width: '100%',
           borderRadius: radius,
           elevation: Platform.OS === 'android' ? elevation : 0,
-          overflow: 'visible'
+          display: 'flex',
+          flexDirection: 'row',
         } as ViewStyle,
         shadowStyle,
         style,
       ]}
     >
       {imageUri && (
-        <Image
-          source={{ uri: imageUri }}
-          resizeMode="cover"
-          style={{ width: '100%', height: 150, borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
-        />
+        <View style={{ overflow: 'hidden', borderEndStartRadius: radius, borderTopLeftRadius: radius }}>
+          <Image
+            source={{ uri: imageUri }}
+            resizeMode="cover"
+            style={{
+              width: 150,
+              height: 150,
+            }}
+          />
+        </View>
       )}
-      {children}
+      <ThemedView style={{ borderRadius: radius, position: 'relative', flex: 1, height: 150, justifyContent: 'space-between' }}>
+        <View style={{ padding: 10, borderRadius: radius, }}>
+          <ThemedText type="cardBoldSubTitle">Room {roomNumber}</ThemedText>
+          <ThemedText type="cardSubTitle">Status: {status}</ThemedText>
+          <ThemedText type="cardSubTitle">Capacity: {capacity}</ThemedText>
+          <ThemedText type="cardSubTitle">Ratings: {ratings}</ThemedText>
+
+        </View>
+
+        <View style={{
+          backgroundColor: isDarkMode ? '#0A1B47' : '#0A1B47',
+          width: '100%', position: 'relative', borderBottomEndRadius: radius, display: 'flex', alignItems: 'center', paddingVertical: 10
+        }}>
+          <ThemedText lightColor='#fff' type="cardSubTitle">Price: ₱{roomPrice.toFixed(2)}</ThemedText>
+        </View>
+      </ThemedView>
+
     </ThemedView>
   );
 };
-
 
 export default RoomCard;
