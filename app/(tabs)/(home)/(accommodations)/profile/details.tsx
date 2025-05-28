@@ -6,6 +6,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFonts } from "expo-font";
 import { Link } from "expo-router";
 import { View } from "react-native";
+import MapView, { Marker } from 'react-native-maps';
 
 type DetailsProps = {
   accommodationId: string | number;
@@ -83,17 +84,33 @@ const Details = ({ accommodationId }: DetailsProps) => {
 
         <View
           style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            padding: 16,
-            paddingLeft: 0,
-            paddingRight: 0,
+            height: 200,
+            borderRadius: 10,
+            overflow: "hidden",
+            marginTop: 10,
           }}
         >
-          <ThemedText type="default">Currently Working On</ThemedText>
+          <MapView
+            style={{ flex: 1 }}
+            initialRegion={{
+              latitude: accommodation.latitude,
+              longitude: accommodation.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+          >
+            <Marker
+              coordinate={{
+                latitude: accommodation.latitude,
+                longitude: accommodation.longitude,
+              }}
+              title={accommodation.name}
+              description={accommodation.location}
+            />
+          </MapView>
         </View>
       </View>
+
     </View>
   );
 };

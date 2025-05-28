@@ -11,6 +11,8 @@ export const accommodations = [
 
         `,
     ratings: 4.5,
+    latitude: 13.632351385740419,
+    longitude: 123.1954792734106,
   },
   {
     id: 2,
@@ -24,6 +26,8 @@ export const accommodations = [
 
         `,
     ratings: 4.5,
+    latitude: 13.6217,
+    longitude: 123.1948,
   },
   {
     id: 3,
@@ -37,6 +41,9 @@ export const accommodations = [
 
         `,
     ratings: 4.5,
+    latitude: 13.6221317,
+    longitude: 123.19123248,
+
   },
 ];
 
