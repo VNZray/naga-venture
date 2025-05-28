@@ -115,11 +115,7 @@ const HomeScreen = () => {
                 direction="column"
                 Title="Events"
                 Icon="calendar"
-<<<<<<< HEAD:app/(tabs)/(home)/index.jsx
-                onPress={() => router.push("/(tabs)/(home)/(events)")}
-=======
                 onPress={() => router.push("/(tabs)/(home)/(events)/")}
->>>>>>> 6bdabb6480c7534bbc7181926544700ebbabcd62:app/(tabs)/(home)/index.tsx
               ></PressableButton>
             </CardContainer>
           </View>
@@ -132,7 +128,6 @@ const HomeScreen = () => {
               padding: 16,
             }}
           >
-
           </View>
         </ScrollView>
       </SafeAreaView>
