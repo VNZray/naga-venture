@@ -2,11 +2,13 @@ import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { useFonts } from "expo-font";
 import {
+  Platform,
   StyleSheet,
   TouchableOpacity,
   useColorScheme,
-  View,
+  View
 } from "react-native";
+
 
 type TabSwitcherTab = {
   key: string;
@@ -50,6 +52,7 @@ const TabSwitcher = ({ tabs, activeTab, onTabChange, color, active }: TabSwitche
           shadowOffset: { width: 4, height: 4 },
           shadowRadius: 3,
           elevation: 4, // <-- Android shadow
+          padding: Platform.OS === "android" ? 6 : 10,
         },
         activeTab === tab.key && {
           borderWidth: 0.2,
