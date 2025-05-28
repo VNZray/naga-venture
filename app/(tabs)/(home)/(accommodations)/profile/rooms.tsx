@@ -1,14 +1,17 @@
 import { rooms as allRooms } from "@/app/Controller/AccommodationData";
 import RoomCard from "@/components/RoomCard";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import { useAccommodation } from "@/context/AccommodationContext";
 import { Link } from "expo-router";
 import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
 
 const screenWidth = Dimensions.get("window").width;
 
-const Rooms = ({ accommodationId }) => {
+type RoomsProps = {
+  accommodationId: number | string;
+};
+
+const Rooms = ({ accommodationId }: RoomsProps) => {
   const { filteredAccommodations } = useAccommodation();
 
   const accommodation = filteredAccommodations.find(
@@ -42,30 +45,19 @@ const Rooms = ({ accommodationId }) => {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.grid}>
         {rooms.map((room) => (
-          <RoomCard
-            key={room.id}
-            elevation={3}
-            background="#fff"
-            imageUri={room.roomImage}
-            style={styles.card}
-          >
-            <Link href={`/room/${room.id}`} key={room.id}>
-              <ThemedView style={styles.info}>
-                <ThemedText type="cardBoldSubTitle">
-                  Room {room.roomNumber}
-                </ThemedText>
-                <ThemedText type="cardSubTitle">
-                  Status: {room.status}
-                </ThemedText>
-                <ThemedText type="cardSubTitle">
-                  Capacity: {room.capacity}
-                </ThemedText>
-                <ThemedText type="cardSubTitle">
-                  Price: ₱{room.roomPrice.toFixed(2)}
-                </ThemedText>
-              </ThemedView>
-            </Link>
-          </RoomCard>
+          <Link href={`/room/${room.id}`} key={room.id}>
+            <RoomCard
+              key={room.id}
+              roomNumber={room.roomNumber}
+              status={room.status}
+              capacity={room.capacity}
+              roomPrice={room.roomPrice}
+              elevation={3}
+              background="#fff"
+              imageUri={room.roomImage}
+              style={styles.card}
+            />
+          </Link>
         ))}
       </View>
     </ScrollView>
@@ -79,13 +71,13 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
-    padding: 16,
     paddingTop: 0,
+    gap: 16,
+    padding: 16
   },
   card: {
-    width: (screenWidth - 48) / 2,
-    marginBottom: 16, // fallback if gap not supported
+    width: 195,
+    marginBottom: 16,
     overflow: "visible",
   },
   info: {

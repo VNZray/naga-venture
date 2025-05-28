@@ -12,7 +12,7 @@ const HomeLayout = () => {
       <Stack.Screen
         name="(accommodations)"
         options={{
-          headerShown: true,
+          headerShown: false,
           animation: "slide_from_right",
           headerTitleAlign: "center",
           headerTitle: "Accommodation Directory",
@@ -22,7 +22,7 @@ const HomeLayout = () => {
       <Stack.Screen
         name="(events)"
         options={{
-          headerShown: true,
+          headerShown: false,
           animation: "slide_from_right",
           headerTitleAlign: "center",
           headerTitle: "Event Directory",
@@ -32,7 +32,7 @@ const HomeLayout = () => {
       <Stack.Screen
         name="(shops)/index"
         options={{
-          headerShown: true,
+          headerShown: false,
           animation: "slide_from_right",
           headerTitleAlign: "center",
           headerTitle: "Shop Directory",
@@ -40,24 +40,9 @@ const HomeLayout = () => {
         }}
       />
       <Stack.Screen
-        name="(shops)/(details)/[shopId]"
+        name="(touristSpots)"
         options={{
           headerShown: false,
-          animation: 'slide_from_right',
-        }}
-      />
-      <Stack.Screen
-        name="(shops)/(categories)/[category]"
-        options={{
-          animation: 'slide_from_right',
-          headerTitleAlign: 'center',
-          headerBackTitle: 'Back',
-        }}
-      />
-      <Stack.Screen
-        name="(touristSpots)/index"
-        options={{
-          headerShown: true,
           animation: "slide_from_right",
           headerTitleAlign: "center",
           headerTitle: "Tourist Spots",

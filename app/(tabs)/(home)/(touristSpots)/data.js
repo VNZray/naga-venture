@@ -1,4 +1,5 @@
 // app/(tabs)/(home)/(touristSpots)/data.js
+import { calculateSpotRatings } from './reviewsData';
 
 export const touristSpotsData = {
   1: {
@@ -9,10 +10,7 @@ export const touristSpotsData = {
       "Metropolitan Cathedral and Parish of Saint John the Evangelist, commonly known as the Naga Metropolitan Cathedral. It is the seat of the Roman Catholic Archdiocese of Caceres.",
     image:
       "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",
-    rating: 5,
-    ratingCount: 150,
-    reviews: [],
-    additionalImages: [],
+    additionalImages: ["https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1","https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1","https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1","https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",],
     location: "Somewhere in the Philippines",
     mapLocation: { latitude: 13.6276, longitude: 123.1917 },
     contact: "+63 (54) 473-8022",
@@ -27,9 +25,6 @@ export const touristSpotsData = {
       'The Porta Mariae (Latin for "Door of Mary") is a devotional landmark built to commemorate the tercentenary of devotion to Our Lady of Peñafrancia.',
     image:
       "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Porta-mariae-e1717984426731.jpg?resize=768%2C506&ssl=1",
-    rating: 4.5,
-    ratingCount: 120,
-    reviews: [],
     additionalImages: [],
     location: "Somewhere in the Philippines",
     mapLocation: { latitude: 13.6316, longitude: 123.1954 },
@@ -45,9 +40,6 @@ export const touristSpotsData = {
       "Mount Isarog is a potentially active stratovolcano located in the province of Camarines Sur, Philippines.",
     image:
       "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Mount_Isarog_View_at_Antipolo_Baao_Camarines_Sur.jpg/1200px-Mount_Isarog_View_at_Antipolo_Baao_Camarines_Sur.jpg",
-    rating: 4.7,
-    ratingCount: 95,
-    reviews: [],
     additionalImages: [],
     location: "Somewhere in the Philippines",
     mapLocation: { latitude: 13.6783, longitude: 123.375 },
@@ -63,9 +55,6 @@ export const touristSpotsData = {
       "A breathtaking waterfall located within Mt. Isarog National Park, offering scenic views and a refreshing escape into nature.",
     image:
       "https://www.nagacityguide.com/wordpress/wp-content/uploads/2016/04/Jomari-Dumalasa%E2%80%8E2.jpg",
-    rating: 4.6,
-    ratingCount: 80,
-    reviews: [],
     additionalImages: [],
     location: "Somewhere in the Philippines",
     mapLocation: { latitude: 13.6694, longitude: 123.3757 },
@@ -81,9 +70,6 @@ export const touristSpotsData = {
       "The Basilica of Our Lady of Peñafrancia, an important religious site and a center of Marian devotion in the Bicol region.",
     image:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnRaPJ69VGxcYiD5EJbI5oLuJ9zy6m3tq3RA&shttps://www2.naga.gov.ph/wp-content/uploads/2022/08/20220704-VIC06248-1024x683.jpg",
-    rating: 4.9,
-    ratingCount: 200,
-    reviews: [],
     additionalImages: [],
     location: "Somewhere in the Philippines",
     mapLocation: { latitude: 13.6311, longitude: 123.1978 },
@@ -99,9 +85,6 @@ export const touristSpotsData = {
       "A relaxing hot spring resort tucked within the lush greenery of Mt. Isarog, perfect for rejuvenation and adventure.",
     image:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRG0ngeduQIbdqDtRb3zqWEnjzGQFoh78-Xpg&s",
-    rating: 4.7,
-    ratingCount: 110,
-    reviews: [],
     additionalImages: [],
     location: "Somewhere in the Philippines",
     mapLocation: { latitude: 13.6723, longitude: 123.3769 },
@@ -133,3 +116,17 @@ export const destinations = Object.values(touristSpotsData)
     name: spot.name,
     image: spot.image,
   }));
+
+// Add getter functions to calculate ratings dynamically
+export const getSpotWithRatings = (spotId) => {
+  const spot = touristSpotsData[spotId];
+  if (!spot) return null;
+  
+  const ratings = calculateSpotRatings(spotId);
+  return {
+    ...spot,
+    rating: ratings.rating,
+    ratingCount: ratings.ratingCount,
+    ratingDistribution: ratings.ratingDistribution
+  };
+};

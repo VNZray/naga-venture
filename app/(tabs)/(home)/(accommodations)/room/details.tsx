@@ -6,7 +6,11 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Link } from "expo-router";
 import { View } from 'react-native';
 
-const Details = ({ roomId }) => {
+interface DetailsProps {
+  roomId: string | number;
+}
+
+const Details = ({ roomId }: DetailsProps) => {
 
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";

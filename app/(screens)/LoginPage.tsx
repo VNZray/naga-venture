@@ -206,7 +206,7 @@ const LoginPage = () => {
             TextSize={16}
             width={"100%"}
             height={60}
-            type="primary"
+            type="secondary"
             IconSize={24}
             color={"#DEE3F2"}
             direction="column"
@@ -216,9 +216,7 @@ const LoginPage = () => {
 
           <View
             style={{
-              color: color,
               display: "flex",
-              fontSize: 16,
               flexDirection: "row",
               gap: 10,
               alignItems: "center",
@@ -229,7 +227,7 @@ const LoginPage = () => {
             <ThemedText type="default2">Don&#39;t Have an Account?</ThemedText>
 
             <Link href={"/(screens)/RegistrationPage"}>
-              <ThemedText type="link">Sign Up</ThemedText>
+              <ThemedText type="link" onPress={() => router.push("/(screens)/RegistrationPage")}>Sign Up</ThemedText>
             </Link>
           </View>
         </View>
@@ -243,14 +241,13 @@ export default LoginPage;
 const styles = {
   webContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-    backgroundColor: ''
+    alignItems: "center" as const,
+    justifyContent: "center" as const,
+    minHeight: 0,
   },
   logoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "row" as const,
+    alignItems: "center" as const,
     marginBottom: 20,
   },
   logo: {

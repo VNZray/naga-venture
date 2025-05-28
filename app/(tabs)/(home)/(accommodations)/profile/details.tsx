@@ -7,7 +7,11 @@ import { useFonts } from "expo-font";
 import { Link } from "expo-router";
 import { View } from "react-native";
 
-const Details = ({ accommodationId }) => {
+type DetailsProps = {
+  accommodationId: string | number;
+};
+
+const Details = ({ accommodationId }: DetailsProps) => {
   const { filteredAccommodations } = useAccommodation();
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";

@@ -100,9 +100,15 @@ const AccommodationProfile = () => {
       </View>
 
       <View style={styles.tabContent}>
-        {activeTab === "details" && <Details accommodationId={id} />}
-        {activeTab === "rooms" && <Rooms accommodationId={id} />}
-        {activeTab === "ratings" && <Ratings accommodationId={id} />}
+        {activeTab === "details" && (
+          <Details accommodationId={Array.isArray(id) ? id[0] : id} />
+        )}
+        {activeTab === "rooms" && (
+          <Rooms accommodationId={Array.isArray(id) ? id[0] : id} />
+        )}
+        {activeTab === "ratings" && (
+          <Ratings accommodationId={Array.isArray(id) ? id[0] : id} />
+        )}
       </View>
     </ScrollView>
   );
