@@ -2,7 +2,18 @@ import { ThemedText } from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
 
-export default function SpotMapSection({ mapLocation, address, iconColor }) {
+interface MapLocation {
+  latitude: number;
+  longitude: number;
+}
+
+interface SpotMapSectionProps {
+  mapLocation: MapLocation | null;
+  address?: string;
+  iconColor: string;
+}
+
+export default function SpotMapSection({ mapLocation, address, iconColor }: SpotMapSectionProps) {
   if (!mapLocation) return null;
   return (
     <View style={styles.section}>

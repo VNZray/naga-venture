@@ -2,8 +2,12 @@ import { ThemedView } from "@/components/ThemedView";
 import { useLocalSearchParams } from "expo-router";
 import { Dimensions, FlatList, Image, StyleSheet, View } from "react-native";
 
-export default function AllImagesScreen() {
-  const { images } = useLocalSearchParams();
+interface ImageItem {
+  item: string;
+}
+
+const AllImagesScreen: React.FC = () => {
+  const { images } = useLocalSearchParams<{ images: string }>();
   const imageList = typeof images === "string" ? images.split(",") : [];
   const screenWidth = Dimensions.get("window").width;
   const gap = 8;
@@ -13,10 +17,10 @@ export default function AllImagesScreen() {
     <ThemedView style={{ flex: 1 }}>
       <FlatList
         data={imageList}
-        keyExtractor={(item, idx) => item + idx}
+        keyExtractor={(item: string, idx: number) => item + idx}
         numColumns={2}
         contentContainerStyle={styles.container}
-        renderItem={({ item }) => (
+        renderItem={({ item }: ImageItem) => (
           <View style={[styles.imageContainer, { width: imageWidth, height: imageWidth, margin: gap / 2 }]}>
             <Image source={{ uri: item }} style={styles.image} />
           </View>
@@ -24,7 +28,7 @@ export default function AllImagesScreen() {
       />
     </ThemedView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -42,3 +46,5 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
 });
+
+export default AllImagesScreen;
