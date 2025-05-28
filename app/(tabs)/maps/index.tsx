@@ -72,7 +72,9 @@ const Maps = () => {
                     style={styles.calloutImage}
                   />
                 )}
-                <Pressable style={styles.viewMoreButton}>
+                <Pressable
+                  style={styles.viewMoreButton}
+                >
                   <ThemedText style={styles.viewMoreText}>View More</ThemedText>
                 </Pressable>
               </View>
