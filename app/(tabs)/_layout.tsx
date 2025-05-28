@@ -2,7 +2,7 @@
 import { Tabs } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Platform, View } from 'react-native';
-
+import AccommodationDetails from '@/app/(tabs)/(home)/(accommodations)/profile/details';
 
 import LoadingScreen from '@/app/(screens)/LoadingScreen';
 import { HapticTab } from '@/components/HapticTab';

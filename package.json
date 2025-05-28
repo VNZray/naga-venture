@@ -59,7 +59,8 @@
     "react-native-web": "^0.20.0",
     "react-native-websocket": "^1.0.2",
     "react-native-webview": "13.13.5",
-    "readable-stream": "^4.7.0"
+    "readable-stream": "^4.7.0",
+    "expo-location": "~18.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

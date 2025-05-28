@@ -16,21 +16,6 @@ export const accommodations = [
   },
   {
     id: 2,
-    name: "Bahay ni Kuya",
-    location: "Somewhere in the Philippines",
-    priceRange: "PHP 500.00 - PHP 3,500.00",
-    imageUri:
-      "https://contents.pep.ph/images2/images2/2021/08/06/pbb-facade-1628248301.jpg",
-    description: `
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed auctor tempor metus, a tincidunt purus vestibulum a. Integer feugiat quam at ante suscipit, a tempor nunc iaculis. Fusce scelerisque nunc velit, ut tempor turpis rhoncus ac. Nulla facilisi. Vivamus volutpat est id ante euismod, at gravida lectus pretium. Donec et vulputate libero. Quisque in augue neque. Fusce hendrerit ex purus, vel aliquam sapien cursus vel. Sed in felis purus. Vivamus euismod nisi at sapien fringilla, non convallis ex cursus.
-
-        `,
-    ratings: 4.5,
-    latitude: 13.6217,
-    longitude: 123.1948,
-  },
-  {
-    id: 3,
     name: "Sampaguita Tourist Inn",
     location: "Naga City, Philippines",
     priceRange: "PHP 500.00 - PHP 3,500.00",
@@ -41,8 +26,8 @@ export const accommodations = [
 
         `,
     ratings: 4.5,
-    latitude: 13.6221317,
-    longitude: 123.19123248,
+    latitude: 13.629483143257575,
+    longitude: 123.19852472895504
 
   },
 ];
