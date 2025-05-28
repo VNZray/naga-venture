@@ -1,7 +1,11 @@
-import { ThemedText } from "@/components/ThemedText";
-import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet, View } from "react-native";
+// Component that displays an interactive map showing the location of a tourist spot
+// Uses Google Maps to show the exact location with a marker and address
 
+import { ThemedText } from "@/components/ThemedText";
+import { StyleSheet, View } from "react-native";
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+
+// Interface for map location coordinates
 interface MapLocation {
   latitude: number;
   longitude: number;
@@ -14,19 +18,42 @@ interface SpotMapSectionProps {
 }
 
 export default function SpotMapSection({ mapLocation, address, iconColor }: SpotMapSectionProps) {
+  // Don't render if no location data is available
   if (!mapLocation) return null;
+
   return (
     <View style={styles.section}>
       <ThemedText type="subtitle" style={styles.sectionTitle}>Location</ThemedText>
       <View style={styles.mapContainer}>
-        <Ionicons name="map-outline" size={40} color={iconColor} />
-        {mapLocation.latitude && mapLocation.longitude && (
-          <ThemedText type="default2" style={styles.mapText}>Map here</ThemedText>
-        )}
-        {address && (
-          <ThemedText type="default2" style={styles.mapAddress}>{address}</ThemedText>
-        )}
+        {/* Google Maps component with initial region centered on the spot */}
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          style={styles.map}
+          initialRegion={{
+            latitude: mapLocation.latitude,
+            longitude: mapLocation.longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          }}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
+          showsCompass={true}
+        >
+          {/* Marker showing the exact spot location */}
+          <Marker
+            coordinate={{
+              latitude: mapLocation.latitude,
+              longitude: mapLocation.longitude,
+            }}
+            title={address}
+            description="Tourist Spot Location"
+          />
+        </MapView>
       </View>
+      {/* Display the address below the map if available */}
+      {address && (
+        <ThemedText type="default2" style={styles.addressText}>{address}</ThemedText>
+      )}
     </View>
   );
 }
@@ -41,19 +68,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   mapContainer: {
-    height: 150,
-    backgroundColor: "#eee",
+    height: 200,
     borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    overflow: "hidden",
+    marginBottom: 8,
   },
-  mapText: {
-    marginLeft: 10,
-    color: "gray",
+  map: {
+    flex: 1,
   },
-  mapAddress: {
-    marginTop: 5,
-    fontSize: 12,
+  addressText: {
+    fontSize: 14,
     color: "gray",
+    textAlign: "center",
   },
 }); 

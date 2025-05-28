@@ -1,3 +1,7 @@
+// Data file containing review information and rating calculation functions
+// Manages user reviews and provides helper functions for rating calculations
+
+// Sample review data for tourist spots
 export const reviewsData = [
   {
     id: 1,
@@ -55,11 +59,14 @@ export const reviewsData = [
   }
 ];
 
-// Helper function to calculate ratings for a spot
+// Helper function to calculate ratings for a specific spot
+// Computes average rating, total count, and rating distribution
 export const calculateSpotRatings = (spotId: string) => {
+  // Filter reviews for the specific spot
   const spotReviews = reviewsData.filter(review => review.spotId === spotId);
   const ratingCount = spotReviews.length;
   
+  // Return default values if no reviews exist
   if (ratingCount === 0) {
     return {
       rating: 0,
@@ -74,10 +81,11 @@ export const calculateSpotRatings = (spotId: string) => {
     };
   }
 
+  // Calculate average rating
   const totalRating = spotReviews.reduce((sum, review) => sum + review.rating, 0);
   const averageRating = totalRating / ratingCount;
 
-  // Calculate rating distribution
+  // Calculate distribution of ratings (how many reviews for each star rating)
   const ratingDistribution = {
     5: 0,
     4: 0,

@@ -1,3 +1,6 @@
+// Component that displays additional images of a tourist spot in a horizontal scrollable gallery
+// Includes a "See All" button when there are more than 3 images
+
 import { ThemedText } from "@/components/ThemedText";
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
@@ -7,10 +10,15 @@ interface SpotMoreImagesProps {
 }
 
 export default function SpotMoreImages({ images, onSeeAll }: SpotMoreImagesProps) {
+  // Don't render if no images are available
   if (!images || images.length === 0) return null;
+  
+  // Show "See All" button only if there are more than 3 images
   const showSeeAll = images.length > 3;
+  
   return (
     <View style={styles.section}>
+      {/* Header with title and See All button */}
       <View style={styles.titleRow}>
         <ThemedText type="subtitle" style={styles.sectionTitle}>More Images</ThemedText>
         {showSeeAll && (
@@ -19,6 +27,7 @@ export default function SpotMoreImages({ images, onSeeAll }: SpotMoreImagesProps
           </TouchableOpacity>
         )}
       </View>
+      {/* Horizontally scrollable image gallery */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {images.map((image, index) => (
           <View key={image + index} style={styles.additionalImageContainer}>

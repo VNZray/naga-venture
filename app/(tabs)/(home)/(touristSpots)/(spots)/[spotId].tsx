@@ -1,4 +1,6 @@
-// app/(tabs)/(home)/(touristSpots)/(spots)/[spotId].tsx
+// Main tourist spot details page that displays comprehensive information about a specific tourist spot
+// This page includes details, reviews, and interactive elements like maps and image galleries
+
 import TabSwitcher from "@/components/TabSwitcherComponent";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -17,26 +19,30 @@ import React, { JSX, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View
 } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { getSpotWithRatings } from "../data";
+import { getSpotWithRatings } from "../TouristSpotData";
 
+// Define the structure for tab navigation
 interface Tab {
   key: string;
   label: string;
 }
 
 const TouristSpotDetails: React.FC = () => {
+  // Get the spot ID from URL parameters
   const { spotId } = useLocalSearchParams<{ spotId: string }>();
+  // State to manage active tab (details or reviews)
   const [activeTab, setActiveTab] = useState<string>("details");
+  // Fetch spot data with ratings
   const spot = spotId ? getSpotWithRatings(spotId) : null;
   const colorScheme = useColorScheme();
   const textColor = Colors[colorScheme].text;
   const activeBackground = "#0A1B47";
 
+  // Show error state if spot is not found
   if (!spot) {
     return (
       <ThemedView style={[styles.container, { justifyContent: "center", alignItems: "center" }]}> 
@@ -50,6 +56,7 @@ const TouristSpotDetails: React.FC = () => {
     );
   }
 
+  // Helper function to render star ratings
   const renderStars = (rating: number): JSX.Element => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -65,12 +72,7 @@ const TouristSpotDetails: React.FC = () => {
     return <View style={{ flexDirection: "row" }}>{stars}</View>;
   };
 
-  const renderRatingBars = (): JSX.Element => (
-    <View>
-      <Text style={{ color: textColor }}>Rating bars will go here</Text>
-    </View>
-  );
-
+  // Define available tabs for navigation
   const tabs: Tab[] = [
     { key: "details", label: "Details" },
     { key: "reviews", label: "Reviews" },
@@ -122,7 +124,11 @@ const TouristSpotDetails: React.FC = () => {
                     images={spot.additionalImages}
                     onSeeAll={() => router.push({ pathname: "/(tabs)/(home)/(touristSpots)/(spots)/AllImages", params: { images: spot.additionalImages.join(",") } })}
                   />
-                  <SpotMapSection mapLocation={spot.mapLocation} address={spot.address} iconColor={Colors[colorScheme].icon} />
+                  <SpotMapSection 
+                    mapLocation={spot.mapLocation} 
+                    address={spot.location} 
+                    iconColor={Colors[colorScheme].icon} 
+                  />
                 </View>
               )}
               {activeTab === "reviews" && (

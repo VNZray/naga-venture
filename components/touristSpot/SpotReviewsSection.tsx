@@ -8,6 +8,9 @@ interface RatingDistribution {
   [key: number]: number;
 }
 
+// Component that displays reviews and ratings for a tourist spot
+// Includes overall rating, rating distribution, and individual review cards
+
 interface SpotReviewsSectionProps {
   spotId: string;
   rating: number;
@@ -17,10 +20,10 @@ interface SpotReviewsSectionProps {
 }
 
 export default function SpotReviewsSection({ spotId, rating, ratingCount, renderStars, iconColor }: SpotReviewsSectionProps) {
-  // Get reviews for this spot
+  // Filter reviews for this specific spot
   const spotReviews = reviewsData.filter(review => review.spotId === spotId);
 
-  // Calculate rating distribution
+  // Initialize rating distribution object to count reviews by star rating
   const ratingDistribution: RatingDistribution = {
     5: 0,
     4: 0,
@@ -29,11 +32,14 @@ export default function SpotReviewsSection({ spotId, rating, ratingCount, render
     1: 0
   };
 
+  // Count reviews for each star rating
   spotReviews.forEach(review => {
     ratingDistribution[review.rating]++;
   });
 
+  // Render the rating distribution bars
   const renderRatingBars = () => {
+    // Find the maximum count to scale the bars proportionally
     const maxCount = Math.max(...Object.values(ratingDistribution));
     
     return (
@@ -64,6 +70,7 @@ export default function SpotReviewsSection({ spotId, rating, ratingCount, render
 
   return (
     <View style={styles.reviewsTab}>
+      {/* Overall rating summary section */}
       <View style={styles.ratingSummary}>
         <View style={styles.overallRating}>
           <ThemedText type="title" style={styles.overallRatingValue}>
@@ -76,6 +83,7 @@ export default function SpotReviewsSection({ spotId, rating, ratingCount, render
         </View>
         <View style={styles.ratingBreakdown}>{renderRatingBars()}</View>
       </View>
+      {/* Individual reviews list */}
       {spotReviews.length > 0 ? (
         <View style={styles.reviewsList}>
           {spotReviews.map((review) => (  
