@@ -16,6 +16,18 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
+## email: <a@gmail.com>
+
+## password: 1234
+
+## Accommodation Module - Rayven Clores
+
+## Tourist Spots Module - Emmanuel Collao
+
+## Shops Module - Hans Gabriel Candor
+
+## Events Module - Wayne Sanao
+
 In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)

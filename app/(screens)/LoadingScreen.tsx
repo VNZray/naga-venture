@@ -1,5 +1,6 @@
 import logo from '@/assets/images/logo.png';
 import { useFonts } from 'expo-font';
+import { router } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Image, StyleSheet, Text, View } from 'react-native';
 
@@ -12,21 +13,29 @@ const LoadingScreen = () => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1.1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, [scaleAnim]);
+    if (fontsLoaded) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(scaleAnim, {
+            toValue: 1.1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+
+      const timer = setTimeout(() => {
+        router.replace('/');
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [fontsLoaded]);
 
   if (!fontsLoaded) {
     return null;

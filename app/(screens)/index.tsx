@@ -1,12 +1,12 @@
 import PressableButton from "@/components/PressableButton";
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { ThemedText } from "@/components/ThemedText";
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";
 import { ImageBackground, Text, View } from "react-native";
 import { PaperProvider } from "react-native-paper";
-
+import 'react-native-url-polyfill/auto';
 const index = () => {
   const [fontsLoaded] = useFonts({
     "Poppins-Black": require("@/assets/fonts/Poppins/Poppins-Black.ttf"),
@@ -15,15 +15,13 @@ const index = () => {
     "Poppins-Bold": require("@/assets/fonts/Poppins/Poppins-Bold.ttf"),
   });
 
-  const colorScheme = useColorScheme(); // ✅ move above the return
-  const color = colorScheme === "dark" ? "#0077B6" : "#0077B6";
-
   if (!fontsLoaded) {
     return null;
   }
 
   const imageBackground =
     "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/08/oragon-monument-by-colline.jpg";
+
 
   return (
     <PaperProvider>
@@ -42,17 +40,17 @@ const index = () => {
           end={{ x: 0.5, y: 1 }}
           style={{ flex: 1, justifyContent: "center", padding: "5%" }}
         >
-          <Text
+          <ThemedText
+            type="title"
             style={{
               fontSize: 38,
               textAlign: "left",
-              fontFamily: "Poppins-Bold",
-              color: "white",
               marginTop: 250,
+              color: '#fff'
             }}
           >
             Begin Your Journey in the Heart of Naga
-          </Text>
+          </ThemedText>
           <Text
             style={{
               fontSize: 18,
@@ -77,7 +75,7 @@ const index = () => {
               TextSize={16}
               width={"100%"}
               height={55}
-              type="primary"
+              type="secondary"
               color={"#DEE3F2"}
               direction="column"
               Title="Login"
@@ -87,7 +85,7 @@ const index = () => {
               TextSize={16}
               width={"100%"}
               height={55}
-              type="secondary"
+              type="tertiary"
               color={"#000"}
               direction="column"
               Title="Register"
