@@ -4,8 +4,8 @@ import EmptyState from "@/components/EmptyState";
 import PressableButton from "@/components/PressableButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import SearchBar from "@/components/TouristSearchBar";
-import TouristSpotCard from "@/components/TouristSpotCard";
+import SearchBar from "@/components/touristSpot/TouristSearchBar";
+import TouristSpotCard from "@/components/touristSpot/TouristSpotCard";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router } from "expo-router";
@@ -129,7 +129,11 @@ const TouristSpotDirectory: React.FC = () => {
               {filteredSpots.map((spot) => (
                 <TouristSpotCard
                   key={spot.id}
-                  spot={spot}
+                  spot={{
+                    ...spot,
+                    description: '',
+                    location: ''
+                  }}
                   onPress={() => handleDestinationPress(spot.id)}
                   variant="grid"
                 />

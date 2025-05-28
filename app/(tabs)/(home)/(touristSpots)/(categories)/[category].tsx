@@ -1,8 +1,8 @@
 // app/(tabs)/(home)/(touristSpots)/(categories)/[category].tsx
 import EmptyState from "@/components/EmptyState";
 import { ThemedView } from "@/components/ThemedView";
-import SearchBar from "@/components/TouristSearchBar";
-import TouristSpotCard from "@/components/TouristSpotCard";
+import SearchBar from "@/components/touristSpot/TouristSearchBar";
+import TouristSpotCard from "@/components/touristSpot/TouristSpotCard";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useLayoutEffect, useMemo, useState } from "react";
@@ -11,7 +11,7 @@ import {
   StatusBar,
   StyleSheet
 } from "react-native";
-import { touristSpotsData, TouristSpot } from "../data";
+import { TouristSpot, touristSpotsData } from "../data";
 
 type CategoryId = "historical" | "natural" | "urban" | "museums" | "resorts";
 
