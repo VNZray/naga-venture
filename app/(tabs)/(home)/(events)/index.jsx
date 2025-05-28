@@ -1,78 +1,299 @@
-import { Text, View } from 'react-native'
+import { events } from '@/app/Controller/EventData';
+import CardContainer from '@/components/CardContainer';
+import SearchBar from '@/components/SearchBar';
+import { ThemedText } from '@/components/ThemedText';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { ActivityIndicator, Dimensions, Image, Pressable, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
+const EventImage = ({ source, style }) => {
+    const [isLoading, setIsLoading] = useState(true);
+    const [hasError, setHasError] = useState(false);
+
+    return (
+        <View style={[style, { backgroundColor: '#f0f0f0', justifyContent: 'center', alignItems: 'center' }]}>
+            {isLoading && <ActivityIndicator size="large" color="#0A2342" />}
+            {hasError ? (
+                <FontAwesome5 name="image" size={24} color="#666" />
+            ) : (
+                <Image 
+                    source={source}
+                    style={[style, { position: 'absolute' }]}
+                    onLoadStart={() => setIsLoading(true)}
+                    onLoadEnd={() => setIsLoading(false)}
+                    onError={() => {
+                        console.error('Image loading error for:', source.uri);
+                        setHasError(true);
+                        setIsLoading(false);
+                    }}
+                />
+            )}
+        </View>
+    );
+};
+
+const getDaysInMonth = (year, month) => {
+    return new Date(year, month + 1, 0).getDate();
+};
+
+const getFirstDayOfMonth = (year, month) => {
+    return new Date(year, month, 1).getDay();
+};
+
+const getDaysInWeek = (date) => {
+    const curr = new Date(date);
+    const week = [];
+    
+    // Get Monday
+    curr.setDate(curr.getDate() - curr.getDay() + 1);
+    
+    for (let i = 0; i < 7; i++) {
+        week.push(new Date(curr));
+        curr.setDate(curr.getDate() + 1);
+    }
+    
+    return week;
+};
+
 const EventsDirectory = () => {
     const [search, setSearch] = useState('');
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [filteredEvents, setFilteredEvents] = useState(events);
     const colorScheme = useColorScheme();
     const color = colorScheme === 'dark' ? '#fff' : '#000';
+    const backgroundColor = colorScheme === 'dark' ? '#1c1c1c' : '#fff';
+    const router = useRouter();
 
-    const handleSearch = () => {
-        console.log('Searching:', search);
+    const calendarData = useMemo(() => {
+        const year = selectedDate.getFullYear();
+        const month = selectedDate.getMonth();
+        const currentDate = selectedDate.getDate();
+        
+        const daysInMonth = getDaysInMonth(year, month);
+        const firstDay = getFirstDayOfMonth(year, month) || 7; // Convert Sunday (0) to 7
+        const firstDayIndex = firstDay - 1; // Adjust to 0-based index
+
+        const days = [];
+        const totalSlots = Math.ceil((daysInMonth + firstDayIndex) / 7) * 7;
+
+        // Add empty slots for days before the first day of the month
+        for (let i = 0; i < firstDayIndex; i++) {
+            days.push(null);
+        }
+
+        // Add the days of the month
+        for (let i = 1; i <= daysInMonth; i++) {
+            days.push(i);
+        }
+
+        // Add empty slots for remaining days
+        while (days.length < totalSlots) {
+            days.push(null);
+        }
+
+        // Group days into weeks
+        const weeks = [];
+        for (let i = 0; i < days.length; i += 7) {
+            weeks.push(days.slice(i, i + 7));
+        }
+
+        return {
+            year,
+            month,
+            currentDate,
+            weeks,
+        };
+    }, [selectedDate]);
+
+    const weekDays = useMemo(() => getDaysInWeek(selectedDate), [selectedDate]);
+
+    const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    const navigateMonth = (direction) => {
+        const newDate = new Date(selectedDate);
+        newDate.setMonth(newDate.getMonth() + direction);
+        setSelectedDate(newDate);
+    };
+
+    const navigateWeek = (direction) => {
+        const newDate = new Date(selectedDate);
+        newDate.setDate(newDate.getDate() + (direction * 7));
+        setSelectedDate(newDate);
+    };
+
+    const handleDateSelect = (date) => {
+        setSelectedDate(date);
+    };
+
+    const handleSearch = (text) => {
+        setSearch(text);
+        if (!text.trim()) {
+            setFilteredEvents(events);
+            return;
+        }
+
+        const searchQuery = text.toLowerCase().trim();
+        const filtered = events.filter(event => {
+            const nameMatch = event.name?.toLowerCase().includes(searchQuery);
+            const locationMatch = event.location?.toLowerCase().includes(searchQuery);
+            const descriptionMatch = event.description?.toLowerCase().includes(searchQuery);
+            return nameMatch || locationMatch || descriptionMatch;
+        });
+        setFilteredEvents(filtered);
+    };
+
+    const handleEventPress = (eventId) => {
+        router.push(`/(tabs)/(home)/(events)/${eventId}`);
     };
 
     const renderDateSelector = () => {
         const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
         return (
             <View style={styles.dateSection}>
                 <View style={styles.monthHeader}>
-                    <ThemedText type="title">October 2024</ThemedText>
-                    <View style={styles.navigationButtons}>
+                    <Pressable onPress={() => navigateWeek(-1)} style={styles.navButton}>
                         <FontAwesome5 name="chevron-left" size={20} color={color} />
+                    </Pressable>
+                    <ThemedText type="title" style={styles.monthText}>
+                        {selectedDate.toLocaleString('default', { month: 'long' })} {selectedDate.getFullYear()}
+                    </ThemedText>
+                    <Pressable onPress={() => navigateWeek(1)} style={styles.navButton}>
                         <FontAwesome5 name="chevron-right" size={20} color={color} />
-                    </View>
+                    </Pressable>
                 </View>
-                <CardContainer elevation={2} style={styles.daysContainer}>
-                    {days.map((day, index) => (
-                        <View key={day} style={styles.dayColumn}>
-                            <ThemedText style={styles.dayText}>{day}</ThemedText>
-                            <View style={[styles.dateCircle, index === 4 && styles.selectedDate]}>
-                                <ThemedText style={[styles.dateText, index === 4 && styles.selectedDateText]}>
-                                    {index + 1}
+                <ScrollView 
+                    horizontal 
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.daysContainer}
+                >
+                    {weekDays.map((date, index) => {
+                        const isSelected = date.getDate() === selectedDate.getDate() && 
+                                        date.getMonth() === selectedDate.getMonth();
+                        const isToday = date.getTime() === today.getTime();
+                        
+                        return (
+                            <Pressable
+                                key={index}
+                                style={styles.dayColumn}
+                                onPress={() => handleDateSelect(date)}
+                            >
+                                <ThemedText style={[
+                                    styles.dayText,
+                                    isSelected && styles.selectedDayText
+                                ]}>
+                                    {days[index]}
                                 </ThemedText>
-                            </View>
-                        </View>
-                    ))}
-                </CardContainer>
-            </View>
-        );
-    };
-
-    const renderNearbyEvents = () => {
-        return (
-            <View style={styles.eventsSection}>
-                <ThemedText type="title" style={styles.sectionTitle}>Nearby Events</ThemedText>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <CardContainer style={styles.eventCard}>
-                        <View style={styles.eventImagePlaceholder}>
-                            <FontAwesome5 name="users" size={40} color={color} />
-                            <ThemedText>Festival Crowd</ThemedText>
-                        </View>
-                    </CardContainer>
-                    <CardContainer style={styles.eventCard}>
-                        <View style={styles.eventImagePlaceholder}>
-                            <FontAwesome5 name="calendar-alt" size={40} color={color} />
-                            <ThemedText>Local Event</ThemedText>
-                        </View>
-                    </CardContainer>
+                                <View style={[
+                                    styles.dateCircle,
+                                    { backgroundColor: colorScheme === 'dark' ? '#2c2c2c' : '#f0f0f0' },
+                                    isSelected && styles.selectedDate,
+                                    isToday && styles.todayDate
+                                ]}>
+                                    <ThemedText style={[
+                                        styles.dateText,
+                                        isSelected && styles.selectedDateText,
+                                        isToday && styles.todayDateText
+                                    ]}>
+                                        {date.getDate()}
+                                    </ThemedText>
+                                </View>
+                            </Pressable>
+                        );
+                    })}
                 </ScrollView>
             </View>
         );
     };
 
+    const renderNearbyEvents = () => {
+        const nearbyEvents = filteredEvents.filter(event => event.isNearby);
+        
+        if (nearbyEvents.length === 0 && search.trim()) {
+            return null; // Don't show section if no results found
+        }
+
+        return (
+            <View style={styles.eventsSection}>
+                <ThemedText type="title" style={styles.sectionTitle}>Nearby Events</ThemedText>
+                {nearbyEvents.length > 0 ? (
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        {nearbyEvents.map((event) => (
+                            <Pressable 
+                                key={event.id} 
+                                onPress={() => handleEventPress(event.id)}
+                            >
+                                <CardContainer style={styles.eventCard}>
+                                    <EventImage source={{ uri: event.image.src }} style={styles.eventImage} />
+                                    <View style={[styles.eventInfo, { backgroundColor }]}>
+                                        <ThemedText type="cardTitle">{event.name}</ThemedText>
+                                        <ThemedText type="cardSubTitle">{event.date}</ThemedText>
+                                        <ThemedText type="cardSubTitle" style={styles.location}>
+                                            <FontAwesome5 name="map-marker-alt" size={12} color={color} /> {event.location}
+                                        </ThemedText>
+                                    </View>
+                                </CardContainer>
+                            </Pressable>
+                        ))}
+                    </ScrollView>
+                ) : (
+                    <ThemedText style={styles.noResults}>No nearby events found</ThemedText>
+                )}
+            </View>
+        );
+    };
+
     const renderUpcomingEvents = () => {
+        const upcomingEvents = filteredEvents.filter(event => event.isUpcoming);
+        
+        if (upcomingEvents.length === 0 && search.trim()) {
+            return null; // Don't show section if no results found
+        }
+
         return (
             <View style={styles.eventsSection}>
                 <ThemedText type="title" style={styles.sectionTitle}>Upcoming Events</ThemedText>
-                <CardContainer style={styles.upcomingEventCard}>
-                    <View style={styles.upcomingEventContent}>
-                        <FontAwesome5 name="camera" size={40} color={color} />
-                        <View style={styles.eventTextContent}>
-                            <ThemedText type="title">NAGA WON! 365</ThemedText>
-                            <ThemedText type="subtitle">(PHOTO/REEL) CONTEST</ThemedText>
-                        </View>
-                    </View>
-                </CardContainer>
+                {upcomingEvents.length > 0 ? (
+                    upcomingEvents.map((event) => (
+                        <Pressable 
+                            key={event.id}
+                            onPress={() => handleEventPress(event.id)}
+                        >
+                            <CardContainer style={styles.upcomingEventCard}>
+                                <EventImage source={{ uri: event.image.src }} style={styles.upcomingEventImage} />
+                                <View style={[styles.upcomingEventContent, { backgroundColor }]}>
+                                    <View style={styles.eventTextContent}>
+                                        <ThemedText type="title">{event.name}</ThemedText>
+                                        <ThemedText type="subtitle">{event.type}</ThemedText>
+                                        <ThemedText type="default" numberOfLines={2} style={styles.description}>
+                                            {event.description}
+                                        </ThemedText>
+                                        <View style={styles.eventDetails}>
+                                            <ThemedText type="cardSubTitle">
+                                                <FontAwesome5 name="calendar-alt" size={12} color={color} /> {event.date}
+                                            </ThemedText>
+                                            <ThemedText type="cardSubTitle">
+                                                <FontAwesome5 name="map-marker-alt" size={12} color={color} /> {event.location}
+                                            </ThemedText>
+                                        </View>
+                                    </View>
+                                </View>
+                            </CardContainer>
+                        </Pressable>
+                    ))
+                ) : (
+                    <ThemedText style={styles.noResults}>No upcoming events found</ThemedText>
+                )}
             </View>
         );
     };
@@ -84,13 +305,23 @@ const EventsDirectory = () => {
                     <View style={styles.content}>
                         <SearchBar
                             value={search}
-                            onChangeText={setSearch}
+                            onChangeText={handleSearch}
                             onSearch={handleSearch}
-                            placeholder="Search Events"
+                            placeholder="Search events by name, location..."
                         />
                         {renderDateSelector()}
-                        {renderNearbyEvents()}
-                        {renderUpcomingEvents()}
+                        {filteredEvents.length === 0 ? (
+                            <View style={styles.noResultsContainer}>
+                                <ThemedText style={styles.noResultsText}>
+                                    No events found matching "{search}"
+                                </ThemedText>
+                            </View>
+                        ) : (
+                            <>
+                                {renderNearbyEvents()}
+                                {renderUpcomingEvents()}
+                            </>
+                        )}
                     </View>
                 </ScrollView>
             </SafeAreaView>
@@ -116,22 +347,31 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 16,
+        paddingHorizontal: 16,
     },
-    navigationButtons: {
-        flexDirection: 'row',
-        gap: 20,
+    monthText: {
+        fontSize: 18,
+        fontWeight: '600',
+    },
+    navButton: {
+        padding: 8,
     },
     daysContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 16,
+        paddingHorizontal: 16,
     },
     dayColumn: {
         alignItems: 'center',
+        marginRight: 24,
     },
     dayText: {
-        fontSize: 12,
+        fontSize: 13,
         marginBottom: 8,
+        opacity: 0.8,
+    },
+    selectedDayText: {
+        color: '#0A2342',
+        opacity: 1,
+        fontWeight: '600',
     },
     dateCircle: {
         width: 36,
@@ -143,11 +383,19 @@ const styles = StyleSheet.create({
     selectedDate: {
         backgroundColor: '#0A2342',
     },
+    todayDate: {
+        borderWidth: 1,
+        borderColor: '#0A2342',
+    },
     dateText: {
-        fontSize: 14,
+        fontSize: 15,
+        fontWeight: '600',
     },
     selectedDateText: {
         color: '#fff',
+    },
+    todayDateText: {
+        color: '#0A2342',
     },
     eventsSection: {
         marginBottom: 24,
@@ -157,30 +405,69 @@ const styles = StyleSheet.create({
     },
     eventCard: {
         width: width * 0.7,
-        height: 180,
+        height: 250,
         marginRight: 16,
+        overflow: 'hidden',
     },
-    eventImagePlaceholder: {
+    eventImage: {
+        width: '100%',
+        height: '60%',
+        resizeMode: 'cover',
+    },
+    eventInfo: {
+        padding: 12,
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+    },
+    location: {
+        marginTop: 4,
     },
     upcomingEventCard: {
         width: '100%',
-        height: 200,
+        height: 300,
+        marginBottom: 16,
+        overflow: 'hidden',
+    },
+    upcomingEventImage: {
+        width: '100%',
+        height: '50%',
+        resizeMode: 'cover',
     },
     upcomingEventContent: {
         flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 20,
-        gap: 20,
+        padding: 16,
     },
     eventTextContent: {
         flex: 1,
     },
+    description: {
+        marginTop: 8,
+        marginBottom: 8,
+    },
+    eventDetails: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 8,
+    },
+    noResults: {
+        textAlign: 'center',
+        marginTop: 8,
+        opacity: 0.6,
+    },
+    noResultsContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 32,
+    },
+    noResultsText: {
+        fontSize: 16,
+        opacity: 0.6,
+        textAlign: 'center',
+    },
 });
 
 export default EventsDirectory;
+
+
 
 

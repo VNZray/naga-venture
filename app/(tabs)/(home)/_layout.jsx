@@ -19,7 +19,7 @@ const HomeLayout = () => {
           headerShown: true,
           animation: 'slide_from_right',
           headerTitleAlign: 'center',
-          headerTitle: 'Event Directory',
+          headerTitle: 'Events',
           headerBackTitle: 'Back',
         }}
       />

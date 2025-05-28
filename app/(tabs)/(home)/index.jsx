@@ -117,7 +117,7 @@ const HomeScreen = () => {
                 direction="column"
                 Title="Events"
                 Icon="calendar"
-                onPress={() => router.push("/(tabs)/(home)/EventDirectory")}
+                onPress={() => router.push("/(tabs)/(home)/(events)")}
               ></PressableButton>
             </CardContainer>
           </View>
