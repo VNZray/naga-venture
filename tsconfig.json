@@ -18,5 +18,5 @@
     "app/(screens)/_layout.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "app/(tabs)/(home)/(shops)/(details)/[shopId].jsx"  ]
 }

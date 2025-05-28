@@ -3,7 +3,9 @@ import { useFonts } from "expo-font";
 import { Link, useLocalSearchParams, useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
+import { Dimensions, Image, Platform, ScrollView, StyleSheet, View } from "react-native";
+
+const { width, height } = Dimensions.get("window");
 
 import TabSwitcher from "@/components/TabSwitcherComponent";
 import { ThemedText } from "@/components/ThemedText";
@@ -46,6 +48,14 @@ const AccommodationProfile = () => {
     return <View style={{ flex: 1, backgroundColor: "#fff" }} />;
   }
 
+  const statusBar = () => {
+    if (Platform.OS === "ios") {
+      return <StatusBar style="light" translucent backgroundColor="transparent" />;
+    } else {
+      return <></>;
+    }
+  };
+
   if (!accommodation) {
     return (
       <View style={styles.notFoundContainer}>
@@ -61,8 +71,8 @@ const AccommodationProfile = () => {
   }
 
   return (
-    <ScrollView style={{ overflow: "visible" }}>
-      <StatusBar style="light" translucent backgroundColor="transparent" />
+    <ScrollView style={{ overflow: "visible" }} nestedScrollEnabled={true}>
+      {statusBar()}
       <Image
         source={{ uri: accommodation.imageUri }}
         style={styles.image}
@@ -116,8 +126,8 @@ const AccommodationProfile = () => {
 
 const styles = StyleSheet.create({
   image: {
-    width: "100%",
-    height: 360,
+    width: width * 1,
+    height: height * 0.40
   },
   content: {
     padding: 16,
