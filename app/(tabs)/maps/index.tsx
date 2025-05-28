@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -10,7 +9,6 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { router } from 'expo-router';
 
 const Maps = () => {
-  const navigation = useNavigation();
   const colorScheme = useColorScheme();
   const color = colorScheme === 'dark' ? '#fff' : '#000';
 
