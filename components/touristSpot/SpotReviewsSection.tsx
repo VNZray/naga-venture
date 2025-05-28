@@ -67,7 +67,7 @@ export default function SpotReviewsSection({ spotId, rating, ratingCount, render
       <View style={styles.ratingSummary}>
         <View style={styles.overallRating}>
           <ThemedText type="title" style={styles.overallRatingValue}>
-            {rating ? rating.toFixed(1) : "No"}
+            {rating ? rating.toFixed(1) : "No Ratings"}
           </ThemedText>
           <View>{renderStars(rating)}</View>
           <ThemedText type="default2" style={styles.ratingCount}>
@@ -78,7 +78,7 @@ export default function SpotReviewsSection({ spotId, rating, ratingCount, render
       </View>
       {spotReviews.length > 0 ? (
         <View style={styles.reviewsList}>
-          {spotReviews.map((review) => (
+          {spotReviews.map((review) => (  
             <ReviewCard
               key={review.id}
               reviewerName={review.reviewerName}
