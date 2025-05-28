@@ -3,6 +3,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import {
+    Dimensions,
     Image,
     StyleSheet,
     useColorScheme as useRNColorScheme,
@@ -45,8 +46,8 @@ const CardView: React.FC<CardViewProps> = ({
             style={[
                 styles.card,
                 {
-                    width,
-                    height,
+                    width: (width ?? Dimensions.get('window').width) * 1,
+                    height: (height ?? Dimensions.get('window').height) * 0.90,
                     borderRadius: radius,
                     elevation,
                 } as ViewStyle,
@@ -77,7 +78,7 @@ const CardView: React.FC<CardViewProps> = ({
                 </ThemedText>
                 <ThemedText type='cardBoldSubTitle' style={styles.price}>{price}</ThemedText>
             </View>
-        </ThemedView>
+        </ThemedView >
     );
 };
 

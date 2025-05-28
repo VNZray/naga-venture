@@ -29,6 +29,8 @@ type Accommodation = {
   imageUri: string;
   description: string;
   ratings: number;
+  latitude: number;
+  longitude: number;
   rooms: Room[];
 };
 

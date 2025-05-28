@@ -5,14 +5,24 @@ import { useFonts } from "expo-font";
 import { Link, useLocalSearchParams, useNavigation } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  Platform,
+  StyleSheet,
+  View
+} from "react-native";
 
+import BookingFormPopup from "@/components/BookingFormPopUp";
 import PressableButton from "@/components/PressableButton";
 import TabSwitcher from "@/components/TabSwitcherComponent";
 import { useAccommodation } from "@/context/AccommodationContext";
 import Details from "./details";
 import Photos from "./photos";
 import Ratings from "./ratings";
+
+const { width, height } = Dimensions.get("window");
 
 const RoomProfile = () => {
   const { id } = useLocalSearchParams();
@@ -21,6 +31,7 @@ const RoomProfile = () => {
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";
   const activeBackground = "#0A1B47";
+  const [isBookingFormVisible, setBookingFormVisible] = useState(false);
 
   const [fontsLoaded] = useFonts({
     "Poppins-Black": require("@/assets/fonts/Poppins/Poppins-Black.ttf"),
@@ -31,7 +42,6 @@ const RoomProfile = () => {
   });
 
   const { filteredAccommodations } = useAccommodation();
-
   const roomId = parseInt(id?.toString() ?? "", 10);
 
   let foundRoom = null;
@@ -72,68 +82,93 @@ const RoomProfile = () => {
     );
   }
 
+  const statusBar = Platform.OS === "ios"
+    ? <StatusBar style="light" translucent backgroundColor="transparent" />
+    : null;
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "details":
+        return <Details roomId={roomId} />;
+      case "photos":
+        return <Photos roomId={roomId} />;
+      case "ratings":
+        return <Ratings roomId={Array.isArray(id) ? id[0] : id} />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <View style={{ height: "100%" }}>
-      <ScrollView style={{ marginBottom: 40 }}>
-        <StatusBar style="light" translucent backgroundColor="transparent" />
-        <View style={{ position: "relative" }}>
-          <Image
-            source={{ uri: foundRoom.roomImage }}
-            style={styles.image}
-            resizeMode="cover"
-          />
-        </View>
+    <View style={{ flex: 1 }}>
+      <FlatList
+        data={[]}
+        keyExtractor={() => "header"}
+        renderItem={() => null}
+        ListHeaderComponent={
+          <>
+            {statusBar}
+            <Image
+              source={{ uri: foundRoom.roomImage }}
+              style={styles.image}
+              resizeMode="cover"
+            />
 
-        <View style={{ padding: 16 }}>
-          <View style={styles.header}>
-            <View>
-              <ThemedText type="profileTitle">Room {foundRoom.roomNumber}</ThemedText>
-              <ThemedText type="default2">
-                <MaterialCommunityIcons name="star" size={16} color="#FFB007" />{" "}
-                {foundRoom.ratings}
-              </ThemedText>
+            <View style={{ padding: 16 }}>
+              <View style={styles.header}>
+                <View>
+                  <ThemedText type="profileTitle">
+                    Room {foundRoom.roomNumber}
+                  </ThemedText>
+                  <ThemedText type="default2">
+                    <MaterialCommunityIcons name="star" size={16} color="#FFB007" />{" "}
+                    {foundRoom.ratings}
+                  </ThemedText>
+                </View>
+                <View>
+                  <ThemedText type="default">
+                    ₱ {foundRoom.roomPrice.toFixed(2)}
+                  </ThemedText>
+                  <ThemedText type="default2">Per Night</ThemedText>
+                </View>
+              </View>
+
+              <TabSwitcher
+                tabs={[
+                  { key: "details", label: "Details" },
+                  { key: "photos", label: "Photos" },
+                  { key: "ratings", label: "Ratings" },
+                ]}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                color={color}
+                active={activeBackground}
+              />
             </View>
-            <View>
-              <ThemedText type="default">₱ {foundRoom.roomPrice.toFixed(2)}</ThemedText>
-              <ThemedText type="default2">Per Night</ThemedText>
-            </View>
-          </View>
 
-          <TabSwitcher
-            tabs={[
-              { key: "details", label: "Details" },
-              { key: "photos", label: "Photos" },
-              { key: "ratings", label: "Ratings" },
-            ]}
-            activeTab={activeTab}
-            onTabChange={setActiveTab}
-            color={color}
-            active={activeBackground}
-          />
-        </View>
+            <View style={styles.tabContent}>{renderTabContent()}</View>
 
-        <View style={styles.tabContent}>
-          <View style={{ display: activeTab === "details" ? "flex" : "none" }}>
-            <Details roomId={roomId} />
-          </View>
-          <View style={{ display: activeTab === "photos" ? "flex" : "none" }}>
-            <Photos roomId={roomId} />
-          </View>
-          <View style={{ display: activeTab === "ratings" ? "flex" : "none" }}>
-            <Ratings roomId={Array.isArray(id) ? id[0] : id} />
-          </View>
-        </View>
-      </ScrollView>
+            <BookingFormPopup
+              visible={isBookingFormVisible}
+              onClose={() => setBookingFormVisible(false)}
+              roomPrice={foundRoom.roomPrice}
+            />
+          </>
+        }
+      />
 
       {activeTab !== "ratings" && (
-        <View style={styles.buttonContainer}>
+        <View style={[
+          styles.buttonContainer,
+          Platform.OS === "android" && { marginBottom: 46 },
+        ]}>
           <PressableButton
             Title="Book Now"
             type="primary"
             color="#fff"
             height={50}
             TextSize={16}
-            onPress={() => { }}
+            onPress={() => setBookingFormVisible(true)}
             style={{ flex: 1 }}
           />
         </View>
@@ -154,8 +189,8 @@ const styles = StyleSheet.create({
     marginBottom: 80,
   },
   image: {
-    width: "100%",
-    height: 360,
+    width: width,
+    height: height * 0.4,
   },
   header: {
     flexDirection: "row",

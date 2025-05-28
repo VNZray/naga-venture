@@ -6,12 +6,11 @@ import {
   Platform,
   StyleProp,
   StyleSheet,
-  Text,
-  TouchableOpacity,
   View,
   ViewStyle,
   useColorScheme as useRNColorScheme,
 } from 'react-native';
+import StarRating from 'react-native-star-rating-widget';
 import { ThemedText } from './ThemedText';
 
 const getShadowStyle = (elevation: number, isDarkMode: boolean): ViewStyle => {
@@ -78,6 +77,7 @@ type ReviewCardProps = {
   reviewerName?: string;
   reviewDate?: string;
   profileImageUri?: string;
+  rating?: number; // <- NEW
 };
 
 const ReviewCard: React.FC<ReviewCardProps> = ({
@@ -91,11 +91,10 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
   reviewerName = 'John Doe',
   reviewDate = 'May 24, 2025',
   style,
+  rating = 5, // <- NEW
 }) => {
   const theme = useColorScheme();
   const isDark = theme === 'dark';
-
-  // Use platform-specific shadow styles
   const shadowStyle =
     Platform.OS === 'ios' ? getShadowStyle(elevation, isDark) : {};
 
@@ -125,17 +124,19 @@ const ReviewCard: React.FC<ReviewCardProps> = ({
           <ThemedText style={styles.name}>{reviewerName}</ThemedText>
           <ThemedText style={styles.date}>{reviewDate}</ThemedText>
         </View>
-
         <View style={{ marginLeft: 'auto' }}>
-          <Text style={styles.ratingText}>★★★★★</Text>
+          <StarRating
+            rating={rating}
+            onChange={() => {}}
+            starSize={18}
+            color="#FFD700"
+            enableSwiping={false}
+          />
         </View>
       </View>
 
       <View style={styles.content}>
         <ThemedText style={styles.reviewText}>{reviewText}</ThemedText>
-        <TouchableOpacity>
-          <ThemedText style={styles.viewMore}>View More</ThemedText>
-        </TouchableOpacity>
       </View>
       {children}
     </ThemedView>
@@ -172,10 +173,6 @@ const styles = StyleSheet.create({
     color: '#007BFF',
     fontSize: 14,
     fontWeight: '500',
-  },
-  ratingText: {
-    fontSize: 16,
-    color: '#FFD700', // gold color
   },
 });
 

@@ -9,8 +9,6 @@ const AccommodationLayout = () => {
       <Stack
         screenOptions={{
           headerBackTitle: "Back",
-          headerShown: true,
-          headerTitle: `Accommodation $(accommodationName)`,
         }}
       >
         <Stack.Screen

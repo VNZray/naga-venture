@@ -1,15 +1,16 @@
-import { accommodations, reviews } from '@/app/Controller/AccommodationData';
+import { accommodations, reviews as initialReviews } from '@/app/Controller/AccommodationData';
 import { users } from '@/app/Controller/User';
 import ReviewCard from '@/components/ReviewCard';
 import { ThemedText } from '@/components/ThemedText';
-import React from 'react';
-import { View } from 'react-native';
+import { useAuth } from '@/context/AuthContext';
+import React, { useState } from 'react';
+import { Button, StyleSheet, TextInput, View } from 'react-native';
+import StarRating from 'react-native-star-rating-widget';
 
-// Define User type if not imported from elsewhere
 type User = {
   id: number;
   name: string;
-  // Add other fields as needed
+  email: string;
 };
 
 interface RatingsProps {
@@ -17,17 +18,65 @@ interface RatingsProps {
 }
 
 const Ratings: React.FC<RatingsProps> = ({ accommodationId }) => {
-  const filteredReviews = reviews.filter(
-    (review) => review.accommodationId === Number(accommodationId)
+  const accId = Number(accommodationId);
+  const { user } = useAuth();
+
+  const [reviews, setReviews] = useState(
+    initialReviews.filter((review) => review.accommodationId === accId)
   );
+  const [newReview, setNewReview] = useState('');
+  const [rating, setRating] = useState(5);
+
+  const handleAddReview = () => {
+    if (!user || newReview.trim() === '') return;
+
+    const newReviewObj = {
+      id: reviews.length + 5,
+      userId: user.id,
+      accommodationId: accId,
+      roomId: null,
+      rating: rating,
+      date: new Date().toISOString().split('T')[0],
+      message: newReview.trim(),
+    };
+
+    setReviews([newReviewObj, ...reviews]);
+    setNewReview('');
+    setRating(5); // Reset to default
+  };
 
   return (
     <View style={{ padding: 16, paddingTop: 0 }}>
-      {filteredReviews.length > 0 ? (
-        filteredReviews.map((review) => {
-            const user: User | undefined = users.find((u: User) => u.id === review.userId);
+      {user ? (
+        <>
+          <ThemedText style={styles.label}>Leave a review:</ThemedText>
+          <StarRating
+            rating={rating}
+            onChange={setRating}
+            starSize={28}
+            color="#FFD700"
+            style={{
+              marginBottom: 16,
+            }}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Write a review..."
+            value={newReview}
+            onChangeText={setNewReview}
+            multiline
+          />
+          <Button title="Submit Review" onPress={handleAddReview} />
+        </>
+      ) : (
+        <ThemedText>Please log in to leave a review.</ThemedText>
+      )}
 
-          const reviewerName = user?.name || 'Unknown User';
+      {reviews.length > 0 ? (
+        reviews.map((review) => {
+          const reviewer = users.find((u) => u.id === review.userId);
+          const reviewerName = reviewer?.name || 'Unknown User';
+
           const profileImageUri =
             review.userId === 1
               ? 'https://randomuser.me/api/portraits/women/1.jpg'
@@ -38,7 +87,7 @@ const Ratings: React.FC<RatingsProps> = ({ accommodationId }) => {
             'https://media-cdn.tripadvisor.com/media/photo-p/2e/4f/53/15/uma-hotel-residences.jpg';
 
           return (
-            <View key={review.id} style={{ marginBottom: 16 }}>
+            <View key={review.id} style={{ marginTop: 16 }}>
               <ReviewCard
                 reviewerName={reviewerName}
                 reviewDate={review.date}
@@ -46,6 +95,7 @@ const Ratings: React.FC<RatingsProps> = ({ accommodationId }) => {
                 imageUri={imageUri}
                 profileImageUri={profileImageUri}
                 elevation={3}
+                rating={review.rating}
               />
             </View>
           );
@@ -56,5 +106,20 @@ const Ratings: React.FC<RatingsProps> = ({ accommodationId }) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 12,
+    minHeight: 60,
+    textAlignVertical: 'top',
+  },
+  label: {
+    marginBottom: 4,
+  },
+});
 
 export default Ratings;
