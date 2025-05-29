@@ -1,27 +1,21 @@
 // Shop-specific Featured Carousel Component
+import type { FeaturedShop } from '@/types/shop';
 import React from 'react';
 import {
-    Dimensions,
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 
 const width = Dimensions.get('window').width;
 
 interface ShopFeaturedCarouselProps {
-  data: {
-    id: number;
-    name: string;
-    image: string;
-    category?: string;
-    rating?: number;
-    [key: string]: any;
-  }[];
-  onItemPress: (id: number) => void;
+  data: FeaturedShop[];
+  onItemPress: (id: string) => void;
   height?: number;
 }
 

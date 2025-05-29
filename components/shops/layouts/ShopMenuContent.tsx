@@ -1,5 +1,6 @@
 // Shop-specific Menu Content Component
 import { useColorScheme } from '@/hooks/useColorScheme';
+import type { ShopData } from '@/types/shop';
 import React from 'react';
 import {
     StyleSheet,
@@ -7,18 +8,8 @@ import {
     View,
 } from 'react-native';
 
-interface MenuItem {
-  item: string;
-  price: string;
-}
-
-interface Shop {
-  menu?: MenuItem[];
-  [key: string]: any;
-}
-
 interface ShopMenuContentProps {
-  shop: Shop;
+  shop: ShopData;
 }
 
 /**

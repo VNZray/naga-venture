@@ -30,7 +30,7 @@ const HomeLayout = () => {
         }}
       />
       <Stack.Screen
-        name="(shops)/index"
+        name="(shops)"
         options={{
           headerShown: false,
           animation: "slide_from_right",
@@ -47,21 +47,6 @@ const HomeLayout = () => {
           headerTitleAlign: "center",
           headerTitle: "Tourist Spots",
           headerBackTitle: "Back",
-        }}
-      />
-      <Stack.Screen
-        name="(touristSpots)/(categories)/[category]"
-        options={{
-          headerTitle: "Category",
-          animation: "slide_from_right",
-          headerTitleAlign: "center",
-        }}
-      />
-      <Stack.Screen
-        name="(touristSpots)/(spots)/[spotId]"
-        options={{
-          headerShown: false,
-          animation: "slide_from_right",
         }}
       />
     </Stack>

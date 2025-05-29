@@ -1,31 +1,19 @@
 // Shop-specific Item List Component
 import { useColorScheme } from '@/hooks/useColorScheme';
+import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
-interface Shop {
-  id: number;
-  name: string;
-  image: string;
-  category?: string;
-  rating?: number;
-  reviewCount?: number;
-  distance?: string;
-  price?: string;
-  isOpen?: boolean;
-  [key: string]: any;
-}
-
 interface ShopItemListProps {
-  shops: Shop[];
-  onShopPress: (id: number) => void;
+  shops: ShopData[];
+  onShopPress: (id: string) => void;
   title?: string;
   showRating?: boolean;
   showCategory?: boolean;

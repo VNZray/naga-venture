@@ -50,7 +50,6 @@ const CardView: React.FC<CardViewProps> = ({
                     borderRadius: radius,
                     elevation,
                 } as ViewStyle,
-                style,
             ]}
         >
             <View style={styles.imageWrapper}>

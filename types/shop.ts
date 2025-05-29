@@ -27,6 +27,11 @@ export interface ShopData {
   openingHours: string;
   priceRange: string;
   menu: ShopMenuItem[];
+  // Additional optional properties for UI display
+  reviewCount?: number;
+  distance?: string;
+  price?: string;
+  isOpen?: boolean;
 }
 
 export interface ShopCategory {
@@ -47,9 +52,11 @@ export interface Shop {
   distance?: string;
   price?: string;
   isOpen?: boolean;
+  ratingCount?: number;
   [key: string]: any;
 }
 
+// Featured shop interface for carousel
 export interface FeaturedShop {
   id: string;
   name: string;

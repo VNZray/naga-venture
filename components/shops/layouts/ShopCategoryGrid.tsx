@@ -1,5 +1,6 @@
 // Shop-specific Category Item Grid Component
 import { useColorScheme } from '@/hooks/useColorScheme';
+import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
@@ -11,21 +12,9 @@ import {
     View,
 } from 'react-native';
 
-interface Shop {
-  id: string | number;
-  name: string;
-  description: string;
-  image: string;
-  location: string;
-  priceRange: string;
-  rating: number;
-  ratingCount: number;
-  [key: string]: any;
-}
-
 interface ShopCategoryGridProps {
-  shops: Shop[];
-  onShopPress: (shopId: string | number) => void;
+  shops: ShopData[];
+  onShopPress: (shopId: string) => void;
 }
 
 /**

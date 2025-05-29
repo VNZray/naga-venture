@@ -1,4 +1,7 @@
 // Shop-specific composition components exports
+export { default as CompactCategoriesGrid } from './layouts/CompactCategoriesGrid';
+export { default as HierarchicalCategoriesSection } from './layouts/HierarchicalCategoriesSection';
+export { default as HorizontalCategoriesSection } from './layouts/HorizontalCategoriesSection';
 export { default as ShopCategoriesSection } from './layouts/ShopCategoriesSection';
 export { default as ShopDirectoryLayout } from './layouts/ShopDirectoryLayout';
 export { default as ShopFeaturedCarousel } from './layouts/ShopFeaturedCarousel';
