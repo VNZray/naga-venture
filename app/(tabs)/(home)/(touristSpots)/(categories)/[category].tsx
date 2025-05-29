@@ -1,8 +1,8 @@
-// app/(tabs)/(home)/(touristSpots)/(categories)/[category].jsx
+// app/(tabs)/(home)/(touristSpots)/(categories)/[category].tsx
 import EmptyState from "@/components/EmptyState";
 import { ThemedView } from "@/components/ThemedView";
-import SearchBar from "@/components/TouristSearchBar";
-import TouristSpotCard from "@/components/TouristSpotCard";
+import SearchBar from "@/components/touristSpot/TouristSearchBar";
+import TouristSpotCard from "@/components/touristSpot/TouristSpotCard";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useLayoutEffect, useMemo, useState } from "react";
@@ -11,16 +11,18 @@ import {
   StatusBar,
   StyleSheet
 } from "react-native";
-import { touristSpotsData } from "../data";
+import { TouristSpot, touristSpotsData } from "../data";
 
-const CategoryPage = () => {
-  const { category: categoryId } = useLocalSearchParams();
+type CategoryId = "historical" | "natural" | "urban" | "museums" | "resorts";
+
+const CategoryPage: React.FC = () => {
+  const { category: categoryId } = useLocalSearchParams<{ category: string }>();
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Define category title based on categoryId
-  const getCategoryTitle = (id) => {
+  const getCategoryTitle = (id: string): string => {
     switch (id) {
       case "historical":
         return "Historical Places";
@@ -46,7 +48,7 @@ const CategoryPage = () => {
   // Filter tourist spots based on the categoryId
   const allCategorySpots = useMemo(() => {
     return Object.values(touristSpotsData).filter(
-      (spot) => spot.category === categoryId
+      (spot: TouristSpot) => spot.category === categoryId
     );
   }, [categoryId]);
 
@@ -54,12 +56,12 @@ const CategoryPage = () => {
     if (!searchQuery.trim()) return allCategorySpots;
 
     const query = searchQuery.toLowerCase().trim();
-    return allCategorySpots.filter((spot) =>
+    return allCategorySpots.filter((spot: TouristSpot) =>
       spot.name.toLowerCase().includes(query)
     );
   }, [searchQuery, allCategorySpots]);
 
-  const handleSpotClick = (spotId) => {
+  const handleSpotClick = (spotId: string): void => {
     router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${spotId}`);
   };
 
@@ -72,7 +74,7 @@ const CategoryPage = () => {
       <SearchBar
         value={searchQuery}
         onChangeText={setSearchQuery}
-        placeholder={`Searcha ${getCategoryTitle(categoryId).toLowerCase()}...`}
+        placeholder={`Search ${getCategoryTitle(categoryId).toLowerCase()}...`}
       />
 
       {/* Content */}

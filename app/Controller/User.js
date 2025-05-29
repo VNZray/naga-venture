@@ -1,8 +1,8 @@
 export const users = [
   {
     id: 1,
-    name: "Jane Smith",
-    email: "jane@example.com",
+    name: "Lewis Wayne Sanao",
+    email: "wayne@gmail.com",
     password: "123456",
     token: "token1"
   },
@@ -19,5 +19,12 @@ export const users = [
     email: " ",
     password: " ",
     token: "token3"
+  },
+    {
+    id: 4,
+    name: "Hans Candor",
+    email: "hans@gmail.com",
+    password: "1234",
+    token: "token4"
   },
 ];

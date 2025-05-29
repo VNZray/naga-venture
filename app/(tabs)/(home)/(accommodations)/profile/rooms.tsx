@@ -3,13 +3,13 @@ import RoomCard from "@/components/RoomCard";
 import { ThemedText } from "@/components/ThemedText";
 import { useAccommodation } from "@/context/AccommodationContext";
 import { Link } from "expo-router";
-import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
-
-const screenWidth = Dimensions.get("window").width;
+import { Dimensions, StyleSheet, View } from "react-native";
 
 type RoomsProps = {
   accommodationId: number | string;
 };
+
+const screenWidth = Dimensions.get("window").width;
 
 const Rooms = ({ accommodationId }: RoomsProps) => {
   const { filteredAccommodations } = useAccommodation();
@@ -26,7 +26,6 @@ const Rooms = ({ accommodationId }: RoomsProps) => {
     );
   }
 
-  // Filter rooms for this accommodation from the global rooms array
   const rooms = allRooms.filter(
     (room) => room.accommodationId === accommodation.id
   );
@@ -42,7 +41,7 @@ const Rooms = ({ accommodationId }: RoomsProps) => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <View style={styles.grid}>
         {rooms.map((room) => (
           <Link href={`/room/${room.id}`} key={room.id}>
@@ -52,15 +51,15 @@ const Rooms = ({ accommodationId }: RoomsProps) => {
               status={room.status}
               capacity={room.capacity}
               roomPrice={room.roomPrice}
+              ratings={room.ratings}
               elevation={3}
               background="#fff"
               imageUri={room.roomImage}
-              style={styles.card}
             />
           </Link>
         ))}
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
@@ -69,20 +68,14 @@ const styles = StyleSheet.create({
     overflow: "visible",
   },
   grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    display: "flex",
+    flexDirection: "column",
     paddingTop: 0,
+    padding: 16,
     gap: 16,
-    padding: 16
   },
   card: {
-    width: 195,
-    marginBottom: 16,
-    overflow: "visible",
-  },
-  info: {
-    padding: 10,
-    borderRadius: 16,
+    flex: 1,
   },
   emptyState: {
     padding: 20,

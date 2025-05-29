@@ -127,7 +127,6 @@ const HomeScreen = () => {
               padding: 16,
             }}
           >
-
           </View>
         </ScrollView>
       </SafeAreaView>

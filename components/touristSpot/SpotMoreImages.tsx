@@ -1,7 +1,12 @@
 import { ThemedText } from "@/components/ThemedText";
 import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
-export default function SpotMoreImages({ images, onSeeAll }) {
+interface SpotMoreImagesProps {
+  images: string[];
+  onSeeAll: () => void;
+}
+
+export default function SpotMoreImages({ images, onSeeAll }: SpotMoreImagesProps) {
   if (!images || images.length === 0) return null;
   const showSeeAll = images.length > 3;
   return (

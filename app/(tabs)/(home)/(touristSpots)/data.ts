@@ -1,7 +1,46 @@
-// app/(tabs)/(home)/(touristSpots)/data.js
+// app/(tabs)/(home)/(touristSpots)/data.ts
 import { calculateSpotRatings } from './reviewsData';
 
-export const touristSpotsData = {
+interface MapLocation {
+  latitude: number;
+  longitude: number;
+}
+
+export interface TouristSpot {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  image: string;
+  additionalImages: string[];
+  location: string;
+  mapLocation: MapLocation;
+  contact: string;
+  openingHours: string;
+  admissionFee: string;
+}
+
+interface TouristSpotWithRatings extends TouristSpot {
+  rating: number;
+  ratingCount: number;
+  ratingDistribution: {
+    [key: number]: number;
+  };
+}
+
+interface Category {
+  id: string;
+  name: string;
+  icon: string;
+}
+
+interface Destination {
+  id: string;
+  name: string;
+  image: string;
+}
+
+export const touristSpotsData: { [key: string]: TouristSpot } = {
   1: {
     id: "1",
     name: "Naga Metropolitan Cathedral",
@@ -92,10 +131,9 @@ export const touristSpotsData = {
     openingHours: "7:00 AM - 9:00 PM",
     admissionFee: "₱150",
   },
-  // Add more data here as needed
 };
 
-export const categories = [
+export const categories: Category[] = [
   { id: "historical", name: "Historical", icon: "university" },
   { id: "natural", name: "Natural", icon: "tree" },
   { id: "urban", name: "Urban", icon: "building" },
@@ -103,14 +141,14 @@ export const categories = [
   { id: "resorts", name: "Resorts", icon: "umbrella-beach" },
 ];
 
-export const featuredLocations = [
+export const featuredLocations: TouristSpot[] = [
   touristSpotsData["1"],
   touristSpotsData["2"],
   touristSpotsData["3"],
 ];
 
-export const destinations = Object.values(touristSpotsData)
-  .slice(0, )
+export const destinations: Destination[] = Object.values(touristSpotsData)
+  .slice(0)
   .map((spot) => ({
     id: spot.id,
     name: spot.name,
@@ -118,7 +156,7 @@ export const destinations = Object.values(touristSpotsData)
   }));
 
 // Add getter functions to calculate ratings dynamically
-export const getSpotWithRatings = (spotId) => {
+export const getSpotWithRatings = (spotId: string): TouristSpotWithRatings | null => {
   const spot = touristSpotsData[spotId];
   if (!spot) return null;
   

@@ -56,7 +56,7 @@ export const reviewsData = [
 ];
 
 // Helper function to calculate ratings for a spot
-export const calculateSpotRatings = (spotId) => {
+export const calculateSpotRatings = (spotId: string) => {
   const spotReviews = reviewsData.filter(review => review.spotId === spotId);
   const ratingCount = spotReviews.length;
   
@@ -85,9 +85,8 @@ export const calculateSpotRatings = (spotId) => {
     2: 0,
     1: 0
   };
-
   spotReviews.forEach(review => {
-    ratingDistribution[review.rating]++;
+    ratingDistribution[review.rating as keyof typeof ratingDistribution]++;
   });
 
   return {

@@ -2,7 +2,13 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { StyleSheet, TextInput, View } from "react-native";
 
-const TSearchBar = ({ value, onChangeText, placeholder }) => {
+interface TSearchBarProps {
+  value: string;
+  onChangeText: (text: string) => void;
+  placeholder?: string;
+}
+
+const TSearchBar: React.FC<TSearchBarProps> = ({ value, onChangeText, placeholder }) => {
   const colorScheme = useColorScheme();
   const textColor = Colors[colorScheme].text;
 
