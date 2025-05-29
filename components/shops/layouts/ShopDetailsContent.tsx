@@ -1,5 +1,6 @@
 // Shop-specific Details Content Component
 import { useColorScheme } from '@/hooks/useColorScheme';
+import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
@@ -12,22 +13,8 @@ import {
     View,
 } from 'react-native';
 
-interface Shop {
-  description?: string;
-  contact?: string;
-  openingHours?: string;
-  priceRange?: string;
-  additionalImages?: string[];
-  mapLocation?: {
-    latitude: number;
-    longitude: number;
-  };
-  location?: string;
-  [key: string]: any;
-}
-
 interface ShopDetailsContentProps {
-  shop: Shop;
+  shop: ShopData;
 }
 
 /**

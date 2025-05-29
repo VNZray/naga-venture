@@ -1,5 +1,6 @@
 // Shop-specific Reviews Content Component
 import { useColorScheme } from '@/hooks/useColorScheme';
+import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
@@ -8,15 +9,8 @@ import {
     View,
 } from 'react-native';
 
-interface Shop {
-  rating?: number;
-  ratingCount?: number;
-  reviews?: any[];
-  [key: string]: any;
-}
-
 interface ShopReviewsContentProps {
-  shop: Shop;
+  shop: ShopData;
 }
 
 /**

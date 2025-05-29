@@ -2,24 +2,17 @@
 import CardContainer from '@/components/CardContainer';
 import PressableButton from '@/components/PressableButton';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import type { ShopCategory } from '@/types/shop';
 import React from 'react';
 import {
-    StyleSheet,
-    Text,
-    View,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
-
-interface ShopCategory {
-  id: number;
-  name: string;
-  icon: string;
-  shopCount?: number;
-  [key: string]: any;
-}
 
 interface ShopCategoriesSectionProps {
   categories: ShopCategory[];
-  onCategoryPress: (categoryId: number) => void;
+  onCategoryPress: (categoryId: string) => void;
   title?: string;
 }
 

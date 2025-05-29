@@ -1,17 +1,24 @@
 // app/(tabs)/(home)/(shops)/index.jsx - Refactored using composition
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
+
+// Import types
+import { useColorScheme } from "@/hooks/useColorScheme";
+import type { ShopData } from "@/types/shop";
 
 // Import our shop-specific composable components
 import {
-  ShopCategoriesSection,
+  HorizontalCategoriesSection,
   ShopDirectoryLayout,
   ShopFeaturedCarousel,
   ShopItemList
 } from "@/components/shops";
 
 // Import data
-import { categories, destinations, featuredShops } from "../../../Controller/ShopData";
+import { getPopularCategories } from "@/utils/shopUtils";
+import { destinations, featuredShops, mainCategories } from "../../../Controller/ShopData";
 
 /**
  * ShopsDirectory - Refactored using shop-specific composition patterns
@@ -29,26 +36,23 @@ import { categories, destinations, featuredShops } from "../../../Controller/Sho
  */
 const ShopsDirectory = () => {
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Navigation handlers
-  interface CategoryPressHandler {
-    (categoryId: string | number): void;
-  }
-
-  const handleCategoryPress: CategoryPressHandler = (categoryId) => {
+  const colorScheme = useColorScheme();
+  
+  // Get popular categories for horizontal display
+  const popularCategories = useMemo(() => getPopularCategories(mainCategories, 12), []);
+    // Navigation handlers
+  const handleCategoryPress = (categoryId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(categories)/${categoryId}`);
   };
-
-  interface ShopPressHandler {
-    (shopId: string | number): void;
-  }
-
-  const handleShopPress: ShopPressHandler = (shopId) => {
-    router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
+  const handleViewAllCategories = () => {
+    router.push("/(tabs)/(home)/(shops)/all-categories");
   };
 
+  const handleShopPress = (shopId: string) => {
+    router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
+  };
   // Filter destinations based on search
-  const filteredDestinations = useMemo(() => {
+  const filteredDestinations: ShopData[] = useMemo(() => {
     if (!searchQuery.trim()) return destinations;
     
     const query = searchQuery.toLowerCase().trim();
@@ -60,10 +64,7 @@ const ShopsDirectory = () => {
   // Prepare featured carousel content
   const featuredContent = (
     <ShopFeaturedCarousel
-      data={featuredShops.map(shop => ({
-        ...shop,
-        id: typeof shop.id === "string" ? parseInt(shop.id, 10) : shop.id
-      }))}
+      data={featuredShops}
       onItemPress={handleShopPress}
       height={200}
     />
@@ -76,28 +77,48 @@ const ShopsDirectory = () => {
       onSearchChange={setSearchQuery}
       showFeaturedSection={true}
       featuredTitle="Featured Shops"
-      featuredContent={featuredContent}
-    >
+      featuredContent={featuredContent}    >
       {/* Main Content - Uses composition via children prop */}
-      
       {/* Categories Section - Only show when not searching */}
       {!searchQuery.trim() && (
-        <ShopCategoriesSection
-          categories={categories.map(cat => ({
-            ...cat,
-            id: typeof cat.id === "string" ? parseInt(cat.id, 10) : cat.id
-          }))}
-          onCategoryPress={handleCategoryPress}
-          title="Shop Categories"
-        />
+        <>
+          <HorizontalCategoriesSection
+            categories={popularCategories}
+            onCategoryPress={handleCategoryPress}
+            title="Popular Categories"
+          />
+          
+          {/* View All Categories Button */}
+          <TouchableOpacity 
+            style={[styles.viewAllButton, { 
+              backgroundColor: colorScheme === "dark" ? "#2a2a2a" : "#f8f9fa",
+              borderColor: colorScheme === "dark" ? "#404040" : "#e9ecef",
+            }]}
+            onPress={handleViewAllCategories}
+            activeOpacity={0.7}
+          >
+            <Ionicons 
+              name="grid-outline" 
+              size={20} 
+              color={colorScheme === "dark" ? "#60a5fa" : "#3b82f6"} 
+            />
+            <Text style={[styles.viewAllText, { 
+              color: colorScheme === "dark" ? "#ffffff" : "#000000" 
+            }]}>
+              View All Categories
+            </Text>
+            <Ionicons 
+              name="chevron-forward" 
+              size={18} 
+              color={colorScheme === "dark" ? "#60a5fa" : "#3b82f6"} 
+            />
+          </TouchableOpacity>
+        </>
       )}
 
       {/* Shops List - Show filtered results when searching, all shops otherwise */}
       <ShopItemList
-        shops={filteredDestinations.map(shop => ({
-          ...shop,
-          id: typeof shop.id === "string" ? parseInt(shop.id, 10) : shop.id
-        }))}
+        shops={filteredDestinations}
         onShopPress={handleShopPress}
         title={searchQuery.trim() ? "Search Results" : "All Shops"}
         showRating={true}
@@ -116,3 +137,29 @@ const ShopsDirectory = () => {
 };
 
 export default ShopsDirectory;
+
+const styles = StyleSheet.create({
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 20,
+    marginBottom: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  viewAllText: {
+    fontSize: 16,
+    fontFamily: "Poppins-Medium",
+    marginHorizontal: 8,
+  },
+});

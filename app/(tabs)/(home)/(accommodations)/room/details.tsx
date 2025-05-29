@@ -12,6 +12,9 @@ interface DetailsProps {
 
 const Details = ({ roomId }: DetailsProps) => {
 
+  const colorScheme = useColorScheme();
+  const color = colorScheme === "dark" ? "#fff" : "#000";
+
     const room = rooms.find(
       (acc) => acc.id.toString() === roomId.toString()
     );
@@ -21,14 +24,11 @@ const Details = ({ roomId }: DetailsProps) => {
         <View>
           <ThemedText>Room not found.</ThemedText>
           <Link href={"/(home)/"}>
-            <ThemedText type="link">Go Home</ThemedText>
+        <ThemedText type="link">Go Home</ThemedText>
           </Link>
         </View>
       );
     }
-
-  const colorScheme = useColorScheme();
-  const color = colorScheme === "dark" ? "#fff" : "#000";
 
   return (
     <View>

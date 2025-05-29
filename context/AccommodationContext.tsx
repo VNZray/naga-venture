@@ -61,7 +61,7 @@ export const AccommodationProvider = ({ children }: ProviderProps) => {
 
   useEffect(() => {
     setFilteredAccommodations(combinedAccommodations);
-  }, []);
+  }, [combinedAccommodations]);
 
   const handleSearch = (query: string) => {
     setLoading(true);
