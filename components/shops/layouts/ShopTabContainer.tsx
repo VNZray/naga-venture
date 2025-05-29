@@ -24,7 +24,7 @@ interface ShopTabContainerProps {
  * - Shop-themed styling
  * - Used specifically for shop detail pages (details, reviews, photos, etc.)
  */
-export const ShopTabContainer: React.FC<ShopTabContainerProps> = ({
+const ShopTabContainer: React.FC<ShopTabContainerProps> = ({
   tabs,
   activeTab,
   onTabChange,

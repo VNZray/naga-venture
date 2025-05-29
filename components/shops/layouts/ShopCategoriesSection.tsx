@@ -1,12 +1,13 @@
 // Shop-specific Categories Section Component
-import CardContainer from '@/components/CardContainer';
-import PressableButton from '@/components/PressableButton';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import type { ShopCategory } from '@/types/shop';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
+  FlatList,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 
@@ -19,58 +20,133 @@ interface ShopCategoriesSectionProps {
 /**
  * ShopCategoriesSection - Shop-specific categories component
  * 
- * This component is tailored for shop categories and demonstrates composition by:
- * - Accepting shop category data via props
- * - Handling shop category press via callback
- * - Optimized for shop-specific display (shop count, shop icons)
- * - Using existing CardContainer and PressableButton components
+ * Improved UI with horizontal scrolling layout and compact design:
+ * - Horizontal scrolling for better space efficiency
+ * - Compact card-based design with smaller icons
+ * - Modern visual design with shadows
+ * - Better dark mode support
+ * - Icon + text layout for better readability
  */
-export const ShopCategoriesSection: React.FC<ShopCategoriesSectionProps> = ({
+const ShopCategoriesSection: React.FC<ShopCategoriesSectionProps> = ({
   categories,
   onCategoryPress,
   title = "Shop Categories",
 }) => {
   const colorScheme = useColorScheme();
-  const color = colorScheme === "dark" ? "#fff" : "#000";
+  const isDark = colorScheme === "dark";
+  
+  // Theme colors
+  const textColor = isDark ? "#ffffff" : "#1f2937";
+  const backgroundColor = isDark ? "#1f2937" : "#ffffff";
+  const cardBackgroundColor = isDark ? "#374151" : "#f9fafb";
+  const borderColor = isDark ? "#4b5563" : "#e5e7eb";
+  const iconColor = isDark ? "#60a5fa" : "#3b82f6";
+  const shadowColor = isDark ? "#000000" : "#6b7280";
+
+  const renderCategoryItem = ({ item }: { item: ShopCategory }) => (
+    <TouchableOpacity
+      style={[
+        styles.categoryCard,
+        {
+          backgroundColor: cardBackgroundColor,
+          borderColor: borderColor,
+          shadowColor: shadowColor,
+        }
+      ]}
+      onPress={() => onCategoryPress(item.id)}
+      activeOpacity={0.7}
+    >
+      <View style={[styles.iconContainer, { backgroundColor: isDark ? "#4f46e5" : "#eef2ff" }]}>
+        <Ionicons
+          name={item.icon as any}
+          size={20}
+          color={iconColor}
+        />
+      </View>
+      <Text
+        style={[styles.categoryText, { color: textColor }]}
+        numberOfLines={2}
+      >
+        {item.name}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  if (categories.length === 0) {
+    return null;
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={[styles.sectionTitle, { color }]}>
+    <View style={[styles.container, { backgroundColor }]}>
+      <Text style={[styles.sectionTitle, { color: textColor }]}>
         {title}
       </Text>
-      <CardContainer style={styles.directories} height="auto">
-        {categories.map((category) => (
-          <PressableButton
-            key={category.id}
-            IconSize={24}
-            color={color}
-            direction="column"
-            Title={category.name}
-            Icon={category.icon}
-            onPress={() => onCategoryPress(category.id)}
-          />
-        ))}
-      </CardContainer>
+      <FlatList
+        data={categories}
+        renderItem={renderCategoryItem}
+        keyExtractor={(item) => item.id}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.horizontalListContainer}
+        ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
+    paddingVertical: 16,
+    marginBottom: 8,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: "Poppins-SemiBold",
-    marginBottom: 15,
+    marginBottom: 16,
+    paddingHorizontal: 20,
   },
-  directories: {
-    flex: 1,
-    width: "100%",
-    padding: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
+  horizontalListContainer: {
+    paddingHorizontal: 20,
+  },
+  itemSeparator: {
+    width: 12,
+  },
+  categoryCard: {
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 70,
+    width: 85,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  iconContainer: {
+    width: 35,
+    height: 35,
+    borderRadius: 17.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 6,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  categoryText: {
+    fontSize: 10,
+    fontFamily: "Poppins-Medium",
+    textAlign: 'center',
+    lineHeight: 12,
   },
 });
 

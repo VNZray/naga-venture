@@ -5,11 +5,11 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import type { ShopCategory } from '@/types/shop';
 import React, { useState } from 'react';
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 interface MainCategory {
@@ -32,15 +32,14 @@ interface HierarchicalCategoriesSectionProps {
  * 
  * This component provides a two-level category system:
  * - Main categories (Food & Beverage, Health & Beauty, etc.)
- * - Subcategories (Restaurants, Cafes, Bars, etc.)
- * 
+ * - Subcategories (Restaurants, Cafes, Bars, etc.) * 
  * Features:
  * - Expandable main categories
  * - Click on main category to see all subcategories
  * - Click on subcategory to go to that specific category
  * - Responsive layout with proper spacing
  */
-export const HierarchicalCategoriesSection: React.FC<HierarchicalCategoriesSectionProps> = ({
+const HierarchicalCategoriesSection: React.FC<HierarchicalCategoriesSectionProps> = ({
   mainCategories,
   onCategoryPress,
   onMainCategoryPress,

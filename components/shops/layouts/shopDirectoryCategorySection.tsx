@@ -2,11 +2,11 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 interface CategoryItem {
@@ -31,7 +31,7 @@ interface HorizontalCategoriesSectionProps {
  * - Clean, modern UI with proper spacing
  * - Support for dark/light themes
  */
-export const HorizontalCategoriesSection: React.FC<HorizontalCategoriesSectionProps> = ({
+const HorizontalCategoriesSection: React.FC<HorizontalCategoriesSectionProps> = ({
   categories,
   onCategoryPress,
   title = "Shop Categories",

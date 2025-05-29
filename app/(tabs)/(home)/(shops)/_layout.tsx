@@ -11,12 +11,39 @@ const ShopDirectoryLayout = () => {
       }}
     >
       <Stack.Screen
+        name="index"
+        options={{
+          headerShown: true,
+          headerTitle: "Shop Directory",
+        }}
+      />
+      <Stack.Screen
+        name="shopViewAllCategoryPage"
+        options={{
+          headerShown: true,
+          animation: "slide_from_right",
+          headerTitleAlign: "center",
+          headerTitle: "All Categories",
+          headerBackTitle: "Back",
+        }}
+      />
+      <Stack.Screen
         name="(categories)/[category]"
         options={{
           headerShown: true,
           animation: "slide_from_right",
           headerTitleAlign: "center",
-          headerTitle: "Shop Categories",
+          headerTitle: "Category",
+          headerBackTitle: "Back",
+        }}
+      />
+      <Stack.Screen
+        name="(subcategory)/[subcategoryId]"
+        options={{
+          headerShown: true,
+          animation: "slide_from_right",
+          headerTitleAlign: "center",
+          headerTitle: "Subcategory",
           headerBackTitle: "Back",
         }}
       />
@@ -32,6 +59,6 @@ const ShopDirectoryLayout = () => {
       />
     </Stack>
   );
-}   
+};
+
 export default ShopDirectoryLayout;
-// This layout file sets up the navigation structure for the shop directory,

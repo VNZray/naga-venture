@@ -31,7 +31,7 @@ interface CompactCategoriesGridProps {
  * - Support for dark/light themes
  * - Consistent spacing and alignment
  */
-export const CompactCategoriesGrid: React.FC<CompactCategoriesGridProps> = ({
+const CompactCategoriesGrid: React.FC<CompactCategoriesGridProps> = ({
   categories,
   onCategoryPress,
   title = "Shop Categories",

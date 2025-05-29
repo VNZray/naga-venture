@@ -32,7 +32,7 @@ interface ShopItemListProps {
  * - Handling shop press via callback
  * - Optimized for shop-specific requirements
  */
-export const ShopItemList: React.FC<ShopItemListProps> = ({
+const ShopItemList: React.FC<ShopItemListProps> = ({
   shops,
   onShopPress,
   title = "Shops",

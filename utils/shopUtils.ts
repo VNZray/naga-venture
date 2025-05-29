@@ -77,6 +77,15 @@ export const getPopularCategories = (mainCategories: any[], limit: number = 8): 
   return [...popular, ...remaining].slice(0, limit);
 };
 
+// New function to get main categories for display
+export const getMainCategoriesForDisplay = (mainCategories: any[], limit: number = 8): { id: string; name: string; icon: string }[] => {
+  return mainCategories.slice(0, limit).map(mainCat => ({
+    id: mainCat.id,
+    name: mainCat.name,
+    icon: mainCat.icon
+  }));
+};
+
 // Filtering utilities following Open/Closed Principle
 export type ShopFilterCriteria = {
   category?: string;
