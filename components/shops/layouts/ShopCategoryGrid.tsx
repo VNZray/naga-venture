@@ -4,12 +4,12 @@ import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 interface ShopCategoryGridProps {
@@ -26,7 +26,7 @@ interface ShopCategoryGridProps {
  * - Responsive design
  * - Touch interactions for navigation
  */
-export const ShopCategoryGrid: React.FC<ShopCategoryGridProps> = ({
+const ShopCategoryGrid: React.FC<ShopCategoryGridProps> = ({
   shops,
   onShopPress,
 }) => {

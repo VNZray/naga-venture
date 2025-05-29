@@ -4,12 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
 import {
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { mainCategories } from '../../../Controller/ShopData';
 
@@ -25,25 +25,25 @@ import { mainCategories } from '../../../Controller/ShopData';
 const AllCategoriesPage = () => {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
-  
-  // Theme colors
+    // Theme colors
   const backgroundColor = isDark ? "#1a1a1a" : "#ffffff";
   const textColor = isDark ? "#ffffff" : "#000000";
   const headerBgColor = isDark ? "#2a2a2a" : "#f8f9fa";
   const borderColor = isDark ? "#404040" : "#e9ecef";
-
+  
   // Navigation handlers
   const handleCategoryPress = (categoryId: string) => {
-    router.push(`/(tabs)/(home)/(shops)/(categories)/${categoryId}`);
+    // Route subcategory clicks to the subcategory page
+    router.push(`/(tabs)/(home)/(shops)/(subcategory)/${categoryId}`);
   };
   const handleMainCategoryPress = (mainCategoryId: string) => {
-    router.push(`/(tabs)/(home)/(shops)/(main-categories)/${mainCategoryId}`);
+    router.push(`/(tabs)/(home)/(shops)/(categories)/${mainCategoryId}`);
   };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
+
         <View style={styles.header}>
           <Text style={[styles.pageTitle, { color: textColor }]}>
             All Categories
@@ -53,10 +53,9 @@ const AllCategoriesPage = () => {
           </Text>
         </View>
 
-        {/* Main Categories with Subcategories */}
         {mainCategories.map((mainCategory) => (
           <View key={mainCategory.id} style={styles.mainCategorySection}>
-            {/* Main Category Header */}
+
             <TouchableOpacity
               style={[styles.mainCategoryHeader, { 
                 backgroundColor: headerBgColor,
@@ -90,7 +89,6 @@ const AllCategoriesPage = () => {
               />
             </TouchableOpacity>
 
-            {/* Subcategories Grid */}
             <CompactCategoriesGrid
               categories={mainCategory.subcategories}
               onCategoryPress={handleCategoryPress}
@@ -100,7 +98,6 @@ const AllCategoriesPage = () => {
           </View>
         ))}
 
-        {/* Bottom spacing */}
         <View style={{ height: 100 }} />
       </ScrollView>
     </SafeAreaView>

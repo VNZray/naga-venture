@@ -4,13 +4,13 @@ import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-    Image,
-    Linking,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 interface ShopDetailsContentProps {
@@ -28,7 +28,7 @@ interface ShopDetailsContentProps {
  * - Additional images
  * - Map/location
  */
-export const ShopDetailsContent: React.FC<ShopDetailsContentProps> = ({
+const ShopDetailsContent: React.FC<ShopDetailsContentProps> = ({
   shop,
 }) => {
   const colorScheme = useColorScheme();

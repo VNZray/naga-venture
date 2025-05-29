@@ -1,66 +1,64 @@
-// app/(tabs)/(home)/(shops)/(main-categories)/[mainCategory].tsx - Main Category Page
+// app/(tabs)/(home)/(shops)/(subcategory)/[subcategoryId].tsx - Individual Subcategory Page
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useLayoutEffect, useMemo, useState } from 'react';
 
 // Import shop-specific composable components
 import {
-    ShopCategoriesSection,
-    ShopCategoryGrid
+  ShopCategoryGrid
 } from "@/components/shops";
 
 // Import the shop data
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 import {
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getMainCategoryById, shopsData } from "../../../../Controller/ShopData";
+import { getCategoryById, shopsData } from "../../../../Controller/ShopData";
 
 /**
- * MainCategoryPage - Shows all subcategories within a main category
+ * SubcategoryPage - Shows shops within a specific subcategory
  * 
  * This page displays:
- * 1. All subcategories within the selected main category
- * 2. All shops that belong to those subcategories
- * 3. Category navigation and filtering
+ * 1. All shops that belong to the selected subcategory
+ * 2. Search functionality within the subcategory
+ * 3. Navigation back to main category
  */
-const MainCategoryPage = () => {
-  const { mainCategory: mainCategoryId } = useLocalSearchParams();
+const SubcategoryPage = () => {
+  const { subcategoryId } = useLocalSearchParams();
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
   const colorScheme = useColorScheme();
 
-  // Ensure mainCategoryId is a string
-  const mainCategoryIdString = Array.isArray(mainCategoryId) ? mainCategoryId[0] : mainCategoryId || "";
+  // Ensure subcategoryId is a string
+  const subcategoryIdString = Array.isArray(subcategoryId) ? subcategoryId[0] : subcategoryId || "";
 
-  // Get the main category data
-  const mainCategoryData = useMemo(() => {
-    return getMainCategoryById(mainCategoryIdString);
-  }, [mainCategoryIdString]);
+  // Get the subcategory data
+  const subcategoryData = useMemo(() => {
+    return getCategoryById(subcategoryIdString);
+  }, [subcategoryIdString]);
 
   // Set navigation title
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: mainCategoryData?.name || "Category",
+      headerTitle: subcategoryData?.name || "Category",
     });
-  }, [navigation, mainCategoryData]);
+  }, [navigation, subcategoryData]);
 
-  // Get all shops that belong to subcategories of this main category
+  // Get all shops that belong to this subcategory
   const allCategoryItems = useMemo(() => {
-    if (!mainCategoryData) return [];
+    if (!subcategoryData) return [];
     
-    const subcategoryIds = mainCategoryData.subcategories.map(sub => sub.id);
     return Object.values(shopsData).filter(
-      (item) => subcategoryIds.includes(item.category)
+      (item) => item.category === subcategoryData.id
     );
-  }, [mainCategoryData]);
+  }, [subcategoryData]);
 
   // Filter shops based on search query
   const filteredItems = useMemo(() => {
@@ -75,10 +73,6 @@ const MainCategoryPage = () => {
   }, [allCategoryItems, searchQuery]);
 
   // Navigation handlers
-  const handleCategoryPress = (categoryId: string) => {
-    router.push(`/(tabs)/(home)/(shops)/(categories)/${categoryId}`);
-  };
-
   const handleShopPress = (shopId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
   };
@@ -86,12 +80,12 @@ const MainCategoryPage = () => {
   const textColor = colorScheme === "dark" ? "#fff" : "#000";
   const backgroundColor = colorScheme === "dark" ? "#0A1B47" : "#F8F8F8";
 
-  if (!mainCategoryData) {
+  if (!subcategoryData) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor }]}>
         <View style={styles.emptyContainer}>
           <Text style={[styles.emptyText, { color: textColor }]}>
-            Main category not found
+            Subcategory not found
           </Text>
         </View>
       </SafeAreaView>
@@ -109,7 +103,7 @@ const MainCategoryPage = () => {
         <View style={styles.searchInputContainer}>
           <TextInput
             style={[styles.searchInput, { color: textColor }]}
-            placeholder={`Search in ${mainCategoryData.name}...`}
+            placeholder={`Search ${subcategoryData.name.toLowerCase()}...`}
             placeholderTextColor={
               colorScheme === "dark" ? "#8E9196" : "#9F9EA1"
             }
@@ -128,14 +122,15 @@ const MainCategoryPage = () => {
       </View>
 
       <ScrollView>
-        {/* Subcategories Section - Only show when not searching */}
-        {!searchQuery.trim() && (
-          <ShopCategoriesSection
-            categories={mainCategoryData.subcategories}
-            onCategoryPress={handleCategoryPress}
-            title="Subcategories"
-          />
-        )}
+        {/* Category Info */}
+        <View style={styles.categoryInfo}>
+          <Text style={[styles.categoryTitle, { color: textColor }]}>
+            {subcategoryData.name}
+          </Text>
+          <Text style={[styles.categoryDescription, { color: textColor + '80' }]}>
+            Showing {filteredItems.length} {filteredItems.length === 1 ? 'business' : 'businesses'}
+          </Text>
+        </View>
 
         {/* Shops Grid */}
         <ShopCategoryGrid
@@ -148,9 +143,9 @@ const MainCategoryPage = () => {
           <View style={styles.emptyContainer}>
             <Ionicons name="information-circle-outline" size={40} color="gray" />
             <Text style={[styles.emptyText, { color: textColor }]}>
-              {searchQuery.trim() 
-                ? `No shops found for "${searchQuery}"`
-                : `No shops available in ${mainCategoryData.name}`
+              {searchQuery.trim()
+                ? `No businesses found matching "${searchQuery}"`
+                : `No businesses found in ${subcategoryData.name}`
               }
             </Text>
           </View>
@@ -191,6 +186,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  categoryInfo: {
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+  },
+  categoryTitle: {
+    fontSize: 24,
+    fontFamily: "Poppins-Bold",
+    marginBottom: 4,
+  },
+  categoryDescription: {
+    fontSize: 14,
+    fontFamily: "Poppins-Regular",
+  },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
@@ -203,7 +211,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     color: "gray",
+    fontFamily: "Poppins-Regular",
   },
 });
 
-export default MainCategoryPage;
+export default SubcategoryPage;

@@ -3,9 +3,9 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import type { ShopData } from '@/types/shop';
 import React from 'react';
 import {
-    StyleSheet,
-    Text,
-    View,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
 interface ShopMenuContentProps {
@@ -20,7 +20,7 @@ interface ShopMenuContentProps {
  * - Pricing information
  * - Empty state when no menu available
  */
-export const ShopMenuContent: React.FC<ShopMenuContentProps> = ({
+const ShopMenuContent: React.FC<ShopMenuContentProps> = ({
   shop,
 }) => {
   const colorScheme = useColorScheme();

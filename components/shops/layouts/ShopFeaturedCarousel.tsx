@@ -27,7 +27,7 @@ interface ShopFeaturedCarouselProps {
  * - Handling shop item press via callback
  * - Optimized for shop-specific display (category, rating)
  */
-export const ShopFeaturedCarousel: React.FC<ShopFeaturedCarouselProps> = ({
+const ShopFeaturedCarousel: React.FC<ShopFeaturedCarouselProps> = ({
   data,
   onItemPress,
   height = 200,
