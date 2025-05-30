@@ -255,3 +255,23 @@ export const getSpotWithRatings = (spotId: string): TouristSpotWithRatings | nul
     ratingDistribution: ratings.ratingDistribution
   };
 };
+
+// In-memory store for reviews
+let reviewsStore: {
+  id: string;
+  spotId: string;
+  userId: number;
+  reviewerName: string;
+  reviewText: string;
+  rating: number;
+  reviewDate: string;
+  profileImageUri: string;
+}[] = [];
+
+export const addReview = (review: typeof reviewsStore[0]) => {
+  reviewsStore.push(review);
+};
+
+export const getReviews = (spotId: string) => {
+  return reviewsStore.filter(review => review.spotId === spotId);
+};

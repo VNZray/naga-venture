@@ -6,6 +6,7 @@ export const reviewsData = [
   {
     id: 1,
     spotId: "1", // Naga Metropolitan Cathedral
+    userId: 0,
     reviewerName: "Maria Santos",
     reviewText: "A beautiful and historic cathedral that showcases the rich religious heritage of Naga City. The architecture is stunning and the atmosphere is very peaceful.",
     reviewDate: "2024-05-15",
@@ -15,6 +16,7 @@ export const reviewsData = [
   {
     id: 2,
     spotId: "1",
+    userId: 0,
     reviewerName: "Juan Dela Cruz",
     reviewText: "One of the most important religious landmarks in Bicol. The cathedral's design and history make it a must-visit destination.",
     reviewDate: "2024-05-10",
@@ -24,6 +26,7 @@ export const reviewsData = [
   {
     id: 3,
     spotId: "2", // Porta Mariae
+    userId: 0,
     reviewerName: "Ana Reyes",
     reviewText: "A beautiful landmark that serves as a gateway to Naga City. The architecture is impressive and it's a great spot for photos.",
     reviewDate: "2024-05-18",
@@ -33,6 +36,7 @@ export const reviewsData = [
   {
     id: 4,
     spotId: "2",
+    userId: 0,
     reviewerName: "Pedro Martinez",
     reviewText: "The Porta Mariae is a significant religious landmark. The design is beautiful and it's well-maintained.",
     reviewDate: "2024-05-12",
@@ -42,6 +46,7 @@ export const reviewsData = [
   {
     id: 5,
     spotId: "3", // Mt. Isarog
+    userId: 0,
     reviewerName: "Carlos Mendoza",
     reviewText: "An amazing hiking experience with breathtaking views. The trail is well-maintained and the guides are very helpful.",
     reviewDate: "2024-05-20",
@@ -51,6 +56,7 @@ export const reviewsData = [
   {
     id: 6,
     spotId: "3",
+    userId: 0,
     reviewerName: "Liza Garcia",
     reviewText: "The mountain offers spectacular views and diverse wildlife. A must-visit for nature lovers.",
     reviewDate: "2024-05-17",
