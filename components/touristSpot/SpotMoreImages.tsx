@@ -9,13 +9,13 @@ interface SpotMoreImagesProps {
   onSeeAll: () => void;
 }
 
-export default function SpotMoreImages({ images, onSeeAll }: SpotMoreImagesProps) {
+const SpotMoreImages: React.FC<SpotMoreImagesProps> = ({ images, onSeeAll }) => {
   // Don't render if no images are available
   if (!images || images.length === 0) return null;
   
   // Show "See All" button only if there are more than 3 images
   const showSeeAll = images.length > 3;
-  
+
   return (
     <View style={styles.section}>
       {/* Header with title and See All button */}
@@ -37,7 +37,7 @@ export default function SpotMoreImages({ images, onSeeAll }: SpotMoreImagesProps
       </ScrollView>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   section: {
@@ -73,4 +73,6 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     fontWeight: "bold",
   },
-}); 
+});
+
+export default SpotMoreImages; 

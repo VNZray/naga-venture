@@ -1,8 +1,29 @@
 // Data file containing review information and rating calculation functions
 // Manages user reviews and provides helper functions for rating calculations
 
+// Interface for review data
+export interface Review {
+  id: number;
+  spotId: string;
+  userId: number;
+  reviewerName: string;
+  reviewText: string;
+  reviewDate: string;
+  rating: number;
+  profileImageUri: string;
+}
+
+// Interface for rating information
+export interface RatingInfo {
+  rating: number;
+  ratingCount: number;
+  ratingDistribution: {
+    [key: number]: number;
+  };
+}
+
 // Sample review data for tourist spots
-export const reviewsData = [
+export const reviewsData: Review[] = [
   {
     id: 1,
     spotId: "1", // Naga Metropolitan Cathedral
@@ -65,9 +86,31 @@ export const reviewsData = [
   }
 ];
 
+// Helper function to get all reviews
+export const getAllReviews = (): Review[] => {
+  return reviewsData;
+};
+
+// Helper function to get reviews for a specific spot
+export const getReviewsBySpotId = (spotId: string): Review[] => {
+  return reviewsData.filter(review => review.spotId === spotId);
+};
+
+// Helper function to get a review by ID
+export const getReviewById = (reviewId: number): Review | null => {
+  return reviewsData.find(review => review.id === reviewId) || null;
+};
+
+// Helper function to add a new review
+export const addReview = (review: Omit<Review, 'id'>): Review => {
+  const newId = Math.max(...reviewsData.map(r => r.id)) + 1;
+  const newReview = { ...review, id: newId };
+  reviewsData.push(newReview);
+  return newReview;
+};
+
 // Helper function to calculate ratings for a specific spot
-// Computes average rating, total count, and rating distribution
-export const calculateSpotRatings = (spotId: string) => {
+export const calculateSpotRatings = (spotId: string): RatingInfo => {
   // Filter reviews for the specific spot
   const spotReviews = reviewsData.filter(review => review.spotId === spotId);
   const ratingCount = spotReviews.length;

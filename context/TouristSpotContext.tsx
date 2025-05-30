@@ -1,10 +1,10 @@
 import { reviewsData } from '@/app/(tabs)/(home)/(touristSpots)/reviewsData';
-import { touristSpotsData } from '@/app/(tabs)/(home)/(touristSpots)/TouristSpotData';
+import { categories, touristSpotsData } from '@/app/(tabs)/(home)/(touristSpots)/TouristSpotData';
 import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 
 // Types
 export type Review = {
-  id: string;
+  id: number;
   spotId: string;
   userId: number;
   reviewerName: string;
@@ -22,10 +22,27 @@ export type TouristSpotWithRatings = TouristSpot & {
   ratingDistribution: { [key: number]: number };
 };
 
+export type Category = {
+  id: string;
+  name: string;
+  icon: string;
+};
+
+export type Destination = {
+  id: string;
+  name: string;
+  image: string;
+};
+
 interface TouristSpotContextType {
   getSpotWithRatings: (spotId: string) => TouristSpotWithRatings | null;
   getReviews: (spotId: string) => Review[];
   addReview: (review: Review) => void;
+  getAllSpots: () => TouristSpot[];
+  getSpotsByCategory: (categoryId: string) => TouristSpot[];
+  getCategories: () => Category[];
+  getDestinations: () => Destination[];
+  searchSpots: (query: string) => TouristSpot[];
 }
 
 const TouristSpotContext = createContext<TouristSpotContextType | undefined>(undefined);
@@ -54,7 +71,10 @@ export const TouristSpotProvider = ({ children }: { children: ReactNode }) => {
     const totalRating = spotReviews.reduce((sum, r) => sum + r.rating, 0);
     const averageRating = totalRating / ratingCount;
     const ratingDistribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-    spotReviews.forEach(r => { ratingDistribution[r.rating]++; });
+    spotReviews.forEach(r => { 
+      const rating = r.rating as keyof typeof ratingDistribution;
+      ratingDistribution[rating]++; 
+    });
     return { rating: averageRating, ratingCount, ratingDistribution };
   }, [getAllReviewsForSpot]);
 
@@ -79,8 +99,48 @@ export const TouristSpotProvider = ({ children }: { children: ReactNode }) => {
     setReviewsStore(prev => [...prev, review]);
   }, []);
 
+  // Get all tourist spots
+  const getAllSpots = useCallback(() => Object.values(touristSpotsData), []);
+
+  // Get spots by category
+  const getSpotsByCategory = useCallback((categoryId: string) => 
+    Object.values(touristSpotsData).filter(spot => spot.category === categoryId)
+  , []);
+
+  // Get all categories
+  const getCategories = useCallback(() => categories, []);
+
+  // Get all destinations
+  const getDestinations = useCallback(() => {
+    const spots = Object.values(touristSpotsData);
+    if (!spots || spots.length === 0) return [];
+    
+    return spots.map(spot => ({
+      id: spot.id,
+      name: spot.name,
+      image: spot.image,
+    }));
+  }, []);
+
+  // Search spots by name
+  const searchSpots = useCallback((query: string) => {
+    const searchQuery = query.toLowerCase().trim();
+    return Object.values(touristSpotsData).filter(spot =>
+      spot.name.toLowerCase().includes(searchQuery)
+    );
+  }, []);
+
   return (
-    <TouristSpotContext.Provider value={{ getSpotWithRatings, getReviews, addReview }}>
+    <TouristSpotContext.Provider value={{ 
+      getSpotWithRatings, 
+      getReviews, 
+      addReview,
+      getAllSpots,
+      getSpotsByCategory,
+      getCategories,
+      getDestinations,
+      searchSpots
+    }}>
       {children}
     </TouristSpotContext.Provider>
   );

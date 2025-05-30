@@ -57,9 +57,14 @@ export const touristSpotsData: { [key: string]: TouristSpot } = {
       "Metropolitan Cathedral and Parish of Saint John the Evangelist, commonly known as the Naga Metropolitan Cathedral. It is the seat of the Roman Catholic Archdiocese of Caceres.",
     image:
       "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",
-    additionalImages: ["https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1","https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1","https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1","https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",],
+    additionalImages: [
+      "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",
+      "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",
+      "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",
+      "https://i0.wp.com/nagayon.com/wp-content/uploads/2024/05/Cathedral-Exterior_1-scaled.jpg?resize=768%2C576&ssl=1",
+    ],
     location: "J. Hernandez Avenue, Naga City, Camarines Sur",
-    mapLocation: { latitude:13.628269541811807, longitude:123.18720142762204 },
+    mapLocation: { latitude: 13.628269541811807, longitude: 123.18720142762204 },
     contact: "+63 (54) 473-8022",
     openingHours: "Open 24 hours",
     admissionFee: "Free",
@@ -227,22 +232,32 @@ export const categories: Category[] = [
   { id: "resorts", name: "Resorts", icon: "umbrella-beach" },
 ];
 
-export const featuredLocations: TouristSpot[] = [
-  touristSpotsData["1"],
-  touristSpotsData["2"],
-  touristSpotsData["3"],
-];
+// Helper function to get all tourist spots
+export const getAllTouristSpots = (): TouristSpot[] => {
+  return Object.values(touristSpotsData);
+};
 
-export const destinations: Destination[] = Object.values(touristSpotsData)
-  .slice(0)
-  .map((spot) => ({
-    id: spot.id,
-    name: spot.name,
-    image: spot.image,
-  }));
+// Helper function to get spots by category
+export const getSpotsByCategory = (categoryId: string): TouristSpot[] => {
+  return Object.values(touristSpotsData).filter(spot => spot.category === categoryId);
+};
+
+// Helper function to get a spot by ID
+export const getSpotById = (spotId: string): TouristSpot | null => {
+  return touristSpotsData[spotId] || null;
+};
+
+// Helper function to get all categories
+export const getAllCategories = (): Category[] => {
+  return categories;
+};
+
+// Helper function to get a category by ID
+export const getCategoryById = (categoryId: string): Category | null => {
+  return categories.find(category => category.id === categoryId) || null;
+};
 
 // Helper function to get a spot with its calculated ratings
-// Combines spot data with rating information from reviews
 export const getSpotWithRatings = (spotId: string): TouristSpotWithRatings | null => {
   const spot = touristSpotsData[spotId];
   if (!spot) return null;
@@ -250,9 +265,7 @@ export const getSpotWithRatings = (spotId: string): TouristSpotWithRatings | nul
   const ratings = calculateSpotRatings(spotId);
   return {
     ...spot,
-    rating: ratings.rating,
-    ratingCount: ratings.ratingCount,
-    ratingDistribution: ratings.ratingDistribution
+    ...ratings,
   };
 };
 

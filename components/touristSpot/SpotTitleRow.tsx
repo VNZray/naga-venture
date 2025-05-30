@@ -1,15 +1,16 @@
 import { ThemedText } from "@/components/ThemedText";
+import { FavoriteAction } from "@/context/TouristSpotContext";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 interface SpotTitleRowProps {
   name: string;
-  onFavorite: () => void;
+  onFavorite: FavoriteAction;
   isFavorite: boolean;
   textColor: string;
 }
 
-export default function SpotTitleRow({ name, onFavorite, isFavorite, textColor }: SpotTitleRowProps) {
+const SpotTitleRow: React.FC<SpotTitleRowProps> = ({ name, onFavorite, isFavorite, textColor }) => {
   return (
     <View style={styles.titleRow}>
       <ThemedText type="title" style={styles.spotTitle}>{name}</ThemedText>
@@ -18,7 +19,7 @@ export default function SpotTitleRow({ name, onFavorite, isFavorite, textColor }
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   titleRow: {
@@ -34,4 +35,6 @@ const styles = StyleSheet.create({
   favoriteButton: {
     padding: 10,
   },
-}); 
+});
+
+export default SpotTitleRow; 

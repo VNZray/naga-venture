@@ -5,6 +5,7 @@ import EmptyState from "@/components/EmptyState";
 import { ThemedView } from "@/components/ThemedView";
 import SearchBar from "@/components/touristSpot/TouristSearchBar";
 import TouristSpotCard from "@/components/touristSpot/TouristSpotCard";
+import { useTouristSpots } from "@/context/TouristSpotContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useLayoutEffect, useMemo, useState } from "react";
@@ -13,13 +14,14 @@ import {
   StatusBar,
   StyleSheet
 } from "react-native";
-import { TouristSpot, touristSpotsData } from "../TouristSpotData";
 
 const CategoryPage: React.FC = () => {
   // Get category ID from URL parameters
   const { category: categoryId } = useLocalSearchParams<{ category: string }>();
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
+  const { getSpotsByCategory, searchSpots } = useTouristSpots();
+  
   // State for search functionality
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -48,22 +50,15 @@ const CategoryPage: React.FC = () => {
     });
   }, [navigation, categoryId]);
 
-  // Filter spots by category
-  const allCategorySpots = useMemo(() => {
-    return Object.values(touristSpotsData).filter(
-      (spot: TouristSpot) => spot.category === categoryId
-    );
-  }, [categoryId]);
-
-  // Filter spots by search query within the category
+  // Get spots by category and filter by search query
   const filteredCategorySpots = useMemo(() => {
-    if (!searchQuery.trim()) return allCategorySpots;
+    const categorySpots = getSpotsByCategory(categoryId);
+    
+    if (!searchQuery.trim()) return categorySpots;
 
-    const query = searchQuery.toLowerCase().trim();
-    return allCategorySpots.filter((spot: TouristSpot) =>
-      spot.name.toLowerCase().includes(query)
-    );
-  }, [searchQuery, allCategorySpots]);
+    const searchResults = searchSpots(searchQuery);
+    return searchResults.filter(spot => spot.category === categoryId);
+  }, [categoryId, searchQuery, getSpotsByCategory, searchSpots]);
 
   // Navigation handler for spot selection
   const handleSpotClick = (spotId: string): void => {

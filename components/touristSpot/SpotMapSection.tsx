@@ -2,14 +2,9 @@
 // Uses Google Maps to show the exact location with a marker and address
 
 import { ThemedText } from "@/components/ThemedText";
+import { MapLocation } from "@/context/TouristSpotContext";
 import { StyleSheet, View } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-
-// Interface for map location coordinates
-interface MapLocation {
-  latitude: number;
-  longitude: number;
-}
 
 interface SpotMapSectionProps {
   mapLocation: MapLocation | null;

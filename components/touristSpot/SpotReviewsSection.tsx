@@ -1,4 +1,3 @@
-import { reviewsData } from "@/app/(tabs)/(home)/(touristSpots)/reviewsData";
 import ReviewCard from "@/components/ReviewCard";
 import { ThemedText } from "@/components/ThemedText";
 import { useTouristSpots } from "@/context/TouristSpotContext";
@@ -19,8 +18,6 @@ interface SpotReviewsSectionProps {
 
 export default function SpotReviewsSection({ spotId, rating, ratingCount, renderStars, iconColor }: SpotReviewsSectionProps) {
   const { getReviews } = useTouristSpots();
-  // Combine dummy data with new reviews
-  const dummyReviews = reviewsData.filter(review => review.spotId === spotId);
   const allReviews = getReviews(spotId);
 
   // Initialize rating distribution object to count reviews by star rating

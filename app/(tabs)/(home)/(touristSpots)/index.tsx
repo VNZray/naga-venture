@@ -9,6 +9,7 @@ import { ThemedView } from "@/components/ThemedView";
 import SearchBar from "@/components/touristSpot/TouristSearchBar";
 import TouristSpotCard from "@/components/touristSpot/TouristSpotCard";
 import { Colors } from "@/constants/Colors";
+import { useTouristSpots } from "@/context/TouristSpotContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
@@ -21,7 +22,6 @@ import {
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { categories, destinations, featuredLocations } from "./TouristSpotData";
 
 // Get screen width for carousel sizing
 const width = Dimensions.get("window").width;
@@ -29,6 +29,8 @@ const width = Dimensions.get("window").width;
 const TouristSpotDirectory: React.FC = () => {
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";
+  const { getCategories, getDestinations, searchSpots } = useTouristSpots();
+  
   // State for search functionality
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -41,15 +43,16 @@ const TouristSpotDirectory: React.FC = () => {
     router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${destinationId}`);
   };
 
+  // Get categories and destinations
+  const categories = getCategories();
+  const destinations = getDestinations();
+
   // Filter spots based on search query
   const filteredSpots = useMemo(() => {
     if (!searchQuery.trim()) return destinations;
 
-    const query = searchQuery.toLowerCase().trim();
-    return destinations.filter((spot) =>
-      spot.name.toLowerCase().includes(query)
-    );
-  }, [searchQuery]);
+    return searchSpots(searchQuery);
+  }, [searchQuery, destinations, searchSpots]);
 
   return (
     <SafeAreaProvider>
@@ -78,12 +81,16 @@ const TouristSpotDirectory: React.FC = () => {
                   width={width - 50}
                   height={200}
                   mode="parallax"
-                  data={featuredLocations}
+                  data={destinations.slice(0, 3)}
                   scrollAnimationDuration={1000}
                   renderItem={({ item: spot }) => (
                     <TouristSpotCard
                       key={spot.id}
-                      spot={spot}
+                      spot={{
+                        ...spot,
+                        description: '',
+                        location: ''
+                      }}
                       onPress={() => handleDestinationPress(spot.id)}
                       variant="carousel"
                     />

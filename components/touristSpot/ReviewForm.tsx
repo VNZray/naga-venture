@@ -5,19 +5,19 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
-import { useTouristSpots } from "@/context/TouristSpotContext";
+import { Review, useTouristSpots } from "@/context/TouristSpotContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  View
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
 
 interface ReviewFormProps {
@@ -61,8 +61,8 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ spotId, spotName, onSubmitSucce
 
     try {
       // Create new review object
-      const newReview = {
-        id: Date.now().toString(), // Use timestamp as unique ID
+      const newReview: Review = {
+        id: Date.now(), // Use timestamp as unique ID
         spotId,
         userId: user.id,
         reviewerName: user.name,

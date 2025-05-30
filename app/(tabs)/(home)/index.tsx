@@ -4,12 +4,12 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { router } from "expo-router";
 import React from "react";
 import {
-  Dimensions,
-  Image,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View
+    Dimensions,
+    Image,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    View
 } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel from "react-native-reanimated-carousel";

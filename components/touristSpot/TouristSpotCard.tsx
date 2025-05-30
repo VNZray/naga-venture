@@ -3,17 +3,10 @@
 
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
+import { TouristSpot } from "@/context/TouristSpotContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-
-// Interface for tourist spot data
-interface TouristSpot {
-  image: string;
-  name: string;
-  description: string;
-  location: string;
-}
 
 interface TouristSpotCardProps {
   spot: TouristSpot;
