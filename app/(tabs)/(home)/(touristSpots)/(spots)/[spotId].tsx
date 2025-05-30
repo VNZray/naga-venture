@@ -12,6 +12,7 @@ import SpotMoreImages from "@/components/touristSpot/SpotMoreImages";
 import SpotReviewsSection from "@/components/touristSpot/SpotReviewsSection";
 import SpotTitleRow from "@/components/touristSpot/SpotTitleRow";
 import { Colors } from "@/constants/Colors";
+import { useTouristSpots } from "@/context/TouristSpotContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
@@ -24,7 +25,6 @@ import {
   View
 } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { getSpotWithRatings } from "../TouristSpotData";
 
 // Define the structure for tab navigation
 interface Tab {
@@ -38,6 +38,7 @@ const TouristSpotDetails: React.FC = () => {
   const colorScheme = useColorScheme();
   const [activeTab, setActiveTab] = useState<string>("details");
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const { getSpotWithRatings } = useTouristSpots();
   const spot = spotId ? getSpotWithRatings(spotId) : null;
   const textColor = Colors[colorScheme].text;
   const activeBackground = "#0A1B47";
@@ -190,17 +191,8 @@ const TouristSpotDetails: React.FC = () => {
               </View>
               <ReviewForm
                 spotId={spotId}
-                spotName={spot.name}
-                onSubmitSuccess={() => {
-                  setShowReviewForm(false);
-                  // Refresh the reviews section
-                  const updatedSpot = getSpotWithRatings(spotId);
-                  if (updatedSpot) {
-                    spot.rating = updatedSpot.rating;
-                    spot.ratingCount = updatedSpot.ratingCount;
-                    spot.ratingDistribution = updatedSpot.ratingDistribution;
-                  }
-                }}
+                spotName={spot?.name || ''}
+                onSubmitSuccess={() => setShowReviewForm(false)}
               />
             </View>
           </View>

@@ -1,9 +1,9 @@
 import { reviewsData } from "@/app/(tabs)/(home)/(touristSpots)/reviewsData";
 import ReviewCard from "@/components/ReviewCard";
 import { ThemedText } from "@/components/ThemedText";
+import { useTouristSpots } from "@/context/TouristSpotContext";
 import { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
-import { getReviews } from "../../app/(tabs)/(home)/(touristSpots)/TouristSpotData";
 
 interface RatingDistribution {
   [key: number]: number;
@@ -18,10 +18,10 @@ interface SpotReviewsSectionProps {
 }
 
 export default function SpotReviewsSection({ spotId, rating, ratingCount, renderStars, iconColor }: SpotReviewsSectionProps) {
+  const { getReviews } = useTouristSpots();
   // Combine dummy data with new reviews
   const dummyReviews = reviewsData.filter(review => review.spotId === spotId);
-  const newReviews = getReviews(spotId);
-  const allReviews = [...dummyReviews, ...newReviews];
+  const allReviews = getReviews(spotId);
 
   // Initialize rating distribution object to count reviews by star rating
   const ratingDistribution: RatingDistribution = {

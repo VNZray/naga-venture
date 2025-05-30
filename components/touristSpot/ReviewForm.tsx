@@ -5,6 +5,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
+import { useTouristSpots } from "@/context/TouristSpotContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
@@ -18,7 +19,6 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import { addReview } from "../../app/(tabs)/(home)/(touristSpots)/TouristSpotData";
 
 interface ReviewFormProps {
   spotId: string;
@@ -29,6 +29,7 @@ interface ReviewFormProps {
 const ReviewForm: React.FC<ReviewFormProps> = ({ spotId, spotName, onSubmitSuccess }) => {
   const colorScheme = useColorScheme();
   const { user } = useAuth();
+  const { addReview } = useTouristSpots();
   const [reviewText, setReviewText] = useState("");
   const [rating, setRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
