@@ -27,11 +27,27 @@ const TouristSpotDirectory = () => {
   const cardBgColor = colorScheme === "dark" ? "#fff" : "#fff";
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleCategoryPress = (categoryId) => {
+  interface Category {
+    id: string;
+    name: string;
+    icon: React.ComponentType<{ size?: number; color?: string }>;
+  }
+
+  interface Destination {
+    id: string;
+    name: string;
+    image: string;
+  }
+
+  const handleCategoryPress = (categoryId: string) => {
     router.push(`/(tabs)/(home)/(touristSpots)/(categories)/${categoryId}`);
   };
 
-  const handleDestinationPress = (destinationId) => {
+  interface HandleDestinationPress {
+    (destinationId: string): void;
+  }
+
+  const handleDestinationPress: HandleDestinationPress = (destinationId) => {
     router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${destinationId}`);
   };
 
@@ -43,6 +59,10 @@ const TouristSpotDirectory = () => {
       destination.name.toLowerCase().includes(query)
     );
   }, [searchQuery]);
+
+  function handleSearch(searchQuery: string): void {
+    setSearchQuery(searchQuery);
+  }
 
   return (
     <SafeAreaProvider>
