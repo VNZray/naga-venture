@@ -1,15 +1,12 @@
+// Reusable card component for displaying tourist spots in different layouts
+// Supports three variants: grid, carousel, and list views
+
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
+import { TouristSpot } from "@/context/TouristSpotContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-
-interface TouristSpot {
-  image: string;
-  name: string;
-  description: string;
-  location: string;
-}
 
 interface TouristSpotCardProps {
   spot: TouristSpot;
@@ -22,6 +19,7 @@ const TouristSpotCard: React.FC<TouristSpotCardProps> = ({ spot, onPress, varian
   const cardBackgroundColor = colorScheme === "dark" ? "#1E293B" : "#fff";
   const shadowColor = colorScheme === "dark" ? "#000" : "#ccc";
 
+  // Carousel variant - Large image with overlay text
   if (variant === "carousel") {
     return (
       <TouchableOpacity
@@ -41,6 +39,7 @@ const TouristSpotCard: React.FC<TouristSpotCardProps> = ({ spot, onPress, varian
     );
   }
 
+  // Grid variant - Square image with overlay text
   if (variant === "grid") {
     return (
       <TouchableOpacity
@@ -64,6 +63,7 @@ const TouristSpotCard: React.FC<TouristSpotCardProps> = ({ spot, onPress, varian
     );
   }
 
+  // List variant - Horizontal layout with image and details
   return (
     <TouchableOpacity
       onPress={onPress}

@@ -2,14 +2,14 @@ import CardContainer from "@/components/CardContainer";
 import PressableButton from "@/components/PressableButton";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
-  Dimensions,
-  Image,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View
+    Dimensions,
+    Image,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    View
 } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel from "react-native-reanimated-carousel";
@@ -21,7 +21,6 @@ import { FeaturedLocation } from "../../Controller/HomeData";
 const width = Dimensions.get("screen").width;
 
 const HomeScreen = () => {
-  const { user } = useAuth();
 
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";
@@ -31,8 +30,12 @@ const HomeScreen = () => {
   const ref = React.useRef(null);
   const progress = useSharedValue(0);
 
+  const { user } = useAuth();
+  const didRedirect = useRef(false);
+
   useEffect(() => {
-    if (!user) {
+    if (!user && !didRedirect.current) {
+      didRedirect.current = true;
       router.replace("/(screens)/LoginPage");
     }
   }, [user]);
