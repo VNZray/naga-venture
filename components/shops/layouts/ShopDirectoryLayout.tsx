@@ -3,13 +3,13 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
@@ -33,7 +33,7 @@ interface ShopDirectoryLayoutProps {
  * 
  * Used specifically by: Shop directory and related shop pages
  */
-export const ShopDirectoryLayout: React.FC<ShopDirectoryLayoutProps> = ({
+const ShopDirectoryLayout: React.FC<ShopDirectoryLayoutProps> = ({
   children,
   searchPlaceholder = "Search shops...",
   searchQuery = "",

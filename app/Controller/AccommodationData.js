@@ -16,21 +16,6 @@ export const accommodations = [
   },
   {
     id: 2,
-    name: "Bahay ni Kuya",
-    location: "Somewhere in the Philippines",
-    priceRange: "PHP 500.00 - PHP 3,500.00",
-    imageUri:
-      "https://contents.pep.ph/images2/images2/2021/08/06/pbb-facade-1628248301.jpg",
-    description: `
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed auctor tempor metus, a tincidunt purus vestibulum a. Integer feugiat quam at ante suscipit, a tempor nunc iaculis. Fusce scelerisque nunc velit, ut tempor turpis rhoncus ac. Nulla facilisi. Vivamus volutpat est id ante euismod, at gravida lectus pretium. Donec et vulputate libero. Quisque in augue neque. Fusce hendrerit ex purus, vel aliquam sapien cursus vel. Sed in felis purus. Vivamus euismod nisi at sapien fringilla, non convallis ex cursus.
-
-        `,
-    ratings: 4.5,
-    latitude: 13.6217,
-    longitude: 123.1948,
-  },
-  {
-    id: 3,
     name: "Sampaguita Tourist Inn",
     location: "Naga City, Philippines",
     priceRange: "PHP 500.00 - PHP 3,500.00",
@@ -41,8 +26,8 @@ export const accommodations = [
 
         `,
     ratings: 4.5,
-    latitude: 13.6221317,
-    longitude: 123.19123248,
+    latitude: 13.629483143257575,
+    longitude: 123.19852472895504
 
   },
 ];
@@ -113,7 +98,7 @@ export const rooms = [
     roomPrice: 2000.0,
     roomImage:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOiV-zO8KiAssWgdTgs5duPvyZJ-wFt_R9Kg&s",
-    ratings: 4.5,
+    ratings: 5.0,
     accommodationId: 1,
     description: `
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed auctor tempor metus, a tincidunt purus vestibulum a. Integer feugiat quam at ante suscipit, a tempor nunc iaculis. Fusce scelerisque nunc velit, ut tempor turpis rhoncus ac. Nulla facilisi. Vivamus volutpat est id ante euismod, at gravida lectus pretium. Donec et vulputate libero. Quisque in augue neque. Fusce hendrerit ex purus, vel aliquam sapien cursus vel. Sed in felis purus. Vivamus euismod nisi at sapien fringilla, non convallis ex cursus.
@@ -169,8 +154,8 @@ export const reviews = [
     accommodationId: 1,
     roomId: null,
     userId: 1,
-    message: 'dasdasdasd adad asd asd asd asdas dasd ad asd asd adasd asd wad asd wadawf asf  cf ascac habd abcySYD VCAVSCVYAS CVASCV YASVY VAYC VAYSVC 8YASC8SA ASCASCASG AGSF7 7A98A F8',
-    rating: 3,
+    message: 'Good place to stay, very clean and comfortable. The staff were friendly and helpful.',
+    rating: 5,
     date: '09-28-2003'
   },
   {
@@ -178,28 +163,102 @@ export const reviews = [
     accommodationId: null,
     roomId: 1,
     userId: 1,
-    message: 'dasdasdasd adad asd asd asd asdas dasd ad asd asd adasd asd wad asd wadawf asf  cf ascac habd abcySYD VCAVSCVYAS CVASCV YASVY VAYC VAYSVC 8YASC8SA ASCASCASG AGSF7 7A98A F8',
-    rating: 3,
+    message: 'Good place to stay, very clean and comfortable. The staff were friendly and helpful.',
+    rating: 4.5,
     date: '09-28-2003'
-
   },
   {
     id: 3,
     accommodationId: 1,
     roomId: null,
     userId: 2,
-    message: 'dasdasdasd adad asd asd asd asdas dasd ad asd asd adasd asd wad asd wadawf asf  cf ascac habd abcySYD VCAVSCVYAS CVASCV YASVY VAYC VAYSVC 8YASC8SA ASCASCASG AGSF7 7A98A F8',
-    rating: 3,
+    message: 'Good place to stay, very clean and comfortable. The staff were friendly and helpful.',
+    rating: 5,
     date: '09-28-2003'
-
   },
   {
     id: 4,
     accommodationId: null,
     roomId: 1,
     userId: 2,
-    message: 'dasdasdasd adad asd asd asd asdas dasd ad asd asd adasd asd wad asd wadawf asf  cf ascac habd abcySYD VCAVSCVYAS CVASCV YASVY VAYC VAYSVC 8YASC8SA ASCASCASG AGSF7 7A98A F8',
-    rating: 3,
+    message: 'Good place to stay, very clean and comfortable. The staff were friendly and helpful.',
+    rating: 4,
     date: '09-28-2003'
+  },
+
+  // More reviews for user 1
+  {
+    id: 5,
+    accommodationId: 2,
+    roomId: null,
+    userId: 1,
+    message: 'Budget-friendly and located in a convenient spot. Rooms were a bit small but manageable.',
+    rating: 4,
+    date: '10-02-2003'
+  },
+  {
+    id: 6,
+    accommodationId: null,
+    roomId: 2,
+    userId: 1,
+    message: 'Spacious room with decent amenities. Worth the price.',
+    rating: 4.2,
+    date: '10-03-2003'
+  },
+  {
+    id: 7,
+    accommodationId: null,
+    roomId: 3,
+    userId: 1,
+    message: 'Had a restful stay here. Clean linens and quiet environment.',
+    rating: 4.8,
+    date: '10-04-2003'
+  },
+  {
+    id: 8,
+    accommodationId: null,
+    roomId: 6,
+    userId: 1,
+    message: 'Room was clean but a little cramped. Staff was accommodating.',
+    rating: 3.9,
+    date: '10-05-2003'
+  },
+
+  // More reviews for user 2
+  {
+    id: 9,
+    accommodationId: 2,
+    roomId: null,
+    userId: 2,
+    message: 'The place was okay for a short stay. Good customer service.',
+    rating: 4,
+    date: '10-06-2003'
+  },
+  {
+    id: 10,
+    accommodationId: null,
+    roomId: 4,
+    userId: 2,
+    message: 'Comfortable bed and good air conditioning. Would recommend.',
+    rating: 4.3,
+    date: '10-07-2003'
+  },
+  {
+    id: 11,
+    accommodationId: null,
+    roomId: 5,
+    userId: 2,
+    message: 'Great view from the window. Quiet surroundings made for a peaceful night.',
+    rating: 4.7,
+    date: '10-08-2003'
+  },
+  {
+    id: 12,
+    accommodationId: null,
+    roomId: 6,
+    userId: 2,
+    message: 'Not bad. The room could use a bit of renovation, but everything worked.',
+    rating: 3.8,
+    date: '10-09-2003'
   }
-]
+];

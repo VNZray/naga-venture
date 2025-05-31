@@ -7,7 +7,6 @@ import { useFonts } from "expo-font";
 import { Link } from "expo-router";
 import { View } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
-
 type DetailsProps = {
   accommodationId: string | number;
 };
@@ -82,12 +81,13 @@ const Details = ({ accommodationId }: DetailsProps) => {
       <View style={{ marginTop: 16 }}>
         <ThemedText type="cardTitle">Guide Map</ThemedText>
 
-        <View
+        <CardContainer
           style={{
-            height: 200,
+            height: 400,
             borderRadius: 10,
-            overflow: "hidden",
             marginTop: 10,
+            padding: 4
+            
           }}
         >
           <MapView
@@ -108,7 +108,7 @@ const Details = ({ accommodationId }: DetailsProps) => {
               description={accommodation.location}
             />
           </MapView>
-        </View>
+        </CardContainer>
       </View>
 
     </View>

@@ -3,12 +3,12 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -32,7 +32,7 @@ interface ShopCategoryLayoutProps {
  * 
  * Used specifically by: Shop category pages
  */
-export const ShopCategoryLayout: React.FC<ShopCategoryLayoutProps> = ({
+const ShopCategoryLayout: React.FC<ShopCategoryLayoutProps> = ({
   children,
   searchQuery,
   onSearchChange,

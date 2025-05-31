@@ -1,31 +1,20 @@
 // Shop-specific Category Item Grid Component
 import { useColorScheme } from '@/hooks/useColorScheme';
+import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
-interface Shop {
-  id: string | number;
-  name: string;
-  description: string;
-  image: string;
-  location: string;
-  priceRange: string;
-  rating: number;
-  ratingCount: number;
-  [key: string]: any;
-}
-
 interface ShopCategoryGridProps {
-  shops: Shop[];
-  onShopPress: (shopId: string | number) => void;
+  shops: ShopData[];
+  onShopPress: (shopId: string) => void;
 }
 
 /**
@@ -37,7 +26,7 @@ interface ShopCategoryGridProps {
  * - Responsive design
  * - Touch interactions for navigation
  */
-export const ShopCategoryGrid: React.FC<ShopCategoryGridProps> = ({
+const ShopCategoryGrid: React.FC<ShopCategoryGridProps> = ({
   shops,
   onShopPress,
 }) => {

@@ -1,22 +1,16 @@
 // Shop-specific Reviews Content Component
 import { useColorScheme } from '@/hooks/useColorScheme';
+import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-    StyleSheet,
-    Text,
-    View,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 
-interface Shop {
-  rating?: number;
-  ratingCount?: number;
-  reviews?: any[];
-  [key: string]: any;
-}
-
 interface ShopReviewsContentProps {
-  shop: Shop;
+  shop: ShopData;
 }
 
 /**
@@ -28,7 +22,7 @@ interface ShopReviewsContentProps {
  * - Individual reviews display
  * - Empty state when no reviews available
  */
-export const ShopReviewsContent: React.FC<ShopReviewsContentProps> = ({
+const ShopReviewsContent: React.FC<ShopReviewsContentProps> = ({
   shop,
 }) => {
   const colorScheme = useColorScheme();

@@ -3,10 +3,14 @@ import React, {
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
-import { rooms as roomData, accommodations as staticAccommodationsData } from "@/app/Controller/AccommodationData";
+import {
+  rooms as roomData,
+  accommodations as staticAccommodationsData,
+} from "@/app/Controller/AccommodationData";
 
 // Types
 type Room = {
@@ -53,15 +57,17 @@ export const AccommodationProvider = ({ children }: ProviderProps) => {
   const [filteredAccommodations, setFilteredAccommodations] = useState<Accommodation[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Combine accommodations with their rooms
-  const combinedAccommodations: Accommodation[] = staticAccommodationsData.map((acc) => ({
-    ...acc,
-    rooms: roomData.filter((room) => room.accommodationId === acc.id),
-  }));
+  // ✅ Memoize combined accommodations to avoid infinite loop
+  const combinedAccommodations = useMemo(() => {
+    return staticAccommodationsData.map((acc) => ({
+      ...acc,
+      rooms: roomData.filter((room) => room.accommodationId === acc.id),
+    }));
+  }, []); // Add [roomData, staticAccommodationsData] if they are dynamic
 
   useEffect(() => {
     setFilteredAccommodations(combinedAccommodations);
-  }, []);
+  }, [combinedAccommodations]);
 
   const handleSearch = (query: string) => {
     setLoading(true);
