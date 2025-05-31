@@ -35,7 +35,6 @@ export interface ShopCategoriesProps {
     icon: string;
   }[];
   onCategoryPress: (categoryId: string) => void;
-  onViewAllPress?: () => void;
 }
 
 export interface ShopCarouselProps {

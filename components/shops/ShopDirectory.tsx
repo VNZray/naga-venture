@@ -87,12 +87,9 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
   const handleViewAllTrending = () => {
     router.push('/(tabs)/(home)/(shops)/(categories)/trending');
   };
+
   const handleViewAllNearby = () => {
     router.push('/(tabs)/(home)/(shops)/(categories)/nearby');
-  };
-
-  const handleViewAllCategories = () => {
-    router.push('/(tabs)/(home)/(shops)/(categories)/all');
   };
 
   return (
@@ -116,11 +113,11 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                 showViewAll={true}
               />
             </View>
-              <View style={styles.section}>
+            
+            <View style={styles.section}>
               <ShopCategories
                 categories={categories}
                 onCategoryPress={handleCategoryPress}
-                onViewAllPress={handleViewAllCategories}
               />
             </View>
             
