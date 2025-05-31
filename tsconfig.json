@@ -11,12 +11,12 @@
     "**/*.ts",
     "**/*.tsx",
     "types/**/*.d.ts",
-    "app/(screens)/*.tsx",
-    "app/(screens)/**/*.tsx",
-    "app/(tabs)/(home)/*.tsx",
-    "app/(tabs)/(home)/**/*.tsx",
-    "app/(screens)/_layout.tsx",
+    "app/TouristApp/(screens)/*.tsx",
+    "app/TouristApp/(screens)/**/*.tsx",
+    "app/TouristApp/(tabs)/(home)/*.tsx",
+    "app/TouristApp/(tabs)/(home)/**/*.tsx",
+    "app/TouristApp/(screens)/_layout.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/(tabs)/(home)/(shops)/(details)/[shopId].jsx"  ]
+, "app/TouristApp/(tabs)/(home)/(shops)/(details)/[shopId].jsx", "app/index.tsx" ]
 }

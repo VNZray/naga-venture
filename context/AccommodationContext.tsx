@@ -10,7 +10,7 @@ import React, {
 import {
   rooms as roomData,
   accommodations as staticAccommodationsData,
-} from "@/app/Controller/AccommodationData";
+} from "@/Controller/AccommodationData";
 
 // Types
 type Room = {

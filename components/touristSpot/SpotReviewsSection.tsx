@@ -1,4 +1,4 @@
-import { reviewsData } from "@/app/(tabs)/(home)/(touristSpots)/reviewsData";
+import { reviewsData } from "@/app/TouristApp/(tabs)/(home)/(touristSpots)/reviewsData";
 import ReviewCard from "@/components/ReviewCard";
 import { ThemedText } from "@/components/ThemedText";
 import { ReactNode } from "react";
