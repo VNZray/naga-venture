@@ -2,16 +2,14 @@ import BusinessApp from './BusinessApp/index';
 import TourismApp from './TourismApp/index';
 import TouristApp from './TouristApp/index';
 
-const CURRENT_APP: 'business' | 'tourism' | 'tourist' = 'tourism';
+const CURRENT_APP: 'business' | 'tourism' | 'tourist' = 'tourist';
 
 export default function App() {
     switch (CURRENT_APP) {
         case 'business':
-            return <BusinessApp />
-;
+            return <BusinessApp />;
         case 'tourism':
-            return <TourismApp />
-;
+            return <TourismApp />;
         case 'tourist':
             return <TouristApp />;
         default:
