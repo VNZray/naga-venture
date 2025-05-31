@@ -18,7 +18,7 @@ const ShopDirectoryLayout = () => {
         }}
       />
       <Stack.Screen
-        name="shopViewAllCategoryPage"
+        name="AllCategories"
         options={{
           headerShown: true,
           animation: "slide_from_right",
