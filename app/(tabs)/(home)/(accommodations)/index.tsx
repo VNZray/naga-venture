@@ -18,7 +18,6 @@ const width = Dimensions.get("screen").width;
 
 const AccommodationDirectory = () => {
   const colorScheme = useColorScheme();
-  const backgroundColor = colorScheme === "dark" ? "#151718" : "#FFFFFF";
   const isDarkMode = colorScheme === "dark";
 
   const { search, setSearch, handleSearch, filteredAccommodations, loading } =

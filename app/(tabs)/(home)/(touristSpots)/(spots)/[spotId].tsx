@@ -122,7 +122,7 @@ const TouristSpotDetails: React.FC = () => {
                     images={spot.additionalImages}
                     onSeeAll={() => router.push({ pathname: "/(tabs)/(home)/(touristSpots)/(spots)/AllImages", params: { images: spot.additionalImages.join(",") } })}
                   />
-                  <SpotMapSection mapLocation={spot.mapLocation} address={spot.address} iconColor={Colors[colorScheme].icon} />
+                  <SpotMapSection mapLocation={spot.mapLocation} address={spot.location} iconColor={Colors[colorScheme].icon} />
                 </View>
               )}
               {activeTab === "reviews" && (
