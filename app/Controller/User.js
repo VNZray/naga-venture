@@ -9,22 +9,22 @@ export const users = [
   {
     id: 2,
     name: "Rayven Clores",
-    email: "1",
-    password: "1",
+    email: "rayven@gmail.com",
+    password: "123456",
     token: "token2"
   },
   {
     id: 3,
     name: "Emmanuel Collao",
-    email: " ",
-    password: " ",
+    email: "emmanuel@gmail.com",
+    password: "123456",
     token: "token3"
   },
   {
     id: 4,
     name: "Hans Candor",
     email: "hans@gmail.com",
-    password: "1234",
+    password: "123456",
     token: "token4"
   },
   {
