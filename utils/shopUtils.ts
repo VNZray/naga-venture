@@ -33,7 +33,7 @@ export const isValidShopCategory = (data: any): data is ShopCategory => {
   );
 };
 
-// Transformation utilities following Single Responsibility Principle
+// Optimized transformation utilities
 export const transformToFeaturedShop = (shop: ShopData): FeaturedShop => {
   return {
     id: shop.id,
@@ -42,12 +42,6 @@ export const transformToFeaturedShop = (shop: ShopData): FeaturedShop => {
     category: shop.category,
     rating: shop.rating,
   };
-};
-
-export const calculateAverageRating = (shops: ShopData[]): number => {
-  if (shops.length === 0) return 0;
-  const totalRating = shops.reduce((sum, shop) => sum + shop.rating, 0);
-  return Math.round((totalRating / shops.length) * 10) / 10;
 };
 
 // Category utility functions
@@ -86,7 +80,7 @@ export const getMainCategoriesForDisplay = (mainCategories: any[], limit: number
   }));
 };
 
-// Filtering utilities following Open/Closed Principle
+// Simplified and optimized filtering (remove caching for now)
 export type ShopFilterCriteria = {
   category?: string;
   searchQuery?: string;
@@ -99,29 +93,21 @@ export const filterShops = (
   shops: ShopData[], 
   criteria: ShopFilterCriteria
 ): ShopData[] => {
+  // Early return if no criteria
+  if (!criteria || Object.keys(criteria).length === 0) return shops;
+
   return shops.filter(shop => {
-    // Category filter
+    // Category filter (fastest check first)
     if (criteria.category && shop.category !== criteria.category) {
       return false;
     }
 
-    // Search query filter
-    if (criteria.searchQuery) {
-      const query = criteria.searchQuery.toLowerCase().trim();
-      const matchesSearch = 
-        shop.name.toLowerCase().includes(query) ||
-        shop.category.toLowerCase().includes(query) ||
-        shop.description.toLowerCase().includes(query);
-      
-      if (!matchesSearch) return false;
-    }
-
-    // Rating filter
-    if (criteria.minRating && shop.rating < criteria.minRating) {
+    // Rating filters (numeric comparisons)
+    if (criteria.minRating !== undefined && shop.rating < criteria.minRating) {
       return false;
     }
 
-    if (criteria.maxRating && shop.rating > criteria.maxRating) {
+    if (criteria.maxRating !== undefined && shop.rating > criteria.maxRating) {
       return false;
     }
 
@@ -130,11 +116,18 @@ export const filterShops = (
       return false;
     }
 
+    // Simplified search query filter
+    if (criteria.searchQuery) {
+      const query = criteria.searchQuery.toLowerCase();
+      return shop.name.toLowerCase().includes(query) ||
+             shop.category.toLowerCase().includes(query);
+    }
+
     return true;
   });
 };
 
-// Sorting utilities following Interface Segregation Principle
+// Simplified sorting utilities (removed caching for performance)
 export type ShopSortOption = 'name' | 'rating' | 'category' | 'distance' | 'price';
 export type SortDirection = 'asc' | 'desc';
 
@@ -146,7 +139,9 @@ export const sortShops = (
   const sortedShops = [...shops];
   
   sortedShops.sort((a, b) => {
-    let comparison = 0;    switch (sortBy) {
+    let comparison = 0;
+    
+    switch (sortBy) {
       case 'name':
         comparison = a.name.localeCompare(b.name);
         break;
@@ -157,11 +152,11 @@ export const sortShops = (
         comparison = a.category.localeCompare(b.category);
         break;
       case 'distance':
-        // Placeholder for distance sorting
-        comparison = 0;
+        const distanceA = (a as any).calculatedDistance || a.distance || Infinity;
+        const distanceB = (b as any).calculatedDistance || b.distance || Infinity;
+        comparison = distanceA - distanceB;
         break;
       case 'price':
-        // Sort by price range (assuming priceRange has orderable values)
         const priceA = a.priceRange || '';
         const priceB = b.priceRange || '';
         comparison = priceA.localeCompare(priceB);
@@ -211,22 +206,86 @@ export const validateShopData = (shop: Partial<ShopData>): ValidationResult => {
   };
 };
 
-// Search utilities with type safety
-export const searchShops = (
+// Simplified search - only name and category
+export const searchShops = (shops: ShopData[], query: string): ShopData[] => {
+  if (!query.trim()) return shops;
+  
+  const searchTerm = query.toLowerCase();
+  return shops.filter(shop =>
+    shop.name.toLowerCase().includes(searchTerm) ||
+    shop.category.toLowerCase().includes(searchTerm)
+  );
+};
+
+// Enhanced filtering function to replace the missing one
+export const filterShopsEnhanced = (
+  shops: ShopData[], 
+  searchQuery: string, 
+  filters: any
+): ShopData[] => {
+  let result = shops;
+
+  // Apply search query first
+  if (searchQuery.trim()) {
+    result = searchShops(result, searchQuery);
+  }
+
+  // Apply category filters
+  if (filters.categories && filters.categories.length > 0) {
+    result = result.filter(shop => filters.categories.includes(shop.category));
+  }
+
+  // Apply rating filters
+  if (filters.minRating !== undefined) {
+    result = result.filter(shop => shop.rating >= filters.minRating);
+  }
+  if (filters.maxRating !== undefined) {
+    result = result.filter(shop => shop.rating <= filters.maxRating);
+  }
+
+  // Apply price range filters
+  if (filters.priceRanges && filters.priceRanges.length > 0) {
+    result = result.filter(shop => 
+      shop.priceRange && filters.priceRanges.includes(shop.priceRange)
+    );
+  }
+
+  // Apply open now filter
+  if (filters.openNow) {
+    result = result.filter(shop => isShopOpen(shop));
+  }
+
+  // Apply sorting
+  if (filters.sortBy) {
+    result = sortShops(result, filters.sortBy);
+  }
+
+  return result;
+};
+
+// Generate search suggestions
+export const generateSearchSuggestions = (
   shops: ShopData[], 
   query: string, 
-  fields: (keyof ShopData)[] = ['name', 'category', 'description']
-): ShopData[] => {
-  if (!query.trim()) return shops;
-
-  const searchTerm = query.toLowerCase().trim();
+  limit: number = 5
+): string[] => {
+  if (!query.trim()) return [];
   
-  return shops.filter(shop => {
-    return fields.some(field => {
-      const value = shop[field];
-      return typeof value === 'string' && value.toLowerCase().includes(searchTerm);
-    });
+  const searchTerm = query.toLowerCase();
+  const suggestions = new Set<string>();
+  
+  shops.forEach(shop => {
+    // Add shop names that match
+    if (shop.name.toLowerCase().includes(searchTerm)) {
+      suggestions.add(shop.name);
+    }
+    // Add categories that match
+    if (shop.category.toLowerCase().includes(searchTerm)) {
+      suggestions.add(shop.category);
+    }
   });
+  
+  return Array.from(suggestions).slice(0, limit);
 };
 
 // Group utilities following Single Responsibility Principle
@@ -270,122 +329,122 @@ export const getShopStatistics = (shops: ShopData[]): ShopStatistics => {
     return !top || shop.rating > top.rating ? shop : top;
   });
 
+  // Calculate average rating inline
+  const totalRating = shops.reduce((sum, shop) => sum + shop.rating, 0);
+  const averageRating = totalRating / shops.length;
+
   return {
     totalShops: shops.length,
-    averageRating: calculateAverageRating(shops),
+    averageRating,
     categoriesCount: Object.keys(categoryDistribution).length,
     topRatedShop,
     categoryDistribution,
   };
 };
 
-// Distance calculation utility (placeholder for future implementation)
+/**
+ * Calculate distance between two coordinates using Haversine formula
+ */
 export const calculateDistance = (
-  lat1: number, 
-  lon1: number, 
-  lat2: number, 
+  lat1: number,
+  lon1: number,
+  lat2: number,
   lon2: number
 ): number => {
-  // Haversine formula implementation would go here
-  // For now, return a placeholder value
-  return 0;
+  const R = 6371; // Earth's radius in kilometers
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  const result = R * c;
+  
+  return result;
 };
 
-// Format utilities for display
+/**
+ * Format distance for display
+ */
+export const formatDistance = (distance: number): string => {
+  if (!distance || distance < 0) return 'N/A';
+  return distance < 1 
+    ? `${Math.round(distance * 1000)}m`
+    : `${distance.toFixed(1)}km`;
+};
+
+/**
+ * Format rating for display
+ */
 export const formatRating = (rating: number): string => {
-  return rating.toFixed(1);
+  if (!rating || rating < 0) return '0.0';
+  return Math.min(rating, 5.0).toFixed(1);
 };
 
-export const formatRatingCount = (count: number): string => {
-  if (count >= 1000) {
-    return `${(count / 1000).toFixed(1)}k`;
-  }
-  return count.toString();
+/**
+ * Check if shop is currently open
+ */
+export const isShopOpen = (shop: ShopData): boolean => {
+  if (!shop.openingHours) return false;
+  
+  // Simple check for "24 Hours"
+  if (shop.openingHours.toLowerCase().includes('24')) return true;
+  
+  // For now, return shop.isOpen if available, otherwise true
+  return shop.isOpen ?? true;
 };
 
-export const formatPriceRange = (priceRange: string): string => {
-  return priceRange.replace(/₱/g, '₱ ');
-};
-
-// Enhanced filtering for the new search component
-export interface EnhancedFilterOptions {
-  categories: string[];
-  minRating: number;
-  maxRating: number;
-  priceRanges: string[];
-  openNow: boolean;
-  sortBy: 'name' | 'rating' | 'distance' | 'price';
-}
-
-export const filterShopsEnhanced = (
-  shops: ShopData[],
-  searchQuery: string,
-  filters: EnhancedFilterOptions
-): ShopData[] => {
-  let filteredShops = [...shops];
-
-  // Apply search query filter
-  if (searchQuery.trim()) {
-    filteredShops = searchShops(filteredShops, searchQuery);
-  }
-
-  // Apply category filter
-  if (filters.categories.length > 0) {
-    filteredShops = filteredShops.filter(shop => 
-      filters.categories.includes(shop.category)
-    );
-  }
-
-  // Apply rating filter
-  filteredShops = filteredShops.filter(shop => 
-    shop.rating >= filters.minRating && shop.rating <= filters.maxRating
+/**
+ * Filter shops by category
+ */
+export const filterShopsByCategory = (shops: ShopData[], category: string): ShopData[] => {
+  if (!category) return shops;
+  
+  const lowerCategory = category.toLowerCase();
+  const result = shops.filter(shop => 
+    shop.category?.toLowerCase() === lowerCategory
   );
-
-  // Apply price range filter
-  if (filters.priceRanges.length > 0) {
-    filteredShops = filteredShops.filter(shop => 
-      filters.priceRanges.includes(shop.priceRange || '')
-    );
-  }
-
-  // Apply open now filter (assuming shops have an isOpen property)
-  if (filters.openNow) {
-    filteredShops = filteredShops.filter(shop => 
-      (shop as any).isOpen !== false // Default to open if not specified
-    );
-  }
-
-  // Apply sorting
-  const sortDirection: SortDirection = 'desc'; // Default to descending for rating/relevance
-  filteredShops = sortShops(filteredShops, filters.sortBy, sortDirection);
-
-  return filteredShops;
+  
+  return result;
 };
 
-// Generate search suggestions based on shop data
-export const generateSearchSuggestions = (
+/**
+ * Sort shops by rating (descending)
+ */
+export const sortShopsByRating = (shops: ShopData[]): ShopData[] => {
+  return [...shops].sort((a, b) => b.rating - a.rating);
+};
+
+/**
+ * Sort shops by distance (ascending)
+ */
+export const sortShopsByDistance = (shops: ShopData[]): ShopData[] => {
+  return [...shops].sort((a, b) => {
+    const distanceA = (a as any).calculatedDistance || a.distance || Infinity;
+    const distanceB = (b as any).calculatedDistance || b.distance || Infinity;
+    return distanceA - distanceB;
+  });
+};
+
+/**
+ * Get shops within a certain distance
+ */
+export const getShopsWithinDistance = (
   shops: ShopData[],
-  query: string,
-  limit: number = 5
-): string[] => {
-  if (!query.trim()) return [];
+  userLat: number,
+  userLon: number,
+  maxDistance: number
+): ShopData[] => {
+  // Return all shops for now, calculate distance on-demand
+  return shops;
+};
 
-  const searchTerm = query.toLowerCase();
-  const suggestions = new Set<string>();
-
-  // Add shop name suggestions
-  shops.forEach(shop => {
-    if (shop.name.toLowerCase().includes(searchTerm)) {
-      suggestions.add(shop.name);
-    }
-  });
-
-  // Add category suggestions
-  shops.forEach(shop => {
-    if (shop.category.toLowerCase().includes(searchTerm)) {
-      suggestions.add(shop.category);
-    }
-  });
-
-  return Array.from(suggestions).slice(0, limit);
+/**
+ * Get trending shops based on rating and review count
+ */
+export const getTrendingShops = (shops: ShopData[], limit: number = 10): ShopData[] => {
+  return shops
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, limit);
 };

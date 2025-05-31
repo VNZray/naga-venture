@@ -1,15 +1,15 @@
-// Shop-specific Directory Layout using composition patterns
+// Shop-specific Directory Layout - Simplified for performance
 import { useColorScheme } from '@/hooks/useColorScheme';
 import React from 'react';
 import {
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    View,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import EnhancedSearchBar, { FilterOptions } from '../../search/EnhancedSearchBar';
 
 interface ShopDirectoryLayoutProps {
   children: React.ReactNode;
@@ -19,24 +19,17 @@ interface ShopDirectoryLayoutProps {
   showFeaturedSection?: boolean;
   featuredTitle?: string;
   featuredContent?: React.ReactNode;
-  // Enhanced search props
-  useEnhancedSearch?: boolean;
-  searchSuggestions?: string[];
-  filters?: FilterOptions;
-  onFiltersChange?: (filters: FilterOptions) => void;
-  availableCategories?: { id: string; name: string }[];
-  availablePriceRanges?: string[];
 }
 
 /**
- * ShopDirectoryLayout - Composition component for shop directory pages
+ * ShopDirectoryLayout - Simplified composition component for shop directory pages
  * 
  * This layout handles:
- * - Common shop directory structure (SafeAreaView, StatusBar, Search)
+ * - Common shop directory structure (SafeAreaView, StatusBar, Basic Search)
  * - Featured shops section (carousel area)
  * - Main content area via children prop
  * 
- * Used specifically by: Shop directory and related shop pages
+ * Optimized for performance by removing enhanced search complexity
  */
 const ShopDirectoryLayout: React.FC<ShopDirectoryLayoutProps> = ({
   children,
@@ -46,12 +39,6 @@ const ShopDirectoryLayout: React.FC<ShopDirectoryLayoutProps> = ({
   showFeaturedSection = true,
   featuredTitle = "Featured Shops",
   featuredContent,
-  useEnhancedSearch = false,
-  searchSuggestions = [],
-  filters,
-  onFiltersChange,
-  availableCategories = [],
-  availablePriceRanges = [],
 }) => {
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";
@@ -66,27 +53,16 @@ const ShopDirectoryLayout: React.FC<ShopDirectoryLayoutProps> = ({
         <StatusBar
           barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
         />
-          {/* Search Section */}
+        
+        {/* Simple Search Section */}
         <View style={styles.searchContainer}>
-          {useEnhancedSearch && filters && onFiltersChange ? (
-            <EnhancedSearchBar
-              searchQuery={searchQuery}
-              onSearchChange={onSearchChange || (() => {})}
-              placeholder={searchPlaceholder}
-              suggestions={searchSuggestions}
-              filters={filters}
-              onFiltersChange={onFiltersChange}
-              availableCategories={availableCategories}
-              availablePriceRanges={availablePriceRanges}
-            />
-          ) : (
-            // Basic search fallback (keeping for backward compatibility)
-            <View style={styles.basicSearchContainer}>
-              <Text style={[styles.basicSearchNote, { color: color }]}>
-                Basic search mode - upgrade to enhanced search for more features
-              </Text>
-            </View>
-          )}
+          <TextInput
+            style={[styles.searchInput, { color, borderColor: color + '20' }]}
+            placeholder={searchPlaceholder}
+            placeholderTextColor={color + '60'}
+            value={searchQuery}
+            onChangeText={onSearchChange}
+          />
         </View>
         
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -137,23 +113,16 @@ const styles = StyleSheet.create({
   searchInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  searchInput: {
+  },  searchInput: {
     flex: 1,
     backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 4,
+    padding: 12,
     paddingHorizontal: 15,
     fontFamily: "Poppins-Regular",
     fontSize: 14,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
   },
   searchButton: {
     marginLeft: 10,

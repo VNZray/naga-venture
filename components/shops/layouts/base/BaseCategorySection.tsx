@@ -1,14 +1,14 @@
-// Base Category Section Component - Unified pattern for all category displays
+// Base Category Section Component - Selective performance optimizations
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
-    FlatList,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 // Base category item interface
@@ -35,6 +35,18 @@ interface CategoryColorScheme {
   headerTextColor: string;
   viewAllColor: string;
 }
+
+// Move color scheme creation outside component
+const createCategoryColorScheme = (isDark: boolean): CategoryColorScheme => ({
+  backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
+  textColor: isDark ? "#ffffff" : "#1f2937",
+  cardBackgroundColor: isDark ? "#2a2a2a" : "#f8f9fa",
+  cardBorderColor: isDark ? "#404040" : "#e9ecef",
+  iconColor: isDark ? "#60a5fa" : "#3b82f6",
+  shadowColor: isDark ? "#000000" : "#6b7280",
+  headerTextColor: isDark ? "#ffffff" : "#000000",
+  viewAllColor: "#2E5AA7",
+});
 
 // Custom render function types
 export type CategoryRenderFunction = (
@@ -81,7 +93,7 @@ interface BaseCategorySectionProps {
 }
 
 /**
- * BaseCategorySection - Unified base component for all category displays
+ * BaseCategorySection - Simplified base component for all category displays
  * 
  * Supports 4 layout types:
  * - horizontal: FoodPanda-style horizontal scrolling
@@ -94,7 +106,7 @@ interface BaseCategorySectionProps {
  * - detailed: Larger cards with descriptions
  * - icon-only: Icons without text labels
  */
-const BaseCategorySection: React.FC<BaseCategorySectionProps> = React.memo(({
+export default function BaseCategorySection({
   categories,
   onCategoryPress,
   layoutType = 'horizontal',
@@ -111,7 +123,7 @@ const BaseCategorySection: React.FC<BaseCategorySectionProps> = React.memo(({
   snapToInterval = true,
   showEmptyState = true,
   emptyStateMessage = "No categories available",
-}) => {
+}: BaseCategorySectionProps) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   
@@ -119,19 +131,8 @@ const BaseCategorySection: React.FC<BaseCategorySectionProps> = React.memo(({
   const [internalExpandedCategories, setInternalExpandedCategories] = useState<Set<string>>(new Set());
   const expandedCategories = externalExpandedCategories || internalExpandedCategories;
   
-  // Memoized color scheme
-  const colors: CategoryColorScheme = useMemo(() => ({
-    backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
-    textColor: isDark ? "#ffffff" : "#1f2937",
-    cardBackgroundColor: isDark ? "#2a2a2a" : "#f8f9fa",
-    cardBorderColor: isDark ? "#404040" : "#e9ecef",
-    iconColor: isDark ? "#60a5fa" : "#3b82f6",
-    shadowColor: isDark ? "#000000" : "#6b7280",
-    headerTextColor: isDark ? "#ffffff" : "#000000",
-    viewAllColor: "#2E5AA7",
-  }), [isDark]);
-  
-  // Memoized styles
+  // Memoize color scheme and styles
+  const colors = useMemo(() => createCategoryColorScheme(isDark), [isDark]);
   const dynamicStyles = useMemo(() => ({
     container: [
       styles.container,
@@ -146,10 +147,10 @@ const BaseCategorySection: React.FC<BaseCategorySectionProps> = React.memo(({
       styles.baseItem,
       customStyles.item,
     ],
-  }), [colors, customStyles]);
+  }), [colors.backgroundColor, customStyles.container, customStyles.header, customStyles.item]);
   
   // Handle category toggle for hierarchical layout
-  const handleToggleCategory = useCallback((categoryId: string) => {
+  const handleToggleCategory = (categoryId: string) => {
     if (onToggleCategory) {
       onToggleCategory(categoryId);
     } else {
@@ -161,19 +162,19 @@ const BaseCategorySection: React.FC<BaseCategorySectionProps> = React.memo(({
       }
       setInternalExpandedCategories(newExpanded);
     }
-  }, [expandedCategories, onToggleCategory]);
+  };
   
   // Handle main category press for hierarchical layout
-  const handleMainCategoryPress = useCallback((category: BaseCategoryItem) => {
+  const handleMainCategoryPress = (category: BaseCategoryItem) => {
     if (onMainCategoryPress) {
       onMainCategoryPress(category.id);
     } else {
       handleToggleCategory(category.id);
     }
-  }, [onMainCategoryPress, handleToggleCategory]);
+  };
   
   // Default category item renderers
-  const renderHorizontalItem = useCallback((item: BaseCategoryItem, index: number) => {
+  const renderHorizontalItem = (item: BaseCategoryItem, index: number) => {
     if (customRender) {
       return customRender(item, index, colors, onCategoryPress);
     }
@@ -210,9 +211,9 @@ const BaseCategorySection: React.FC<BaseCategorySectionProps> = React.memo(({
         )}
       </TouchableOpacity>
     );
-  }, [customRender, colors, onCategoryPress, displayMode, dynamicStyles.item]);
+  };
   
-  const renderGridItem = useCallback((item: BaseCategoryItem, index: number) => {
+  const renderGridItem = (item: BaseCategoryItem, index: number) => {
     if (customRender) {
       return customRender(item, index, colors, onCategoryPress);
     }
@@ -252,9 +253,9 @@ const BaseCategorySection: React.FC<BaseCategorySectionProps> = React.memo(({
         )}
       </TouchableOpacity>
     );
-  }, [customRender, colors, onCategoryPress, displayMode, itemsPerRow, dynamicStyles.item]);
+  };
   
-  const renderHierarchicalItem = useCallback((item: BaseCategoryItem, index: number) => {
+  const renderHierarchicalItem = (item: BaseCategoryItem, index: number) => {
     if (customRender) {
       return customRender(item, index, colors, onCategoryPress);
     }
@@ -332,7 +333,7 @@ const BaseCategorySection: React.FC<BaseCategorySectionProps> = React.memo(({
         )}
       </View>
     );
-  }, [customRender, colors, onCategoryPress, expandedCategories, handleMainCategoryPress]);
+  };
   
   // Render header
   const renderHeader = () => (
@@ -419,13 +420,14 @@ const BaseCategorySection: React.FC<BaseCategorySectionProps> = React.memo(({
         return null;
     }
   };
-    return (
+
+  return (
     <View style={dynamicStyles.container}>
       {renderHeader()}
       {renderContent()}
     </View>
   );
-});
+}
 
 // Styles
 const styles = StyleSheet.create({
@@ -448,30 +450,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-  },
-  viewAllText: {
-    fontSize: 14,
-    fontWeight: '500',
+  },  viewAllText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Medium',
+    marginRight: 4,
   },
   baseItem: {
-    // Base styles that can be extended by layout-specific styles
+    // Base styles for custom items
   },
   
   // Horizontal layout styles
   horizontalContent: {
-    paddingRight: 16,
-    gap: 12,
+    paddingVertical: 4,
   },
   horizontalItem: {
-    width: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 12,
+    marginRight: 12,
     borderRadius: 12,
     borderWidth: 1,
-    alignItems: 'center',
+    width: 100,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 3,
+    elevation: 2,
   },
   
   // Grid layout styles
@@ -482,18 +485,19 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   gridItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 12,
     borderRadius: 12,
     borderWidth: 1,
-    alignItems: 'center',
+    aspectRatio: 1,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    minHeight: 80,
+    shadowRadius: 3,
+    elevation: 2,
   },
   gridItemText: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: '500',
     textAlign: 'center',
     marginTop: 6,
@@ -510,6 +514,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
+    marginBottom: 4,
   },
   mainCategoryLeft: {
     flexDirection: 'row',
@@ -517,20 +522,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   categoryInfo: {
-    marginLeft: 12,
     flex: 1,
+    marginLeft: 12,
   },
   mainCategoryText: {
     fontSize: 16,
     fontWeight: '600',
+    marginBottom: 2,
   },
   categoryDescription: {
     fontSize: 12,
-    marginTop: 2,
+    opacity: 0.7,
   },
   subcategoriesContainer: {
-    marginTop: 8,
-    marginLeft: 16,
+    paddingLeft: 16,
+    paddingRight: 8,
     gap: 6,
   },
   subcategoryItem: {
@@ -574,8 +580,3 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
 });
-
-// Add display name for debugging
-BaseCategorySection.displayName = 'BaseCategorySection';
-
-export default BaseCategorySection;

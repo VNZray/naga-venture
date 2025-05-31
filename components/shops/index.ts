@@ -17,16 +17,6 @@ export { default as PersonalizedRecommendations } from './sections/PersonalizedR
 export { default as SpecialOffers } from './sections/SpecialOffers';
 export { default as TrendingShops } from './sections/TrendingShops';
 
-// Custom Hooks - Phase 4 Performance Optimization
-export * from './hooks';
-
-// Search Components
-export { default as EnhancedSearchBar } from './search/EnhancedSearchBar';
-export { saveSearchToHistory, default as SearchHistoryManager } from './search/SearchHistoryManager';
-
-// UI Components
-export { default as PerformanceMonitor } from './ui/PerformanceMonitor';
-export { default as PullToRefresh } from './ui/PullToRefresh';
 export { default as ShopSkeleton } from './ui/ShopSkeleton';
 
 // Category page components

@@ -1,9 +1,8 @@
-// app/(tabs)/(home)/(shops)/index.jsx - Refactored using composition
+// app/(tabs)/(home)/(shops)/index.tsx - Simplified for performance
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import type { ShopData } from "@/types/shop";
-import type { FilterOptions } from "components/shops/search/EnhancedSearchBar.tsx";
 
 import {
   HorizontalCategoriesSection,
@@ -17,55 +16,17 @@ import {
 } from "@/components/shops";
 
 import {
-  filterShopsEnhanced,
-  flattenCategories,
-  generateSearchSuggestions,
-  getMainCategoriesForDisplay
+  getMainCategoriesForDisplay,
+  searchShops
 } from "@/utils/shopUtils";
 import { destinations, featuredShops, mainCategories } from "../../../Controller/ShopData";
-
 
 const ShopsDirectory = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Enhanced search filters state
-  const [filters, setFilters] = useState<FilterOptions>({
-    categories: [],
-    minRating: 0,
-    maxRating: 5,
-    priceRanges: [],
-    openNow: false,
-    sortBy: 'rating' as const,
-  });
-
-  // Simulated user preferences for personalized recommendations
-  const userPreferences = {
-    favoriteCategories: ['dining', 'cafe', 'shopping'],
-    visitedShops: ['1', '3', '5'], // IDs of previously visited shops
-    searchHistory: ['coffee', 'restaurants', 'souvenir shops'],
-  };
-
-  const displayMainCategories = useMemo(() => getMainCategoriesForDisplay(mainCategories, 8), []);
+  // Simple main categories - no useMemo to avoid optimization overhead
+  const displayMainCategories = getMainCategoriesForDisplay(mainCategories, 8);
   
-  // Get available categories and price ranges for filters
-  const availableCategories = useMemo(() => 
-    flattenCategories(mainCategories).map(cat => ({ id: cat.id, name: cat.name })), 
-    []
-  );
-  
-  const availablePriceRanges = useMemo(() => {
-    const ranges = new Set<string>();
-    destinations.forEach(shop => {
-      if (shop.priceRange) ranges.add(shop.priceRange);
-    });
-    return Array.from(ranges).sort();
-  }, []);
-
-  // Generate search suggestions based on current query
-  const searchSuggestions = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    return generateSearchSuggestions(destinations, searchQuery, 5);
-  }, [searchQuery]);
   const handleCategoryPress = (categoryId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(categories)/${categoryId}`);
   };
@@ -73,17 +34,15 @@ const ShopsDirectory = () => {
   const handleViewAllCategories = () => {
     router.push("/(tabs)/(home)/(shops)/shopViewAllCategoryPage");
   };
+
   const handleShopPress = (shopId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
   };
-    const filteredDestinations: ShopData[] = useMemo(() => {
-    // Use enhanced filtering when search query or filters are active
-    if (searchQuery.trim() || filters.categories.length > 0 || filters.priceRanges.length > 0 || filters.openNow) {
-      return filterShopsEnhanced(destinations, searchQuery, filters);
-    }
-    return destinations;
-  }, [searchQuery, filters]);
-  
+
+  // Simple filtering - no useMemo optimization
+  const filteredDestinations: ShopData[] = searchQuery.trim() 
+    ? searchShops(destinations, searchQuery)
+    : destinations;
 
   const featuredContent = (
     <ShopFeaturedCarousel
@@ -91,7 +50,9 @@ const ShopsDirectory = () => {
       onItemPress={handleShopPress}
       height={200}
     />
-  );  return (
+  );
+
+  return (
     <ShopDirectoryLayout
       searchPlaceholder="Search shops..."
       searchQuery={searchQuery}
@@ -99,11 +60,8 @@ const ShopsDirectory = () => {
       showFeaturedSection={true}
       featuredTitle="Featured Shops"
       featuredContent={featuredContent}
-      useEnhancedSearch={true}
-      searchSuggestions={searchSuggestions}
-      filters={filters}
-      onFiltersChange={setFilters}
-      availableCategories={availableCategories}      availablePriceRanges={availablePriceRanges}    >      {/* Categories - Only show when not searching */}
+    >      
+        {/* Categories - Only show when not searching */}
       {!searchQuery.trim() && (
         <HorizontalCategoriesSection
           categories={displayMainCategories}
@@ -113,37 +71,37 @@ const ShopsDirectory = () => {
         />
       )}
 
-      {/* Personalized Recommendations */}
-      <PersonalizedRecommendations 
-        shops={destinations} 
-        onShopPress={handleShopPress}
-        userPreferences={userPreferences}
-        limit={6}
-      />
-
-      {/* Special Offers */}
-      <SpecialOffers 
-        shops={destinations} 
-        onShopPress={handleShopPress}
-      />
-
-      {/* Trending Shops */}
-      <TrendingShops 
-        shops={destinations.slice(0, 8)} 
-        onShopPress={handleShopPress}
-        title="Trending Shops"
-      />      {/* Near You Shops */}
-      <NearYouShops 
-        shops={destinations} 
-        onShopPress={handleShopPress}
-        maxDistance={5}
-        limit={6}
-      />
-
+      {/* Performance Sections - Only show when not searching */}
+      {!searchQuery.trim() && (
+        <>
+          <PersonalizedRecommendations 
+            userPreferences={["Restaurant", "Food"]}
+            limit={6}
+            showViewAll={true}
+          />
+          
+          <SpecialOffers 
+            limit={6}
+            showViewAll={true}
+          />
+          
+          <TrendingShops 
+            limit={6}
+            showViewAll={true}
+          />
+          
+          <NearYouShops 
+            userLocation={{ latitude: 13.6218, longitude: 123.1948 }}
+            maxDistance={5}
+            limit={6}
+            showViewAll={true}
+          />
+        </>
+      )}      {/* Discover More */}
       <ShopItemList
         shops={filteredDestinations}
         onShopPress={handleShopPress}
-        title={searchQuery.trim() ? "Search Results" : "All Shops"}
+        title={searchQuery.trim() ? "Search Results" : "Discover More"}
         showRating={true}
         showCategory={true}
         showDistance={false}

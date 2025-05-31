@@ -17,7 +17,6 @@ import React, { JSX, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View
 } from "react-native";
@@ -65,11 +64,6 @@ const TouristSpotDetails: React.FC = () => {
     return <View style={{ flexDirection: "row" }}>{stars}</View>;
   };
 
-  const renderRatingBars = (): JSX.Element => (
-    <View>
-      <Text style={{ color: textColor }}>Rating bars will go here</Text>
-    </View>
-  );
 
   const tabs: Tab[] = [
     { key: "details", label: "Details" },
@@ -122,7 +116,7 @@ const TouristSpotDetails: React.FC = () => {
                     images={spot.additionalImages}
                     onSeeAll={() => router.push({ pathname: "/(tabs)/(home)/(touristSpots)/(spots)/AllImages", params: { images: spot.additionalImages.join(",") } })}
                   />
-                  <SpotMapSection mapLocation={spot.mapLocation} address={spot.address} iconColor={Colors[colorScheme].icon} />
+                  <SpotMapSection mapLocation={spot.mapLocation} iconColor={Colors[colorScheme].icon} />
                 </View>
               )}
               {activeTab === "reviews" && (

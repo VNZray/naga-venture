@@ -1,15 +1,15 @@
-// Base Content Section Component - Unified pattern for all tab content displays
+// Base Content Section Component - Simplified for performance
 import { useColorScheme } from '@/hooks/useColorScheme';
 import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import {
-    Linking,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 // Content type definitions
@@ -48,31 +48,25 @@ interface BaseContentSectionProps {
   
   // Content configuration
   sections?: ContentSection[];
-  
-  // Header configuration
   title?: string;
+  
+  // Display options
   showHeader?: boolean;
-  
-  // Customization
   customRender?: ContentRenderFunction;
-  customStyles?: {
-    container?: any;
-    section?: any;
-    header?: any;
-  };
-  
-  // Behavior
+  customStyles?: Partial<typeof styles>;
   scrollable?: boolean;
+  
+  // Empty state
   showEmptyState?: boolean;
   emptyStateMessage?: string;
   emptyStateIcon?: string;
   
-  // Actions
+  // Callbacks
   onActionPress?: (action: string, data?: any) => void;
 }
 
 /**
- * BaseContentSection - Unified base component for all shop tab content
+ * BaseContentSection - Simplified base component for all shop tab content
  * 
  * Supports multiple content types:
  * - details: Shop description, contact info, hours, etc.
@@ -87,9 +81,8 @@ interface BaseContentSectionProps {
  * - Empty state handling
  * - Action callbacks for interactions
  * - Custom rendering support
- * - Performance optimized with React.memo
  */
-const BaseContentSection: React.FC<BaseContentSectionProps> = React.memo(({
+const BaseContentSection: React.FC<BaseContentSectionProps> = ({
   shop,
   contentType,
   sections = [],
@@ -99,14 +92,15 @@ const BaseContentSection: React.FC<BaseContentSectionProps> = React.memo(({
   customStyles = {},
   scrollable = true,
   showEmptyState = true,
-  emptyStateMessage,  emptyStateIcon = "information-circle-outline",
+  emptyStateMessage,
+  emptyStateIcon = "information-circle-outline",
   onActionPress,
 }) => {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   
-  // Memoized color scheme
-  const colors: ContentColorScheme = useMemo(() => ({
+  // Simple color scheme
+  const colors: ContentColorScheme = {
     backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
     textColor: isDark ? "#ffffff" : "#1f2937",
     sectionBackgroundColor: isDark ? "#2a2a2a" : "#f8f9fa",
@@ -114,10 +108,10 @@ const BaseContentSection: React.FC<BaseContentSectionProps> = React.memo(({
     accentColor: isDark ? "#60a5fa" : "#3b82f6",
     mutedTextColor: isDark ? "#9ca3af" : "#6b7280",
     emptyStateColor: isDark ? "#6b7280" : "#9ca3af",
-  }), [isDark]);
+  };
   
-  // Memoized styles
-  const dynamicStyles = useMemo(() => ({
+  // Simple styles
+  const dynamicStyles = {
     container: [
       styles.container,
       { backgroundColor: colors.backgroundColor },
@@ -132,32 +126,33 @@ const BaseContentSection: React.FC<BaseContentSectionProps> = React.memo(({
       styles.header,
       customStyles.header,
     ],
-  }), [colors, customStyles]);
+  };
   
   // Action handlers
-  const handleCall = useCallback(() => {
+  const handleCall = () => {
     if (shop.contact) {
       Linking.openURL(`tel:${shop.contact}`);
       onActionPress?.('call', shop.contact);
     }
-  }, [shop.contact, onActionPress]);
+  };
   
-  const handleDirections = useCallback(() => {
+  const handleDirections = () => {
     if (shop.mapLocation) {
       const { latitude, longitude } = shop.mapLocation;
       Linking.openURL(`https://maps.google.com/?q=${latitude},${longitude}`);
       onActionPress?.('directions', shop.mapLocation);
-    }  }, [shop.mapLocation, onActionPress]);
+    }
+  };
   
-  const handleWebsite = useCallback(() => {
+  const handleWebsite = () => {
     if (shop.website) {
       Linking.openURL(shop.website);
       onActionPress?.('website', shop.website);
     }
-  }, [shop.website, onActionPress]);
+  };
   
   // Star rating renderer
-  const renderStars = useCallback((rating: number, size: number = 16) => {
+  const renderStars = (rating: number, size: number = 16) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
@@ -170,7 +165,8 @@ const BaseContentSection: React.FC<BaseContentSectionProps> = React.memo(({
       );
     }
     return <View style={styles.starsContainer}>{stars}</View>;
-  }, [colors.mutedTextColor]);
+  };
+
   // Default content renderers by type
   const renderDefaultContent = () => {
     switch (contentType) {
@@ -276,7 +272,7 @@ const BaseContentSection: React.FC<BaseContentSectionProps> = React.memo(({
           </Text>
           {renderStars(Math.round(shop.rating || 0), 20)}
           <Text style={[styles.reviewCount, { color: colors.mutedTextColor }]}>
-            ({shop.reviewCount || 0} reviews)
+            ({(shop as any).reviewCount || 0} reviews)
           </Text>
         </View>
       </View>
@@ -382,14 +378,15 @@ const BaseContentSection: React.FC<BaseContentSectionProps> = React.memo(({
       {isEmpty ? renderEmptyState() : content}
     </View>
   );
-    return scrollable ? (
+
+  return scrollable ? (
     <ScrollView showsVerticalScrollIndicator={false}>
       {mainContent}
     </ScrollView>
   ) : (
     mainContent
   );
-});
+};
 
 // Styles
 const styles = StyleSheet.create({
@@ -487,8 +484,5 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
 });
-
-// Add display name for debugging
-BaseContentSection.displayName = 'BaseContentSection';
 
 export default BaseContentSection;

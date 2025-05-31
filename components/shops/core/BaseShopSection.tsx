@@ -1,15 +1,15 @@
-// Base Shop Section Component - Eliminates code duplication across shop components
+// Base Shop Section Component - Selective performance optimizations
 import { useColorScheme } from '@/hooks/useColorScheme';
 import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 export interface BaseShopSectionProps {
@@ -38,7 +38,16 @@ export interface ColorScheme {
   borderColor: string;
 }
 
-const BaseShopSection: React.FC<BaseShopSectionProps> = React.memo(({
+// Move color scheme creation outside component to avoid recreation
+const createColorScheme = (isDark: boolean): ColorScheme => ({
+  textColor: isDark ? '#ffffff' : '#1A1A1A',
+  subtextColor: isDark ? '#94A3B8' : '#6B7280',
+  backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+  cardBackground: isDark ? '#334155' : '#F8FAFB',
+  borderColor: isDark ? '#475569' : '#E5E7EB',
+});
+
+const BaseShopSection: React.FC<BaseShopSectionProps> = ({
   title,
   shops,
   onShopPress,
@@ -57,26 +66,17 @@ const BaseShopSection: React.FC<BaseShopSectionProps> = React.memo(({
 }) => {
   const colorScheme = useColorScheme();
   
-  // Memoized color scheme - only recalculates when colorScheme changes
-  const colors: ColorScheme = useMemo(() => ({
-    textColor: colorScheme === 'dark' ? '#ffffff' : '#1A1A1A',
-    subtextColor: colorScheme === 'dark' ? '#94A3B8' : '#6B7280',
-    backgroundColor: colorScheme === 'dark' ? '#1E293B' : '#FFFFFF',
-    cardBackground: colorScheme === 'dark' ? '#334155' : '#F8FAFB',
-    borderColor: colorScheme === 'dark' ? '#475569' : '#E5E7EB',
-  }), [colorScheme]);
-
-  // Memoized styles - only recalculates when customStyles changes
-  const styles = useMemo(() => ({ ...defaultStyles, ...customStyles }), [customStyles]);  // Memoized filtered shops - only recalculates when shops or limit changes
+  // Only memoize expensive computations
+  const colors = useMemo(() => createColorScheme(colorScheme === 'dark'), [colorScheme]);
+  const styles = useMemo(() => ({ ...defaultStyles, ...customStyles }), [customStyles]);
   const displayShops = useMemo(() => shops.slice(0, limit), [shops, limit]);
-
-  // Memoized view all press handler - only recreates when onViewAllPress changes
-  const handleViewAllPress = useCallback(() => {
+  // Simple view all press handler
+  const handleViewAllPress = () => {
     onViewAllPress?.();
-  }, [onViewAllPress]);
+  };
 
-  // Memoized default card renderer - only recreates when dependencies change
-  const renderDefaultCard = useCallback((shop: ShopData, index: number) => (
+  // Simple default card renderer
+  const renderDefaultCard = (shop: ShopData, index: number) => (
     <TouchableOpacity
       key={shop.id}
       style={[
@@ -143,11 +143,10 @@ const BaseShopSection: React.FC<BaseShopSectionProps> = React.memo(({
                 : `${(shop as any).calculatedDistance.toFixed(1)}km`
               }
             </Text>
-          )}
-        </View>
+          )}        </View>
       </View>
     </TouchableOpacity>
-  ), [cardWidth, colors, onShopPress, renderCustomBadge, showCategory, showDistance, showPrice, showRating, styles]);
+  );
 
   // Show empty state if no shops
   if (displayShops.length === 0) {
@@ -163,39 +162,43 @@ const BaseShopSection: React.FC<BaseShopSectionProps> = React.memo(({
             </Text>
           </View>
         </View>
-      );    }
+      );
+    }
     return null;
   }
 
   return (
     <View style={styles.container}>
-      {/* Standardized Header */}
+      
+      {/* Standardized Header */}      
       <View style={styles.headerContainer}>
-        <Text style={[styles.title, { color: colors.textColor }]}>{title}</Text>        {showViewAll && onViewAllPress && (
+        <Text style={[styles.title, { color: colors.textColor }]}>{title}</Text>
+        {showViewAll && onViewAllPress && (
           <TouchableOpacity style={styles.viewAllButton} onPress={handleViewAllPress}>
             <Text style={[styles.viewAllText, { color: '#2E5AA7' }]}>View All</Text>
             <Ionicons name="chevron-forward" size={16} color="#2E5AA7" />
           </TouchableOpacity>
         )}
       </View>
-      
+
       {/* Horizontal Scroll View */}
       <ScrollView 
         horizontal 
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {displayShops.map((shop, index) => 
-          renderCustomCard 
-            ? renderCustomCard(shop, index, styles, colors)
-            : renderDefaultCard(shop, index)
-        )}
-      </ScrollView>    </View>
+        {displayShops.map((shop, index) => (
+          <View key={shop.id}>
+            {renderCustomCard 
+              ? renderCustomCard(shop, index, styles, colors)
+              : renderDefaultCard(shop, index)
+            }
+          </View>
+        ))}
+      </ScrollView>
+    </View>
   );
-});
-
-// Add display name for debugging
-BaseShopSection.displayName = 'BaseShopSection';
+};
 
 // Default standardized styles
 const defaultStyles = StyleSheet.create({
@@ -216,9 +219,8 @@ const defaultStyles = StyleSheet.create({
   viewAllButton: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  viewAllText: {
-    fontSize: 14,
+  },  viewAllText: {
+    fontSize: 16,
     fontFamily: 'Poppins-Medium',
     marginRight: 4,
   },
@@ -313,3 +315,4 @@ const defaultStyles = StyleSheet.create({
 
 export default BaseShopSection;
 export { defaultStyles as BaseShopSectionStyles };
+
