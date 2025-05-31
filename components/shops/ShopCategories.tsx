@@ -12,7 +12,8 @@ import type { ShopCategoriesProps } from './types';
 
 const ShopCategories: React.FC<ShopCategoriesProps> = ({ 
   categories, 
-  onCategoryPress 
+  onCategoryPress,
+  onViewAllPress
 }) => {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
@@ -44,12 +45,21 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
       fontSize: 20,
       fontFamily: 'Poppins-SemiBold',
       color: colors.textColor,
-    },
-    subtitle: {
+    },    subtitle: {
       fontSize: 14,
       fontFamily: 'Poppins-Regular',
       color: colors.subtextColor,
       marginTop: 2,
+    },
+    viewAllButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    viewAllText: {
+      fontSize: 16,
+      fontFamily: 'Poppins-Medium',
+      color: '#2E5AA7',
+      marginRight: 4,
     },
     list: {
       paddingHorizontal: 20,
@@ -111,12 +121,17 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={styles.container}>      <View style={styles.header}>
         <View>
           <Text style={styles.title}>Shop Categories</Text>
           <Text style={styles.subtitle}>Browse by category</Text>
         </View>
+        {onViewAllPress && (
+          <TouchableOpacity style={styles.viewAllButton} onPress={onViewAllPress}>
+            <Text style={styles.viewAllText}>View All</Text>
+            <Ionicons name="chevron-forward" size={16} color="#2E5AA7" />
+          </TouchableOpacity>
+        )}
       </View>
       
       <FlatList
