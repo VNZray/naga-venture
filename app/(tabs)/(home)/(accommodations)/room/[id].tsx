@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   tabContent: {
     paddingTop: 0,
     padding: 16,
-    marginBottom: 100,
+    marginBottom: 150,
   },
   centered: {
     flex: 1,
