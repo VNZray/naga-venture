@@ -1,12 +1,25 @@
+<<<<<<< HEAD
 // app/(tabs)/(home)/(touristSpots)/index.jsx
 import CardContainer from "@/components/CardContainer";
 import PressableButton from "@/components/PressableButton";
 import SearchBar from "@/components/SearchBar";
+=======
+// app/(tabs)/(home)/(touristSpots)/index.tsx
+import CardContainer from "@/components/CardContainer";
+import EmptyState from "@/components/EmptyState";
+import PressableButton from "@/components/PressableButton";
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import SearchBar from "@/components/touristSpot/TouristSearchBar";
+import TouristSpotCard from "@/components/touristSpot/TouristSpotCard";
+import { Colors } from "@/constants/Colors";
+>>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import {
   Dimensions,
+<<<<<<< HEAD
   Image,
   ScrollView,
   StatusBar,
@@ -39,10 +52,41 @@ const TouristSpotDirectory = () => {
     image: string;
   }
 
+=======
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  View
+} from "react-native";
+import Carousel from "react-native-reanimated-carousel";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { categories, destinations, featuredLocations } from "./data";
+
+const width = Dimensions.get("window").width;
+
+interface Category {
+  id: string;
+  name: string;
+  icon: string;
+}
+
+interface Destination {
+  id: string;
+  name: string;
+  image: string;
+}
+
+const TouristSpotDirectory: React.FC = () => {
+  const colorScheme = useColorScheme();
+  const color = colorScheme === "dark" ? "#fff" : "#000";
+  const [searchQuery, setSearchQuery] = useState("");
+
+>>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253
   const handleCategoryPress = (categoryId: string) => {
     router.push(`/(tabs)/(home)/(touristSpots)/(categories)/${categoryId}`);
   };
 
+<<<<<<< HEAD
   interface HandleDestinationPress {
     (destinationId: string): void;
   }
@@ -85,11 +129,39 @@ const TouristSpotDirectory = () => {
             />
           </View>
         </View>
+=======
+  const handleDestinationPress = (destinationId: string) => {
+    router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${destinationId}`);
+  };
+
+  const filteredSpots = useMemo(() => {
+    if (!searchQuery.trim()) return destinations;
+
+    const query = searchQuery.toLowerCase().trim();
+    return destinations.filter((spot) =>
+      spot.name.toLowerCase().includes(query)
+    );
+  }, [searchQuery]);
+
+  return (
+    <SafeAreaProvider>
+      <ThemedView style={styles.container}>
+        <StatusBar
+          barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
+        />
+        
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search tourist spots..."
+        />
+>>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253
 
         <ScrollView showsVerticalScrollIndicator={false}>
           {/* Featured Locations - Only show when not searching */}
           {!searchQuery.trim() && (
             <View style={styles.sectionContainer}>
+<<<<<<< HEAD
               <Text style={[styles.sectionTitle, { color: color }]}>
                 Featured Locations
               </Text>
@@ -97,10 +169,20 @@ const TouristSpotDirectory = () => {
                 <Carousel
                   loop
                   width={width - 40}
+=======
+              <ThemedText type="subtitle" style={styles.CarouselTitle}>
+                Featured Locations
+              </ThemedText>
+              <View style={{ height: 200 }}>
+                <Carousel
+                  loop
+                  width={width - 50}
+>>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253
                   height={200}
                   mode="parallax"
                   data={featuredLocations}
                   scrollAnimationDuration={1000}
+<<<<<<< HEAD
                   renderItem={({ item }) => (
                     <TouchableOpacity
                       key={item.id}
@@ -117,6 +199,15 @@ const TouristSpotDirectory = () => {
                         <Text style={styles.carouselTitle}>{item.name}</Text>
                       </View>
                     </TouchableOpacity>
+=======
+                  renderItem={({ item: spot }) => (
+                    <TouristSpotCard
+                      key={spot.id}
+                      spot={spot}
+                      onPress={() => handleDestinationPress(spot.id)}
+                      variant="carousel"
+                    />
+>>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253
                   )}
                 />
               </View>
@@ -126,15 +217,25 @@ const TouristSpotDirectory = () => {
           {/* Categories - Only show when not searching */}
           {!searchQuery.trim() && (
             <View style={styles.sectionContainer}>
+<<<<<<< HEAD
               <Text style={[styles.sectionTitle, { color: color }]}>
                 Categories
               </Text>
+=======
+              <ThemedText type="subtitle" style={styles.sectionTitle}>
+                Categories
+              </ThemedText>
+>>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253
               <CardContainer style={styles.directories} height={"auto"}>
                 {categories.map((category) => (
                   <PressableButton
                     key={category.id}
                     IconSize={24}
+<<<<<<< HEAD
                     color={color}
+=======
+                    color={Colors[colorScheme].text}
+>>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253
                     direction="column"
                     Title={category.name}
                     Icon={category.icon}
@@ -147,6 +248,7 @@ const TouristSpotDirectory = () => {
 
           {/* Discover More / Search Results */}
           <View style={[styles.sectionContainer, { marginBottom: 100 }]}>
+<<<<<<< HEAD
             <Text style={[styles.sectionTitle, { color: color }]}>
               {searchQuery ? "Search Results" : "Discover More"}
             </Text>
@@ -178,11 +280,35 @@ const TouristSpotDirectory = () => {
                     No tourist spots found matching &quot;{searchQuery}&quot;
                   </Text>
                 </View>
+=======
+            <ThemedText type="subtitle" style={styles.sectionTitle}>
+              {searchQuery ? "Search Results" : "Discover More"}
+            </ThemedText>
+            <View style={styles.destinationsGrid}>
+              {filteredSpots.map((spot) => (
+                <TouristSpotCard
+                  key={spot.id}
+                  spot={{
+                    ...spot,
+                    description: '',
+                    location: ''
+                  }}
+                  onPress={() => handleDestinationPress(spot.id)}
+                  variant="grid"
+                />
+              ))}
+              {filteredSpots.length === 0 && (
+                <EmptyState message={`No tourist spots found matching "${searchQuery}"`} />
+>>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253
               )}
             </View>
           </View>
         </ScrollView>
+<<<<<<< HEAD
       </SafeAreaView>
+=======
+      </ThemedView>
+>>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253
     </SafeAreaProvider>
   );
 };
@@ -196,6 +322,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     padding: 10,
+<<<<<<< HEAD
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -225,6 +352,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+=======
+    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+>>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253
   sectionContainer: {
     paddingHorizontal: 20,
   },
@@ -233,6 +366,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
     marginBottom: 10,
   },
+<<<<<<< HEAD
   carouselItem: {
     borderRadius: 15,
     overflow: "hidden",
@@ -257,12 +391,19 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontFamily: "Poppins-SemiBold",
+=======
+  CarouselTitle: {
+    fontSize: 18,
+    fontFamily: "Poppins-SemiBold",
+    marginBottom: -10,
+>>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253
   },
   destinationsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
+<<<<<<< HEAD
   destinationCard: {
     width: "48%",
     marginBottom: 15,
@@ -306,3 +447,9 @@ const styles = StyleSheet.create({
 });
 
 export default TouristSpotDirectory;
+=======
+});
+
+export default TouristSpotDirectory;
+
+>>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253

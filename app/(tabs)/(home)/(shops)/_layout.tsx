@@ -1,73 +1,64 @@
-import { AccommodationProvider } from "@/context/AccommodationContext";
 import { Stack } from "expo-router";
-import { View } from "react-native";
-const accommodation = () => {};
 
-const AccommodationLayout = () => {
+const ShopDirectoryLayout = () => {
   return (
-    <AccommodationProvider>
-      <Stack
-        screenOptions={{
-          headerBackTitle: "Back",
+    <Stack
+      screenOptions={{
+        headerBackTitle: "Back",
+        headerShown: true,
+        headerTitleAlign: "center",
+        headerTitle: "Shop Directory",
+      }}
+    >
+      <Stack.Screen
+        name="index"
+        options={{
           headerShown: true,
-          headerTitle: `Shop $(shopName)`,
+          headerTitle: "Shop Directory",
         }}
-      >
-        <Stack.Screen
-          name="profile/[id]"
-          options={{
-            headerTransparent: true,
-            headerShown: true,
-            animation: "slide_from_right",
-            headerTitleAlign: "center",
-            headerTitleStyle: {
-              color: "#fff",
-            },
-            headerTintColor: "#fff",
-            headerBackground: () => (
-              <View
-                style={{
-                  flex: 1,
-                  backgroundColor: "rgba(0, 0, 0, 0.4)", // translucent black
-                }}
-              />
-            ),
-          }}
-        />
-        <Stack.Screen
-          name="room/[id]"
-          options={{
-            headerTransparent: true,
-            headerShown: true,
-            animation: "slide_from_right",
-            headerTitleAlign: "center",
-            headerTitleStyle: {
-              color: "#fff",
-            },
-            headerTintColor: "#fff",
-            headerBackground: () => (
-              <View
-                style={{
-                  flex: 1,
-                  backgroundColor: "rgba(0, 0, 0, 0.4)", // translucent black
-                }}
-              />
-            ),
-          }}
-        />
-        <Stack.Screen
-          name="index"
-          options={{
-            headerShown: true,
-            animation: "slide_from_right",
-            headerTitleAlign: "center",
-            headerTitle: "Shops",
-            headerBackTitle: "Back",
-          }}
-        />
-      </Stack>
-    </AccommodationProvider>
+      />
+      <Stack.Screen
+        name="shopViewAllCategoryPage"
+        options={{
+          headerShown: true,
+          animation: "slide_from_right",
+          headerTitleAlign: "center",
+          headerTitle: "All Categories",
+          headerBackTitle: "Back",
+        }}
+      />
+      <Stack.Screen
+        name="(categories)/[category]"
+        options={{
+          headerShown: true,
+          animation: "slide_from_right",
+          headerTitleAlign: "center",
+          headerTitle: "Category",
+          headerBackTitle: "Back",
+        }}
+      />
+      <Stack.Screen
+        name="(subcategory)/[subcategoryId]"
+        options={{
+          headerShown: true,
+          animation: "slide_from_right",
+          headerTitleAlign: "center",
+          headerTitle: "Subcategory",
+          headerBackTitle: "Back",
+        }}
+      />
+      <Stack.Screen
+        name="(details)/[shopId]"
+        options={{
+          headerShown: false,
+          animation: "slide_from_right",
+          headerTitleAlign: "center",
+          headerTitle: "Shop Details",
+          headerBackTitle: "Back",
+        }}
+      />
+    </Stack>
   );
 };
 
-export default AccommodationLayout;
+export default ShopDirectoryLayout;

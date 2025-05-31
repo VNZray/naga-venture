@@ -2,7 +2,7 @@ import CardContainer from "@/components/CardContainer";
 import PressableButton from "@/components/PressableButton";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Dimensions,
   Image,
@@ -18,11 +18,9 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "@/context/AuthContext";
 import { FeaturedLocation } from "../../Controller/HomeData";
 
-import { useEffect } from "react";
 const width = Dimensions.get("screen").width;
 
 const HomeScreen = () => {
-  const { user } = useAuth();
 
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";
@@ -32,8 +30,12 @@ const HomeScreen = () => {
   const ref = React.useRef(null);
   const progress = useSharedValue(0);
 
+  const { user } = useAuth();
+  const didRedirect = useRef(false);
+
   useEffect(() => {
-    if (!user) {
+    if (!user && !didRedirect.current) {
+      didRedirect.current = true;
       router.replace("/(screens)/LoginPage");
     }
   }, [user]);
@@ -128,7 +130,6 @@ const HomeScreen = () => {
               padding: 16,
             }}
           >
-
           </View>
         </ScrollView>
       </SafeAreaView>

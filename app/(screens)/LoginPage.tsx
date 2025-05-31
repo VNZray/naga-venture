@@ -135,7 +135,7 @@ const LoginPage = () => {
                 padding: 20,
               }}
             >
-              <ThemedText type="default2">Don't Have an Account?</ThemedText>
+              <ThemedText type="default2">Don&#39;t Have an Account?</ThemedText>
 
               <Link href={"/(screens)/RegistrationPage"}>
                 <ThemedText type="link">Sign Up</ThemedText>
@@ -224,7 +224,7 @@ const LoginPage = () => {
               padding: 20,
             }}
           >
-            <ThemedText type="default2">Don't Have an Account?</ThemedText>
+            <ThemedText type="default2">Don&#39;t Have an Account?</ThemedText>
 
             <Link href={"/(screens)/RegistrationPage"}>
               <ThemedText type="link" onPress={() => router.push("/(screens)/RegistrationPage")}>Sign Up</ThemedText>
