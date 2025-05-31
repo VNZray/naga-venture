@@ -19,6 +19,7 @@ interface HorizontalCategoriesSectionProps {
   categories: CategoryItem[];
   onCategoryPress: (categoryId: string) => void;
   title?: string;
+  onViewAllPress?: () => void;
 }
 
 /**
@@ -35,6 +36,7 @@ const HorizontalCategoriesSection: React.FC<HorizontalCategoriesSectionProps> = 
   categories,
   onCategoryPress,
   title = "Shop Categories",
+  onViewAllPress,
 }) => {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -45,12 +47,19 @@ const HorizontalCategoriesSection: React.FC<HorizontalCategoriesSectionProps> = 
   const categoryBgColor = isDark ? "#2a2a2a" : "#f8f9fa";
   const categoryBorderColor = isDark ? "#404040" : "#e9ecef";
   const shadowColor = isDark ? "#000000" : "#000000";
-
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      <Text style={[styles.sectionTitle, { color: textColor }]}>
-        {title}
-      </Text>
+      <View style={styles.headerContainer}>
+        <Text style={[styles.sectionTitle, { color: textColor }]}>
+          {title}
+        </Text>
+        {onViewAllPress && (
+          <TouchableOpacity style={styles.viewAllButton} onPress={onViewAllPress}>
+            <Text style={[styles.viewAllText, { color: '#2E5AA7' }]}>View All</Text>
+            <Ionicons name="chevron-forward" size={16} color="#2E5AA7" />
+          </TouchableOpacity>
+        )}
+      </View>
       
       <ScrollView
         horizontal
@@ -80,10 +89,9 @@ const HorizontalCategoriesSection: React.FC<HorizontalCategoriesSectionProps> = 
             <View style={[styles.iconContainer, { 
               backgroundColor: isDark ? "#3a3a3a" : "#ffffff",
               shadowColor: shadowColor,
-            }]}>
-              <Ionicons
+            }]}>              <Ionicons
                 name={category.icon as any}
-                size={28}
+                size={24} // Reduced from 28 to 24
                 color={isDark ? "#60a5fa" : "#3b82f6"}
               />
             </View>
@@ -105,13 +113,27 @@ const HorizontalCategoriesSection: React.FC<HorizontalCategoriesSectionProps> = 
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
+    paddingVertical: 12, // Reduced from 20 to 12
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18, // Consistent with other headers
     fontFamily: "Poppins-SemiBold",
-    marginBottom: 16,
-    paddingHorizontal: 20,
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  viewAllText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    marginRight: 4,
   },
   scrollView: {
     overflow: 'visible',
@@ -120,12 +142,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   categoryItem: {
-    width: 100,
-    height: 120,
+    width: 90, // Reduced from 100 to 90
+    height: 100, // Reduced from 120 to 100
     marginHorizontal: 4,
-    borderRadius: 16,
+    borderRadius: 12, // Reduced from 16 to 12
     borderWidth: 1,
-    padding: 12,
+    padding: 10, // Reduced from 12 to 10
     alignItems: 'center',
     justifyContent: 'center',
     shadowOffset: {
@@ -143,12 +165,12 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 48, // Reduced from 56 to 48
+    height: 48, // Reduced from 56 to 48
+    borderRadius: 24, // Reduced from 28 to 24
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 8,
+    marginBottom: 6, // Reduced from 8 to 6
     shadowOffset: {
       width: 0,
       height: 1,
@@ -158,10 +180,10 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   categoryText: {
-    fontSize: 12,
+    fontSize: 11, // Reduced from 12 to 11
     fontFamily: "Poppins-Medium",
     textAlign: 'center',
-    lineHeight: 16,
+    lineHeight: 14, // Reduced from 16 to 14
     flexShrink: 1,
   },
   endSpacer: {

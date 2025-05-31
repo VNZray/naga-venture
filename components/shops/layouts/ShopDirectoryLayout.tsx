@@ -1,17 +1,15 @@
 // Shop-specific Directory Layout using composition patterns
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import EnhancedSearchBar, { FilterOptions } from '../EnhancedSearchBar';
 
 interface ShopDirectoryLayoutProps {
   children: React.ReactNode;
@@ -21,6 +19,13 @@ interface ShopDirectoryLayoutProps {
   showFeaturedSection?: boolean;
   featuredTitle?: string;
   featuredContent?: React.ReactNode;
+  // Enhanced search props
+  useEnhancedSearch?: boolean;
+  searchSuggestions?: string[];
+  filters?: FilterOptions;
+  onFiltersChange?: (filters: FilterOptions) => void;
+  availableCategories?: { id: string; name: string }[];
+  availablePriceRanges?: string[];
 }
 
 /**
@@ -41,6 +46,12 @@ const ShopDirectoryLayout: React.FC<ShopDirectoryLayoutProps> = ({
   showFeaturedSection = true,
   featuredTitle = "Featured Shops",
   featuredContent,
+  useEnhancedSearch = false,
+  searchSuggestions = [],
+  filters,
+  onFiltersChange,
+  availableCategories = [],
+  availablePriceRanges = [],
 }) => {
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";
@@ -55,31 +66,27 @@ const ShopDirectoryLayout: React.FC<ShopDirectoryLayoutProps> = ({
         <StatusBar
           barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
         />
-        
-        {/* Search Section */}
+          {/* Search Section */}
         <View style={styles.searchContainer}>
-          <View style={styles.searchInputContainer}>
-            <TextInput
-              style={[styles.searchInput, { color: color }]}
+          {useEnhancedSearch && filters && onFiltersChange ? (
+            <EnhancedSearchBar
+              searchQuery={searchQuery}
+              onSearchChange={onSearchChange || (() => {})}
               placeholder={searchPlaceholder}
-              placeholderTextColor={
-                colorScheme === "dark" ? "#8E9196" : "#9F9EA1"
-              }
-              value={searchQuery}
-              onChangeText={onSearchChange}
+              suggestions={searchSuggestions}
+              filters={filters}
+              onFiltersChange={onFiltersChange}
+              availableCategories={availableCategories}
+              availablePriceRanges={availablePriceRanges}
             />
-            <TouchableOpacity
-              style={[
-                styles.searchButton,
-                {
-                  backgroundColor:
-                    colorScheme === "dark" ? "#152A5E" : "#0077B6",
-                },
-              ]}
-            >
-              <Ionicons name="search" size={20} color="#fff" />
-            </TouchableOpacity>
-          </View>
+          ) : (
+            // Basic search fallback (keeping for backward compatibility)
+            <View style={styles.basicSearchContainer}>
+              <Text style={[styles.basicSearchNote, { color: color }]}>
+                Basic search mode - upgrade to enhanced search for more features
+              </Text>
+            </View>
+          )}
         </View>
         
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -114,6 +121,18 @@ const styles = StyleSheet.create({
   searchContainer: {
     paddingHorizontal: 20,
     paddingVertical: 10,
+  },
+  basicSearchContainer: {
+    padding: 15,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  basicSearchNote: {
+    fontSize: 12,
+    fontFamily: "Poppins-Regular",
+    textAlign: 'center',
+    opacity: 0.7,
   },
   searchInputContainer: {
     flexDirection: "row",
@@ -155,7 +174,7 @@ const styles = StyleSheet.create({
   },
   sectionContainer: {
     paddingHorizontal: 20,
-    marginBottom: 20,
+    marginBottom: 0,
   },
   sectionTitle: {
     fontSize: 18,

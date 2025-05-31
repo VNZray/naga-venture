@@ -1,9 +1,11 @@
-import { CompactCategoriesGrid } from '@/components/shops';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import type { ShopCategory } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
 import {
+  Dimensions,
+  FlatList,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -13,160 +15,226 @@ import {
 } from 'react-native';
 import { mainCategories } from '../../../Controller/ShopData';
 
-/**
- * AllCategoriesPage - Comprehensive view of all shop categories
- * 
- * Features:
- * - Shows all categories in a clean grid layout
- * - Organized by main categories with collapsible sections
- * - Search functionality within categories
- * - Beautiful design matching the app's theme
- */
+const { width } = Dimensions.get('window');
+const SUBCATEGORY_GAP = 12;
+const SUBCATEGORIES_PER_ROW = 3;
+const SUBCATEGORY_WIDTH = (width - (SUBCATEGORY_GAP * (SUBCATEGORIES_PER_ROW + 1))) / SUBCATEGORIES_PER_ROW;
+
 const AllCategoriesPage = () => {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
-    // Theme colors
-  const backgroundColor = isDark ? "#1a1a1a" : "#ffffff";
-  const textColor = isDark ? "#ffffff" : "#000000";
-  const headerBgColor = isDark ? "#2a2a2a" : "#f8f9fa";
-  const borderColor = isDark ? "#404040" : "#e9ecef";
-  
-  // Navigation handlers
-  const handleCategoryPress = (categoryId: string) => {
-    // Route subcategory clicks to the subcategory page
-    router.push(`/(tabs)/(home)/(shops)/(subcategory)/${categoryId}`);
+  // Clean, modern color palette with custom accent color
+  const colors = {
+    background: isDark ? "#121212" : "#F8F9FA",
+    cardBackground: isDark ? "#1E1E1E" : "#FFFFFF",
+    textPrimary: isDark ? "#FFFFFF" : "#1A1A1A",
+    textSecondary: isDark ? "#B0B0B0" : "#6B7280",
+    accent: "#2E5AA7", // Custom blue accent color
+    border: isDark ? "#2D2D2D" : "#E5E7EB",
+    divider: isDark ? "#374151" : "#E5E7EB",
+    subcategoryCard: isDark ? "#2A2A2A" : "#F9FAFB",
+    subcategoryBorder: isDark ? "#404040" : "#E5E7EB",
+    shadow: isDark ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.1)",
+    seeAllText: "#2E5AA7", // Custom blue for "See All" text
   };
+
   const handleMainCategoryPress = (mainCategoryId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(categories)/${mainCategoryId}`);
   };
+  const handleSubcategoryPress = (subcategoryId: string) => {
+    router.push(`/(tabs)/(home)/(shops)/(subcategory)/${subcategoryId}`);
+  };
+
+  const renderSubcategoryItem = ({ item, index }: { item: ShopCategory; index: number }) => {
+    const isLastInRow = (index + 1) % SUBCATEGORIES_PER_ROW === 0;
+    
+    return (
+      <TouchableOpacity
+        style={[
+          styles.subcategoryCard,
+          {
+            backgroundColor: colors.subcategoryCard,
+            borderColor: colors.subcategoryBorder,
+            width: SUBCATEGORY_WIDTH,
+            marginRight: isLastInRow ? 0 : SUBCATEGORY_GAP,
+          },
+        ]}
+        onPress={() => handleSubcategoryPress(item.id)}
+        activeOpacity={0.7}
+        accessible={true}
+        accessibilityLabel={item.name}
+        accessibilityRole="button"
+      >
+        <View style={[styles.iconContainer, { backgroundColor: colors.accent + '20' }]}>
+          <Ionicons
+            name={item.icon as any}
+            size={24}
+            color={colors.accent}
+          />
+        </View>
+        <Text 
+          style={[styles.subcategoryTitle, { color: colors.textPrimary }]}
+          numberOfLines={2}
+        >
+          {item.name}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderMainCategorySection = (mainCategory: any, index: number) => {
+    const subcategoryCount = mainCategory.subcategories.length;
+    
+    return (
+      <View key={mainCategory.id} style={styles.sectionContainer}>
+
+        {/* Main Category Header */}
+        <View style={styles.sectionHeader}>
+          <TouchableOpacity
+            style={styles.mainCategoryButton}
+            onPress={() => handleMainCategoryPress(mainCategory.id)}
+            activeOpacity={0.7}
+            accessible={true}
+            accessibilityLabel={`View all ${mainCategory.name} businesses`}
+            accessibilityRole="button"
+          >
+            <Text style={[styles.mainCategoryTitle, { color: colors.textPrimary }]}>
+              {mainCategory.name}
+            </Text>
+            <Text style={[styles.subcategoryCount, { color: colors.textSecondary }]}>
+              {subcategoryCount} {subcategoryCount === 1 ? 'category' : 'categories'}
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={styles.seeAllButton}
+            onPress={() => handleMainCategoryPress(mainCategory.id)}
+            activeOpacity={0.7}
+            accessible={true}
+            accessibilityLabel={`See all ${mainCategory.name}`}
+            accessibilityRole="button"
+          >
+            <Text style={[styles.seeAllText, { color: colors.seeAllText }]}>
+              See All
+            </Text>
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={colors.seeAllText}
+            />
+          </TouchableOpacity>
+        </View>        
+        
+        {/* Divider Line */}
+        <View style={[styles.divider, { backgroundColor: colors.divider }]} />
+
+        {/* Subcategories Grid */}
+        <FlatList
+          data={mainCategory.subcategories}
+          renderItem={renderSubcategoryItem}
+          keyExtractor={(item) => item.id}
+          numColumns={SUBCATEGORIES_PER_ROW}
+          scrollEnabled={false}
+          contentContainerStyle={styles.subcategoriesGrid}
+          columnWrapperStyle={styles.gridRow}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    );
+  };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      paddingVertical: 16,
+    },
+    sectionContainer: {
+      marginBottom: 32,
+      paddingHorizontal: 16,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-end',
+      marginBottom: 12,
+    },
+    mainCategoryButton: {
+      flex: 1,
+    },
+    mainCategoryTitle: {
+      fontSize: 22,
+      fontFamily: "Poppins-Bold",
+      marginBottom: 2,
+    },
+    subcategoryCount: {
+      fontSize: 13,
+      fontFamily: "Poppins-Regular",
+    },
+    seeAllButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 4,
+      paddingHorizontal: 8,
+      gap: 4,
+    },
+    seeAllText: {
+      fontSize: 14,
+      fontFamily: "Poppins-SemiBold",
+    },
+    divider: {
+      height: 1,
+      marginBottom: 16,
+    },
+    subcategoriesGrid: {
+      paddingBottom: 8,
+    },    gridRow: {
+      justifyContent: 'flex-start',
+      marginBottom: SUBCATEGORY_GAP,
+    },
+    subcategoryCard: {
+      borderRadius: 12,
+      borderWidth: 1,
+      padding: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: 100,
+      shadowColor: colors.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 3,
+      elevation: 2,
+    },
+    iconContainer: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 8,
+    },
+    subcategoryTitle: {
+      fontSize: 12,
+      fontFamily: "Poppins-Medium",
+      textAlign: 'center',
+      lineHeight: 16,
+    },
+  });
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-
-        <View style={styles.header}>
-          <Text style={[styles.pageTitle, { color: textColor }]}>
-            All Categories
-          </Text>
-          <Text style={[styles.pageSubtitle, { color: textColor + '80' }]}>
-            Discover all types of shops and services
-          </Text>
-        </View>
-
-        {mainCategories.map((mainCategory) => (
-          <View key={mainCategory.id} style={styles.mainCategorySection}>
-
-            <TouchableOpacity
-              style={[styles.mainCategoryHeader, { 
-                backgroundColor: headerBgColor,
-                borderColor: borderColor,
-              }]}
-              onPress={() => handleMainCategoryPress(mainCategory.id)}
-              activeOpacity={0.7}
-            >
-              <View style={styles.mainCategoryContent}>
-                <View style={styles.mainCategoryTitleRow}>
-                  <Ionicons
-                    name={mainCategory.icon as any}
-                    size={24}
-                    color={isDark ? "#60a5fa" : "#3b82f6"}
-                  />
-                  <Text style={[styles.mainCategoryTitle, { color: textColor }]}>
-                    {mainCategory.name}
-                  </Text>
-                  <Text style={[styles.categoryCount, { color: textColor + '60' }]}>
-                    ({mainCategory.subcategories.length})
-                  </Text>
-                </View>
-                <Text style={[styles.mainCategoryDescription, { color: textColor + '80' }]}>
-                  {mainCategory.description}
-                </Text>
-              </View>
-              <Ionicons
-                name="chevron-forward"
-                size={20}
-                color={isDark ? "#60a5fa" : "#3b82f6"}
-              />
-            </TouchableOpacity>
-
-            <CompactCategoriesGrid
-              categories={mainCategory.subcategories}
-              onCategoryPress={handleCategoryPress}
-              title=""
-              itemsPerRow={3}
-            />
-          </View>
-        ))}
-
-        <View style={{ height: 100 }} />
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {mainCategories.map((mainCategory, index) => 
+          renderMainCategorySection(mainCategory, index)
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 10,
-  },
-  pageTitle: {
-    fontSize: 28,
-    fontFamily: "Poppins-Bold",
-    marginBottom: 8,
-  },
-  pageSubtitle: {
-    fontSize: 16,
-    fontFamily: "Poppins-Regular",
-    lineHeight: 24,
-  },
-  mainCategorySection: {
-    marginBottom: 24,
-  },
-  mainCategoryHeader: {
-    marginHorizontal: 20,
-    marginBottom: 16,
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  mainCategoryContent: {
-    flex: 1,
-  },
-  mainCategoryTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  mainCategoryTitle: {
-    fontSize: 18,
-    fontFamily: "Poppins-SemiBold",
-    marginLeft: 12,
-    flex: 1,
-  },
-  categoryCount: {
-    fontSize: 14,
-    fontFamily: "Poppins-Medium",
-  },
-  mainCategoryDescription: {
-    fontSize: 14,
-    fontFamily: "Poppins-Regular",
-    marginLeft: 36,
-    lineHeight: 20,
-  },
-});
 
 export default AllCategoriesPage;

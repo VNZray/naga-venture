@@ -135,7 +135,7 @@ export const filterShops = (
 };
 
 // Sorting utilities following Interface Segregation Principle
-export type ShopSortOption = 'name' | 'rating' | 'category' | 'distance';
+export type ShopSortOption = 'name' | 'rating' | 'category' | 'distance' | 'price';
 export type SortDirection = 'asc' | 'desc';
 
 export const sortShops = (
@@ -146,9 +146,7 @@ export const sortShops = (
   const sortedShops = [...shops];
   
   sortedShops.sort((a, b) => {
-    let comparison = 0;
-
-    switch (sortBy) {
+    let comparison = 0;    switch (sortBy) {
       case 'name':
         comparison = a.name.localeCompare(b.name);
         break;
@@ -161,6 +159,12 @@ export const sortShops = (
       case 'distance':
         // Placeholder for distance sorting
         comparison = 0;
+        break;
+      case 'price':
+        // Sort by price range (assuming priceRange has orderable values)
+        const priceA = a.priceRange || '';
+        const priceB = b.priceRange || '';
+        comparison = priceA.localeCompare(priceB);
         break;
       default:
         comparison = 0;
@@ -301,4 +305,87 @@ export const formatRatingCount = (count: number): string => {
 
 export const formatPriceRange = (priceRange: string): string => {
   return priceRange.replace(/₱/g, '₱ ');
+};
+
+// Enhanced filtering for the new search component
+export interface EnhancedFilterOptions {
+  categories: string[];
+  minRating: number;
+  maxRating: number;
+  priceRanges: string[];
+  openNow: boolean;
+  sortBy: 'name' | 'rating' | 'distance' | 'price';
+}
+
+export const filterShopsEnhanced = (
+  shops: ShopData[],
+  searchQuery: string,
+  filters: EnhancedFilterOptions
+): ShopData[] => {
+  let filteredShops = [...shops];
+
+  // Apply search query filter
+  if (searchQuery.trim()) {
+    filteredShops = searchShops(filteredShops, searchQuery);
+  }
+
+  // Apply category filter
+  if (filters.categories.length > 0) {
+    filteredShops = filteredShops.filter(shop => 
+      filters.categories.includes(shop.category)
+    );
+  }
+
+  // Apply rating filter
+  filteredShops = filteredShops.filter(shop => 
+    shop.rating >= filters.minRating && shop.rating <= filters.maxRating
+  );
+
+  // Apply price range filter
+  if (filters.priceRanges.length > 0) {
+    filteredShops = filteredShops.filter(shop => 
+      filters.priceRanges.includes(shop.priceRange || '')
+    );
+  }
+
+  // Apply open now filter (assuming shops have an isOpen property)
+  if (filters.openNow) {
+    filteredShops = filteredShops.filter(shop => 
+      (shop as any).isOpen !== false // Default to open if not specified
+    );
+  }
+
+  // Apply sorting
+  const sortDirection: SortDirection = 'desc'; // Default to descending for rating/relevance
+  filteredShops = sortShops(filteredShops, filters.sortBy, sortDirection);
+
+  return filteredShops;
+};
+
+// Generate search suggestions based on shop data
+export const generateSearchSuggestions = (
+  shops: ShopData[],
+  query: string,
+  limit: number = 5
+): string[] => {
+  if (!query.trim()) return [];
+
+  const searchTerm = query.toLowerCase();
+  const suggestions = new Set<string>();
+
+  // Add shop name suggestions
+  shops.forEach(shop => {
+    if (shop.name.toLowerCase().includes(searchTerm)) {
+      suggestions.add(shop.name);
+    }
+  });
+
+  // Add category suggestions
+  shops.forEach(shop => {
+    if (shop.category.toLowerCase().includes(searchTerm)) {
+      suggestions.add(shop.category);
+    }
+  });
+
+  return Array.from(suggestions).slice(0, limit);
 };
