@@ -33,7 +33,10 @@ import { shopsData } from "../../../../Controller/ShopData";
 const ShopDetails = () => {
   const { shopId } = useLocalSearchParams();
   const [activeTab, setActiveTab] = useState("details");
-  const shop = shopId ? shopsData[String(shopId)] : null;
+  
+  // Handle shopId which can be string or string[]
+  const shopKey = Array.isArray(shopId) ? shopId[0] : shopId;
+  const shop = shopKey ? shopsData[Number(shopKey) as keyof typeof shopsData] : null;
 
   // Handle case where shop is not found
   if (!shop) {

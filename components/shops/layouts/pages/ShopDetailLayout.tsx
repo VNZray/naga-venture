@@ -1,15 +1,16 @@
-// Shop-specific Detail Layout Component
+// filepath: c:\Users\Hans Candor\Documents\capstone-NV\naga-venture\components\shops\layouts\ShopDetailLayout.tsx
+// Optimized Shop-specific Detail Layout Component with performance enhancements
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
@@ -28,7 +29,12 @@ interface ShopDetailLayoutProps {
 }
 
 /**
- * ShopDetailLayout - Composition component for shop detail pages
+ * ShopDetailLayout - Optimized composition component for shop detail pages
+ * 
+ * Performance optimizations:
+ * - Memoized color calculations
+ * - Optimized callbacks for navigation
+ * - Conditional rendering optimizations
  * 
  * This layout handles:
  * - Hero image section with back button
@@ -38,25 +44,37 @@ interface ShopDetailLayoutProps {
  * 
  * Used specifically by: Shop detail pages
  */
-const ShopDetailLayout: React.FC<ShopDetailLayoutProps> = ({
+const ShopDetailLayout: React.FC<ShopDetailLayoutProps> = React.memo(({
   children,
   shop,
   showBackButton = true,
 }) => {
   const colorScheme = useColorScheme();
-  const textColor = colorScheme === "dark" ? "#fff" : "#000";
-  const backgroundColor = colorScheme === "dark" ? "#0A1B47" : "#F8F8F8";
+  
+  // Memoized color calculations for performance
+  const colors = useMemo(() => ({
+    textColor: colorScheme === "dark" ? "#fff" : "#000",
+    backgroundColor: colorScheme === "dark" ? "#0A1B47" : "#F8F8F8",
+  }), [colorScheme]);
+
+  // Optimized navigation handler
+  const handleBackPress = useCallback(() => {
+    router.back();
+  }, []);
+
+  // Memoized image source
+  const imageSource = useMemo(() => ({ uri: shop.image }), [shop.image]);
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.backgroundColor }]}>
         <ScrollView>
           {/* Header Image */}
           <View style={styles.headerImageContainer}>
-            <Image source={{ uri: shop.image }} style={styles.headerImage} />
+            <Image source={imageSource} style={styles.headerImage} />
             {showBackButton && (
               <TouchableOpacity
-                onPress={() => router.back()}
+                onPress={handleBackPress}
                 style={styles.backButton}
               >
                 <Ionicons name="arrow-back" size={24} color="white" />
@@ -65,14 +83,14 @@ const ShopDetailLayout: React.FC<ShopDetailLayoutProps> = ({
           </View>
 
           {/* Details Container */}
-          <View style={[styles.detailsContainer, { backgroundColor }]}>
+          <View style={[styles.detailsContainer, { backgroundColor: colors.backgroundColor }]}>
             <View style={styles.titleRow}>
-              <Text style={[styles.shopTitle, { color: textColor }]}>
+              <Text style={[styles.shopTitle, { color: colors.textColor }]}>
                 {shop.name}
               </Text>
               {/* Favorite Button - Add functionality later */}
               <TouchableOpacity style={styles.favoriteButton}>
-                <Ionicons name="heart-outline" size={24} color={textColor} />
+                <Ionicons name="heart-outline" size={24} color={colors.textColor} />
               </TouchableOpacity>
             </View>
 
@@ -90,7 +108,9 @@ const ShopDetailLayout: React.FC<ShopDetailLayoutProps> = ({
       </SafeAreaView>
     </SafeAreaProvider>
   );
-};
+});
+
+ShopDetailLayout.displayName = 'ShopDetailLayout';
 
 const styles = StyleSheet.create({
   container: {

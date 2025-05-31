@@ -2,14 +2,13 @@
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 
-import type { FilterOptions } from "@/components/shops/EnhancedSearchBar";
 import type { ShopData } from "@/types/shop";
+import type { FilterOptions } from "components/shops/search/EnhancedSearchBar.tsx";
 
 import {
   HorizontalCategoriesSection,
   NearYouShops,
   PersonalizedRecommendations,
-  RecentlyViewedShops,
   ShopDirectoryLayout,
   ShopFeaturedCarousel,
   ShopItemList,
@@ -133,16 +132,13 @@ const ShopsDirectory = () => {
         shops={destinations.slice(0, 8)} 
         onShopPress={handleShopPress}
         title="Trending Shops"
-      />
-
-      {/* Near You Shops */}
+      />      {/* Near You Shops */}
       <NearYouShops 
         shops={destinations} 
         onShopPress={handleShopPress}
         maxDistance={5}
         limit={6}
-      />      {/* Recently Viewed Shops */}
-      <RecentlyViewedShops onShopPress={handleShopPress} />
+      />
 
       <ShopItemList
         shops={filteredDestinations}

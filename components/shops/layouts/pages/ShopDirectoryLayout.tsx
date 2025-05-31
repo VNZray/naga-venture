@@ -2,14 +2,14 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
 import React from 'react';
 import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import EnhancedSearchBar, { FilterOptions } from '../EnhancedSearchBar';
+import EnhancedSearchBar, { FilterOptions } from '../../search/EnhancedSearchBar';
 
 interface ShopDirectoryLayoutProps {
   children: React.ReactNode;
