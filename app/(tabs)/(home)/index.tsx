@@ -2,7 +2,7 @@ import CardContainer from "@/components/CardContainer";
 import PressableButton from "@/components/PressableButton";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Dimensions,
   Image,
@@ -18,7 +18,6 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "@/context/AuthContext";
 import { FeaturedLocation } from "../../Controller/HomeData";
 
-import { useEffect } from "react";
 const width = Dimensions.get("screen").width;
 
 const HomeScreen = () => {

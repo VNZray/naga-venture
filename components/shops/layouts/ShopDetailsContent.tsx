@@ -1,33 +1,20 @@
 // Shop-specific Details Content Component
 import { useColorScheme } from '@/hooks/useColorScheme';
+import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-    Image,
-    Linking,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
-interface Shop {
-  description?: string;
-  contact?: string;
-  openingHours?: string;
-  priceRange?: string;
-  additionalImages?: string[];
-  mapLocation?: {
-    latitude: number;
-    longitude: number;
-  };
-  location?: string;
-  [key: string]: any;
-}
-
 interface ShopDetailsContentProps {
-  shop: Shop;
+  shop: ShopData;
 }
 
 /**
@@ -41,7 +28,7 @@ interface ShopDetailsContentProps {
  * - Additional images
  * - Map/location
  */
-export const ShopDetailsContent: React.FC<ShopDetailsContentProps> = ({
+const ShopDetailsContent: React.FC<ShopDetailsContentProps> = ({
   shop,
 }) => {
   const colorScheme = useColorScheme();
