@@ -2,13 +2,13 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { StyleSheet, TextInput, View } from "react-native";
 
-interface TSearchBarProps {
+interface TouristSearchBarProps {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
 }
 
-const TSearchBar: React.FC<TSearchBarProps> = ({ value, onChangeText, placeholder }) => {
+const TouristSearchBar: React.FC<TouristSearchBarProps> = ({ value, onChangeText, placeholder }) => {
   const colorScheme = useColorScheme();
   const textColor = Colors[colorScheme].text;
 
@@ -39,17 +39,16 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 10,
+    borderRadius: 8,
+    padding: 12,
     paddingHorizontal: 15,
-    fontFamily: "Poppins-Regular",
-    fontSize: 14,
+    fontSize: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 5,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
 });
 
-export default TSearchBar; 
+export default TouristSearchBar; 

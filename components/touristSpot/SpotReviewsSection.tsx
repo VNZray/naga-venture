@@ -1,6 +1,6 @@
-import { reviewsData } from "@/app/(tabs)/(home)/(touristSpots)/reviewsData";
 import ReviewCard from "@/components/ReviewCard";
 import { ThemedText } from "@/components/ThemedText";
+import { useTouristSpots } from "@/context/TouristSpotContext";
 import { ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -17,10 +17,10 @@ interface SpotReviewsSectionProps {
 }
 
 export default function SpotReviewsSection({ spotId, rating, ratingCount, renderStars, iconColor }: SpotReviewsSectionProps) {
-  // Get reviews for this spot
-  const spotReviews = reviewsData.filter(review => review.spotId === spotId);
+  const { getReviews } = useTouristSpots();
+  const allReviews = getReviews(spotId);
 
-  // Calculate rating distribution
+  // Initialize rating distribution object to count reviews by star rating
   const ratingDistribution: RatingDistribution = {
     5: 0,
     4: 0,
@@ -29,11 +29,14 @@ export default function SpotReviewsSection({ spotId, rating, ratingCount, render
     1: 0
   };
 
-  spotReviews.forEach(review => {
+  // Count reviews for each star rating
+  allReviews.forEach(review => {
     ratingDistribution[review.rating]++;
   });
 
+  // Render the rating distribution bars
   const renderRatingBars = () => {
+    // Find the maximum count to scale the bars proportionally
     const maxCount = Math.max(...Object.values(ratingDistribution));
     
     return (
@@ -64,10 +67,11 @@ export default function SpotReviewsSection({ spotId, rating, ratingCount, render
 
   return (
     <View style={styles.reviewsTab}>
+      {/* Overall rating summary section */}
       <View style={styles.ratingSummary}>
         <View style={styles.overallRating}>
           <ThemedText type="title" style={styles.overallRatingValue}>
-            {rating ? rating.toFixed(1) : "No"}
+            {rating ? rating.toFixed(1) : "No Ratings"}
           </ThemedText>
           <View>{renderStars(rating)}</View>
           <ThemedText type="default2" style={styles.ratingCount}>
@@ -76,9 +80,11 @@ export default function SpotReviewsSection({ spotId, rating, ratingCount, render
         </View>
         <View style={styles.ratingBreakdown}>{renderRatingBars()}</View>
       </View>
-      {spotReviews.length > 0 ? (
+
+      {/* Individual reviews list */}
+      {allReviews.length > 0 ? (
         <View style={styles.reviewsList}>
-          {spotReviews.map((review) => (
+          {allReviews.map((review) => (  
             <ReviewCard
               key={review.id}
               reviewerName={review.reviewerName}
@@ -86,6 +92,7 @@ export default function SpotReviewsSection({ spotId, rating, ratingCount, render
               reviewDate={review.reviewDate}
               profileImageUri={review.profileImageUri}
               style={styles.reviewCard}
+              rating={review.rating}
             />
           ))}
         </View>

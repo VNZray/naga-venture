@@ -1,3 +1,4 @@
+import { TouristSpotProvider } from "@/context/TouristSpotContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Stack } from "expo-router";
 import React, { FC } from "react";
@@ -7,7 +8,7 @@ import { StatusBar } from "react-native";
 const TouristSpotsLayout: FC = () => {
   const colorScheme = useColorScheme();
   return (
-    <>
+    <TouristSpotProvider>
       <StatusBar
         backgroundColor={colorScheme === "dark" ? "#000" : "#fff"}
         barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
@@ -45,7 +46,7 @@ const TouristSpotsLayout: FC = () => {
           }}
         />
       </Stack>
-    </>
+    </TouristSpotProvider>
   );
 };
 
