@@ -1,8 +1,11 @@
-// app/(tabs)/(home)/(touristSpots)/(categories)/[category].tsx
+// Category page that displays tourist spots filtered by a specific category
+// Includes search functionality and a list view of spots within the category
+
 import EmptyState from "@/components/EmptyState";
 import { ThemedView } from "@/components/ThemedView";
 import SearchBar from "@/components/touristSpot/TouristSearchBar";
 import TouristSpotCard from "@/components/touristSpot/TouristSpotCard";
+import { useTouristSpots } from "@/context/TouristSpotContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { useLayoutEffect, useMemo, useState } from "react";
@@ -11,17 +14,18 @@ import {
   StatusBar,
   StyleSheet
 } from "react-native";
-import { TouristSpot, touristSpotsData } from "../data";
-
-type CategoryId = "historical" | "natural" | "urban" | "museums" | "resorts";
 
 const CategoryPage: React.FC = () => {
+  // Get category ID from URL parameters
   const { category: categoryId } = useLocalSearchParams<{ category: string }>();
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
+  const { getSpotsByCategory, searchSpots } = useTouristSpots();
+  
+  // State for search functionality
   const [searchQuery, setSearchQuery] = useState<string>("");
 
-  // Define category title based on categoryId
+  // Helper function to get human-readable category title
   const getCategoryTitle = (id: string): string => {
     switch (id) {
       case "historical":
@@ -39,28 +43,24 @@ const CategoryPage: React.FC = () => {
     }
   };
 
+  // Set navigation header title based on category
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: getCategoryTitle(categoryId),
     });
   }, [navigation, categoryId]);
 
-  // Filter tourist spots based on the categoryId
-  const allCategorySpots = useMemo(() => {
-    return Object.values(touristSpotsData).filter(
-      (spot: TouristSpot) => spot.category === categoryId
-    );
-  }, [categoryId]);
-
+  // Get spots by category and filter by search query
   const filteredCategorySpots = useMemo(() => {
-    if (!searchQuery.trim()) return allCategorySpots;
+    const categorySpots = getSpotsByCategory(categoryId);
+    
+    if (!searchQuery.trim()) return categorySpots;
 
-    const query = searchQuery.toLowerCase().trim();
-    return allCategorySpots.filter((spot: TouristSpot) =>
-      spot.name.toLowerCase().includes(query)
-    );
-  }, [searchQuery, allCategorySpots]);
+    const searchResults = searchSpots(searchQuery);
+    return searchResults.filter(spot => spot.category === categoryId);
+  }, [categoryId, searchQuery, getSpotsByCategory, searchSpots]);
 
+  // Navigation handler for spot selection
   const handleSpotClick = (spotId: string): void => {
     router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${spotId}`);
   };
@@ -71,13 +71,14 @@ const CategoryPage: React.FC = () => {
         barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
       />
       
+      {/* Search bar for filtering spots within category */}
       <SearchBar
         value={searchQuery}
         onChangeText={setSearchQuery}
         placeholder={`Search ${getCategoryTitle(categoryId).toLowerCase()}...`}
       />
 
-      {/* Content */}
+      {/* List of spots in the category */}
       <ScrollView contentContainerStyle={styles.content}>
         {filteredCategorySpots.length > 0 ? (
           filteredCategorySpots.map((spot) => (

@@ -1,4 +1,6 @@
-// app/(tabs)/(home)/(touristSpots)/index.tsx
+// Main tourist spots directory page that displays all tourist spots in Naga City
+// Features a search bar, featured locations carousel, category navigation, and a grid of all spots
+
 import CardContainer from "@/components/CardContainer";
 import EmptyState from "@/components/EmptyState";
 import PressableButton from "@/components/PressableButton";
@@ -7,6 +9,7 @@ import { ThemedView } from "@/components/ThemedView";
 import SearchBar from "@/components/touristSpot/TouristSearchBar";
 import TouristSpotCard from "@/components/touristSpot/TouristSpotCard";
 import { Colors } from "@/constants/Colors";
+import { useTouristSpots } from "@/context/TouristSpotContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
@@ -19,27 +22,19 @@ import {
 } from "react-native";
 import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { categories, destinations, featuredLocations } from "./data";
 
+// Get screen width for carousel sizing
 const width = Dimensions.get("window").width;
-
-interface Category {
-  id: string;
-  name: string;
-  icon: string;
-}
-
-interface Destination {
-  id: string;
-  name: string;
-  image: string;
-}
 
 const TouristSpotDirectory: React.FC = () => {
   const colorScheme = useColorScheme();
   const color = colorScheme === "dark" ? "#fff" : "#000";
+  const { getCategories, getDestinations, searchSpots } = useTouristSpots();
+  
+  // State for search functionality
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Navigation handlers
   const handleCategoryPress = (categoryId: string) => {
     router.push(`/(tabs)/(home)/(touristSpots)/(categories)/${categoryId}`);
   };
@@ -48,14 +43,16 @@ const TouristSpotDirectory: React.FC = () => {
     router.push(`/(tabs)/(home)/(touristSpots)/(spots)/${destinationId}`);
   };
 
+  // Get categories and destinations
+  const categories = getCategories();
+  const destinations = getDestinations();
+
+  // Filter spots based on search query
   const filteredSpots = useMemo(() => {
     if (!searchQuery.trim()) return destinations;
 
-    const query = searchQuery.toLowerCase().trim();
-    return destinations.filter((spot) =>
-      spot.name.toLowerCase().includes(query)
-    );
-  }, [searchQuery]);
+    return searchSpots(searchQuery);
+  }, [searchQuery, destinations, searchSpots]);
 
   return (
     <SafeAreaProvider>
@@ -64,6 +61,7 @@ const TouristSpotDirectory: React.FC = () => {
           barStyle={colorScheme === "dark" ? "light-content" : "dark-content"}
         />
         
+        {/* Search bar for filtering spots */}
         <SearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -71,7 +69,7 @@ const TouristSpotDirectory: React.FC = () => {
         />
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          {/* Featured Locations - Only show when not searching */}
+          {/* Featured Locations Carousel - Only shown when not searching */}
           {!searchQuery.trim() && (
             <View style={styles.sectionContainer}>
               <ThemedText type="subtitle" style={styles.CarouselTitle}>
@@ -83,12 +81,16 @@ const TouristSpotDirectory: React.FC = () => {
                   width={width - 50}
                   height={200}
                   mode="parallax"
-                  data={featuredLocations}
+                  data={destinations.slice(0, 3)}
                   scrollAnimationDuration={1000}
                   renderItem={({ item: spot }) => (
                     <TouristSpotCard
                       key={spot.id}
-                      spot={spot}
+                      spot={{
+                        ...spot,
+                        description: '',
+                        location: ''
+                      }}
                       onPress={() => handleDestinationPress(spot.id)}
                       variant="carousel"
                     />
@@ -98,7 +100,7 @@ const TouristSpotDirectory: React.FC = () => {
             </View>
           )}
 
-          {/* Categories - Only show when not searching */}
+          {/* Categories Section - Only shown when not searching */}
           {!searchQuery.trim() && (
             <View style={styles.sectionContainer}>
               <ThemedText type="subtitle" style={styles.sectionTitle}>
@@ -120,7 +122,7 @@ const TouristSpotDirectory: React.FC = () => {
             </View>
           )}
 
-          {/* Discover More / Search Results */}
+          {/* Discover More / Search Results Section */}
           <View style={[styles.sectionContainer, { marginBottom: 100 }]}>
             <ThemedText type="subtitle" style={styles.sectionTitle}>
               {searchQuery ? "Search Results" : "Discover More"}
