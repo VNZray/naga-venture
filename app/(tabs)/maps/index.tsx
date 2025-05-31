@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { Text, View } from 'react-native';
-
-
-const Maps = () => {
-    const colorScheme = useColorScheme();
-    const color = colorScheme === 'dark' ? '#fff' : '#000';
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ fontSize: 24, color: color, fontWeight: 'bold' }}>Maps</Text>
-    </View>
-  )
-}
-
-export default Maps
-=======
 import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -151,4 +134,3 @@ const styles = StyleSheet.create({
 });
 
 export default Maps;
->>>>>>> 8e19b64207678c8f7ccccbd42b27cb6cf1df1253
