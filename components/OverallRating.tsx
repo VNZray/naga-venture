@@ -11,12 +11,18 @@ interface OverallRatingProps {
   reviews: Review[];
 }
 
+// Utility function to round to nearest 0.5
+const sanitizeRating = (value: number) => {
+  return Math.max(0, Math.min(5, Math.round(value * 2) / 2));
+};
+
 const OverallRating: React.FC<OverallRatingProps> = ({ reviews }) => {
   // Calculate rating distribution
   const ratingDistribution = useMemo(() => {
     const dist: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
     reviews.forEach((r) => {
-      dist[r.rating]++;
+      const cleanRating = Math.max(1, Math.min(5, Math.round(r.rating))); // Clamp to [1–5]
+      dist[cleanRating]++;
     });
     return dist;
   }, [reviews]);
@@ -28,27 +34,27 @@ const OverallRating: React.FC<OverallRatingProps> = ({ reviews }) => {
     return total / reviews.length;
   }, [reviews]);
 
+  const averageRatingRounded = sanitizeRating(averageRating);
   const maxCount = Math.max(...Object.values(ratingDistribution));
 
   return (
     <View style={{ flexDirection: 'row' }}>
-      {/* Average rating */}
       <View style={styles.averageContainer}>
-        <ThemedText style={styles.averageText}>{averageRating.toFixed(1)}</ThemedText>
+        <ThemedText style={styles.averageText}>{averageRatingRounded}</ThemedText>
         <StarRating
-          rating={averageRating}
-          onChange={() => {}}
+          rating={averageRatingRounded}
+          onChange={() => { }}
           starSize={22}
           color="#FFD700"
           enableSwiping={false}
           enableHalfStar={true}
+          maxStars={5}
         />
         <ThemedText style={styles.reviewCount}>
           {reviews.length} review{reviews.length !== 1 ? 's' : ''}
         </ThemedText>
       </View>
 
-      {/* Rating bars */}
       <View style={styles.ratingBarsContainer}>
         {[5, 4, 3, 2, 1].map((star) => (
           <View key={star} style={styles.ratingBarRow}>

@@ -98,7 +98,7 @@ export const rooms = [
     roomPrice: 2000.0,
     roomImage:
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOiV-zO8KiAssWgdTgs5duPvyZJ-wFt_R9Kg&s",
-    ratings: 4.5,
+    ratings: 5.0,
     accommodationId: 1,
     description: `
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed auctor tempor metus, a tincidunt purus vestibulum a. Integer feugiat quam at ante suscipit, a tempor nunc iaculis. Fusce scelerisque nunc velit, ut tempor turpis rhoncus ac. Nulla facilisi. Vivamus volutpat est id ante euismod, at gravida lectus pretium. Donec et vulputate libero. Quisque in augue neque. Fusce hendrerit ex purus, vel aliquam sapien cursus vel. Sed in felis purus. Vivamus euismod nisi at sapien fringilla, non convallis ex cursus.
@@ -154,8 +154,8 @@ export const reviews = [
     accommodationId: 1,
     roomId: null,
     userId: 1,
-    message: 'dasdasdasd adad asd asd asd asdas dasd ad asd asd adasd asd wad asd wadawf asf  cf ascac habd abcySYD VCAVSCVYAS CVASCV YASVY VAYC VAYSVC 8YASC8SA ASCASCASG AGSF7 7A98A F8',
-    rating: 3,
+    message: 'Good place to stay, very clean and comfortable. The staff were friendly and helpful.',
+    rating: 5,
     date: '09-28-2003'
   },
   {
@@ -163,8 +163,8 @@ export const reviews = [
     accommodationId: null,
     roomId: 1,
     userId: 1,
-    message: 'dasdasdasd adad asd asd asd asdas dasd ad asd asd adasd asd wad asd wadawf asf  cf ascac habd abcySYD VCAVSCVYAS CVASCV YASVY VAYC VAYSVC 8YASC8SA ASCASCASG AGSF7 7A98A F8',
-    rating: 3,
+    message: 'Good place to stay, very clean and comfortable. The staff were friendly and helpful.',
+    rating: 4.5,
     date: '09-28-2003'
 
   },
@@ -173,8 +173,8 @@ export const reviews = [
     accommodationId: 1,
     roomId: null,
     userId: 2,
-    message: 'dasdasdasd adad asd asd asd asdas dasd ad asd asd adasd asd wad asd wadawf asf  cf ascac habd abcySYD VCAVSCVYAS CVASCV YASVY VAYC VAYSVC 8YASC8SA ASCASCASG AGSF7 7A98A F8',
-    rating: 3,
+    message: 'Good place to stay, very clean and comfortable. The staff were friendly and helpful.',
+    rating: 5,
     date: '09-28-2003'
 
   },
@@ -183,8 +183,8 @@ export const reviews = [
     accommodationId: null,
     roomId: 1,
     userId: 2,
-    message: 'dasdasdasd adad asd asd asd asdas dasd ad asd asd adasd asd wad asd wadawf asf  cf ascac habd abcySYD VCAVSCVYAS CVASCV YASVY VAYC VAYSVC 8YASC8SA ASCASCASG AGSF7 7A98A F8',
-    rating: 3,
+    message: 'Good place to stay, very clean and comfortable. The staff were friendly and helpful.',
+    rating: 4,
     date: '09-28-2003'
   }
 ]

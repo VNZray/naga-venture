@@ -1,4 +1,4 @@
-import { accommodations, reviews as initialReviews } from '@/app/Controller/AccommodationData';
+import { reviews as initialReviews } from '@/app/Controller/AccommodationData';
 import { users } from '@/app/Controller/User';
 import OverallRating from '@/components/OverallRating';
 import ReviewCard from '@/components/ReviewCard';
@@ -38,12 +38,14 @@ const AccommodationRatings: React.FC<AccommodationRatingsProps> = ({ accommodati
   const handleAddReview = () => {
     if (!user || newReview.trim() === '') return;
 
+    const safeRating = Math.min(5, Math.max(1, rating));
+
     const newReviewObj = {
       id: reviews.length + 5,
       userId: user.id,
       accommodationId: accId,
       roomId: null,
-      rating: rating,
+      rating: safeRating,
       date: new Date().toISOString().split('T')[0],
       message: newReview.trim(),
     };
@@ -51,13 +53,13 @@ const AccommodationRatings: React.FC<AccommodationRatingsProps> = ({ accommodati
     setReviews([newReviewObj, ...reviews]);
     setNewReview('');
     setRating(5);
-    setModalVisible(false); // Close modal after submitting
+    setModalVisible(false);
+
+    console.log('New review added:', newReviewObj);
   };
 
   return (
     <View style={{ padding: 16, paddingTop: 0 }}>
-
-
       {reviews.length > 0 ? (
         <>
           <OverallRating reviews={reviews} />
@@ -82,6 +84,8 @@ const AccommodationRatings: React.FC<AccommodationRatingsProps> = ({ accommodati
                       onChange={setRating}
                       starSize={28}
                       color="#FFD700"
+                      maxStars={5}
+                      enableHalfStar={true}
                       style={{ marginBottom: 16 }}
                     />
                     <TextInput
@@ -111,19 +115,19 @@ const AccommodationRatings: React.FC<AccommodationRatingsProps> = ({ accommodati
                 ? 'https://randomuser.me/api/portraits/women/1.jpg'
                 : 'https://randomuser.me/api/portraits/men/2.jpg';
 
-            const imageUri =
-              accommodations.find((acc) => acc.id === review.accommodationId)?.imageUri ||
-              'https://media-cdn.tripadvisor.com/media/photo-p/2e/4f/53/15/uma-hotel-residences.jpg';
+            const reviewDate = new Date(review.date).toLocaleDateString(undefined, {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            });
 
             return (
               <View key={review.id} style={{ marginTop: 16 }}>
                 <ReviewCard
-                  reviewerName={reviewerName}
-                  reviewDate={review.date}
-                  reviewText={review.message}
-                  imageUri={imageUri}
                   profileImageUri={profileImageUri}
-                  elevation={3}
+                  reviewerName={reviewerName}
+                  reviewDate={reviewDate}
+                  reviewText={review.message}
                   rating={review.rating}
                 />
               </View>
@@ -152,7 +156,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)', // dark semi-transparent background
+    backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },

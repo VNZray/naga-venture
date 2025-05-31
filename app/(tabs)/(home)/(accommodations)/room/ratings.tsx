@@ -13,6 +13,7 @@ import {
   View
 } from 'react-native';
 import StarRating from 'react-native-star-rating-widget';
+
 type User = {
   id: number;
   name: string;
@@ -21,6 +22,11 @@ type User = {
 interface RoomRatingsProps {
   roomId: string;
 }
+
+// Utility function to round to the nearest 0.5
+const sanitizeRating = (value: number) => {
+  return Math.max(0, Math.min(5, Math.round(value * 2) / 2));
+};
 
 const RoomRatings: React.FC<RoomRatingsProps> = ({ roomId }) => {
   const { user } = useAuth();
@@ -41,7 +47,7 @@ const RoomRatings: React.FC<RoomRatingsProps> = ({ roomId }) => {
       userId: user.id,
       accommodationId: null,
       roomId: rId,
-      rating: rating,
+      rating: sanitizeRating(rating),
       date: new Date().toISOString().split('T')[0],
       message: newReview.trim(),
     };
@@ -52,11 +58,16 @@ const RoomRatings: React.FC<RoomRatingsProps> = ({ roomId }) => {
     setModalVisible(false);
   };
 
+  console.log('Current reviews:', reviews);
+  console.log('Current user:', user);
+  console.log('New review:', newReview);
+  console.log('Current rating:', rating);
+
   return (
     <View>
       {reviews.length > 0 ? (
         <>
-                  <OverallRating reviews={reviews} />
+          <OverallRating reviews={reviews} />
 
           {user ? (
             <>
@@ -74,10 +85,11 @@ const RoomRatings: React.FC<RoomRatingsProps> = ({ roomId }) => {
                   <View style={styles.modalContainer}>
                     <ThemedText style={styles.label}>Leave a review:</ThemedText>
                     <StarRating
-                      rating={rating}
-                      onChange={setRating}
+                      rating={sanitizeRating(rating)}
+                      onChange={(value) => setRating(sanitizeRating(value))}
                       starSize={28}
                       color="#FFD700"
+                      enableHalfStar={true}
                       style={{ marginBottom: 16 }}
                     />
                     <TextInput
@@ -121,7 +133,7 @@ const RoomRatings: React.FC<RoomRatingsProps> = ({ roomId }) => {
                   imageUri={imageUri}
                   profileImageUri={profileImageUri}
                   elevation={3}
-                  rating={review.rating}
+                  rating={sanitizeRating(review.rating)}
                 />
               </View>
             );
