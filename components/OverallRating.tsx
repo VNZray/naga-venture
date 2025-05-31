@@ -40,7 +40,7 @@ const OverallRating: React.FC<OverallRatingProps> = ({ reviews }) => {
   return (
     <View style={{ flexDirection: 'row' }}>
       <View style={styles.averageContainer}>
-        <ThemedText style={styles.averageText}>{averageRatingRounded}</ThemedText>
+        <ThemedText type='defaultSemiBold' style={styles.averageText}>{averageRatingRounded}</ThemedText>
         <StarRating
           rating={averageRatingRounded}
           onChange={() => { }}
@@ -87,8 +87,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   averageText: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    fontSize: 42,
   },
   reviewCount: {
     fontSize: 12,

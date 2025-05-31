@@ -166,7 +166,6 @@ export const reviews = [
     message: 'Good place to stay, very clean and comfortable. The staff were friendly and helpful.',
     rating: 4.5,
     date: '09-28-2003'
-
   },
   {
     id: 3,
@@ -176,7 +175,6 @@ export const reviews = [
     message: 'Good place to stay, very clean and comfortable. The staff were friendly and helpful.',
     rating: 5,
     date: '09-28-2003'
-
   },
   {
     id: 4,
@@ -186,5 +184,81 @@ export const reviews = [
     message: 'Good place to stay, very clean and comfortable. The staff were friendly and helpful.',
     rating: 4,
     date: '09-28-2003'
+  },
+
+  // More reviews for user 1
+  {
+    id: 5,
+    accommodationId: 2,
+    roomId: null,
+    userId: 1,
+    message: 'Budget-friendly and located in a convenient spot. Rooms were a bit small but manageable.',
+    rating: 4,
+    date: '10-02-2003'
+  },
+  {
+    id: 6,
+    accommodationId: null,
+    roomId: 2,
+    userId: 1,
+    message: 'Spacious room with decent amenities. Worth the price.',
+    rating: 4.2,
+    date: '10-03-2003'
+  },
+  {
+    id: 7,
+    accommodationId: null,
+    roomId: 3,
+    userId: 1,
+    message: 'Had a restful stay here. Clean linens and quiet environment.',
+    rating: 4.8,
+    date: '10-04-2003'
+  },
+  {
+    id: 8,
+    accommodationId: null,
+    roomId: 6,
+    userId: 1,
+    message: 'Room was clean but a little cramped. Staff was accommodating.',
+    rating: 3.9,
+    date: '10-05-2003'
+  },
+
+  // More reviews for user 2
+  {
+    id: 9,
+    accommodationId: 2,
+    roomId: null,
+    userId: 2,
+    message: 'The place was okay for a short stay. Good customer service.',
+    rating: 4,
+    date: '10-06-2003'
+  },
+  {
+    id: 10,
+    accommodationId: null,
+    roomId: 4,
+    userId: 2,
+    message: 'Comfortable bed and good air conditioning. Would recommend.',
+    rating: 4.3,
+    date: '10-07-2003'
+  },
+  {
+    id: 11,
+    accommodationId: null,
+    roomId: 5,
+    userId: 2,
+    message: 'Great view from the window. Quiet surroundings made for a peaceful night.',
+    rating: 4.7,
+    date: '10-08-2003'
+  },
+  {
+    id: 12,
+    accommodationId: null,
+    roomId: 6,
+    userId: 2,
+    message: 'Not bad. The room could use a bit of renovation, but everything worked.',
+    rating: 3.8,
+    date: '10-09-2003'
   }
-]
+];

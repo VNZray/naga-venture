@@ -1,5 +1,6 @@
 import { reviews as initialReviews } from '@/app/Controller/AccommodationData';
 import { users } from '@/app/Controller/User';
+import CardContainer from '@/components/CardContainer';
 import OverallRating from '@/components/OverallRating';
 import ReviewCard from '@/components/ReviewCard';
 import { ThemedText } from '@/components/ThemedText';
@@ -13,6 +14,7 @@ import {
   View
 } from 'react-native';
 import StarRating from 'react-native-star-rating-widget';
+import Icon from 'react-native-vector-icons/MaterialIcons'; // or FontAwesome, Ionicons, etc.
 
 type User = {
   id: number;
@@ -35,8 +37,16 @@ const AccommodationRatings: React.FC<AccommodationRatingsProps> = ({ accommodati
   const [rating, setRating] = useState(5);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [feedbackMessage, setFeedbackMessage] = useState('');
+  const [feedbackType, setFeedbackType] = useState<'success' | 'error' | ''>('');
+
   const handleAddReview = () => {
-    if (!user || newReview.trim() === '') return;
+    if (!user || newReview.trim() === '') {
+      setFeedbackMessage('Please enter a valid review.');
+      setFeedbackType('error');
+      clearFeedbackAfterDelay();
+      return;
+    }
 
     const safeRating = Math.min(5, Math.max(1, rating));
 
@@ -55,57 +65,90 @@ const AccommodationRatings: React.FC<AccommodationRatingsProps> = ({ accommodati
     setRating(5);
     setModalVisible(false);
 
+    setFeedbackMessage('Review submitted successfully!');
+    setFeedbackType('success');
+    clearFeedbackAfterDelay();
+
     console.log('New review added:', newReviewObj);
+  };
+
+  const clearFeedbackAfterDelay = () => {
+    setTimeout(() => {
+      setFeedbackMessage('');
+      setFeedbackType('');
+    }, 3000);
   };
 
   return (
     <View style={{ padding: 16, paddingTop: 0 }}>
       {reviews.length > 0 ? (
         <>
-          <OverallRating reviews={reviews} />
-
-          {user ? (
-            <>
-              <View style={{ marginTop: 16 }}>
-                <Button title="Leave a Review" onPress={() => setModalVisible(true)} />
+          <CardContainer style={{ padding: 16 }}>
+            <OverallRating reviews={reviews} />
+            {feedbackMessage !== '' && (
+              <View style={[styles.feedbackContainer, { marginTop: 16 }]}>
+                {feedbackType === 'success' && (
+                  <Icon name="check-circle" size={20} color="green" style={styles.icon} />
+                )}
+                <ThemedText style={[styles.feedbackText, feedbackType === 'success' ? styles.success : styles.error]}>
+                  {feedbackMessage}
+                </ThemedText>
               </View>
+            )}
 
-              <Modal
-                visible={modalVisible}
-                animationType="fade"
-                transparent={true}
-                onRequestClose={() => setModalVisible(false)}
-              >
-                <View style={styles.modalOverlay}>
-                  <View style={styles.modalContainer}>
-                    <ThemedText style={styles.label}>Leave a review:</ThemedText>
-                    <StarRating
-                      rating={rating}
-                      onChange={setRating}
-                      starSize={28}
-                      color="#FFD700"
-                      maxStars={5}
-                      enableHalfStar={true}
-                      style={{ marginBottom: 16 }}
-                    />
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Write a review..."
-                      value={newReview}
-                      onChangeText={setNewReview}
-                      multiline
-                    />
-                    <View style={styles.modalButtonRow}>
-                      <Button title="Cancel" onPress={() => setModalVisible(false)} />
-                      <Button title="Submit Review" onPress={handleAddReview} />
+            {user ? (
+              <>
+                <View style={{ marginTop: 16 }}>
+                  <Button title="Leave a Review" onPress={() => setModalVisible(true)} />
+                </View>
+
+                <Modal
+                  visible={modalVisible}
+                  animationType="fade"
+                  transparent={true}
+                  onRequestClose={() => setModalVisible(false)}
+                >
+                  <View style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
+
+
+                      <View style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                        <ThemedText type='default' style={styles.label}>Leave a review:</ThemedText>
+
+                        <StarRating
+                          rating={rating}
+                          onChange={setRating}
+                          starSize={28}
+                          color="#FFD700"
+                          maxStars={5}
+                          enableHalfStar={true}
+                          style={{ marginBottom: 16 }}
+                        />
+                      </View>
+                      <TextInput
+                        style={styles.input}
+                        placeholder="Write a review..."
+                        value={newReview}
+                        onChangeText={setNewReview}
+                        multiline
+                      />
+                      <View style={styles.modalButtonRow}>
+                        <Button title="Cancel" onPress={() => setModalVisible(false)} />
+                        <Button title="Submit Review" onPress={handleAddReview} />
+                      </View>
                     </View>
                   </View>
-                </View>
-              </Modal>
-            </>
-          ) : (
-            <ThemedText>Please log in to leave a review.</ThemedText>
-          )}
+                </Modal>
+              </>
+            ) : (
+              <ThemedText>Please log in to leave a review.</ThemedText>
+            )}
+          </CardContainer>
+
           {reviews.map((review) => {
             const reviewer = users.find((u) => u.id === review.userId);
             const reviewerName = reviewer?.name || 'Unknown User';
@@ -152,7 +195,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   label: {
-    marginBottom: 4,
+    marginBottom: 16,
   },
   modalOverlay: {
     flex: 1,
@@ -171,6 +214,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  feedbackText: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  success: {
+    color: 'green',
+  },
+  error: {
+    color: 'red',
+  },
+  feedbackContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  icon: {
+    marginRight: 6,
+  },
+
 });
 
 export default AccommodationRatings;
