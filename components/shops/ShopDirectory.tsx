@@ -1,3 +1,4 @@
+import { specialOffersData as importedSpecialOffersData } from '@/app/Controller/ShopData';
 import { ShopColors } from '@/constants/ShopColors';
 import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,22 +12,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import DiscoverMoreShopList from './DiscoverMoreShopList'; // Import the new list component
 import RecommendedShopCard from './RecommendedShopCard';
 import ShopCarousel from './ShopCarousel';
 import ShopCategories from './ShopCategories';
-import ShopList from './ShopList';
+import ShopList from './ShopList'; // Keep for search results
 import ShopSearch from './ShopSearch';
 import SpecialOfferCard from './SpecialOfferCard';
-// Corrected import using path alias
-import { specialOffersData as importedSpecialOffersData } from '@/app/Controller/ShopData';
 
-// Define a simple type for our special offer data for props, if needed elsewhere consider moving to types.ts
 interface SpecialOfferItem {
   id: string;
   promoImageUrl: string;
   title?: string;
   altText?: string;
-  targetPath?: string; // For navigation
+  targetPath?: string;
 }
 
 interface ShopDirectoryProps {
@@ -45,7 +44,6 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
   featuredShops,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-
   const specialOffersData: SpecialOfferItem[] = useMemo(
     () => importedSpecialOffersData,
     []
@@ -57,13 +55,19 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
       backgroundColor: ShopColors.background,
     },
     content: {
+      // Main ScrollView's style
       paddingTop: 8,
-      paddingBottom: 32,
+    },
+    scrollViewContent: {
+      // contentContainerStyle for the main ScrollView
+      paddingBottom: 32, // Ensures padding at the very end of all content
     },
     section: {
-      marginBottom: 24,
+      // Style for each section block
+      marginBottom: 24, // Spacing between sections
     },
     sectionHeader: {
+      // For sections like Recommended, Special Offers (if they have a View All)
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -71,6 +75,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
       marginBottom: 16,
     },
     sectionTitle: {
+      // For titles within sectionHeader
       fontSize: 20,
       fontFamily: 'Poppins-SemiBold',
       color: ShopColors.textPrimary,
@@ -86,6 +91,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
       marginRight: 4,
     },
     horizontalListContentContainer: {
+      // For horizontal FlatLists
       paddingHorizontal: 20,
       paddingVertical: 4,
     },
@@ -93,6 +99,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
       width: 16,
     },
     emptyStateText: {
+      // Generic empty state text
       paddingHorizontal: 20,
       paddingVertical: 10,
       fontFamily: 'Poppins-Regular',
@@ -112,12 +119,12 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
     );
   }, [shops, searchQuery]);
 
-  const recommendedShops = useMemo(
+  const recommendedShopsData = useMemo(
     () => shops.filter((shop) => shop.rating >= 4.5).slice(0, 10),
     [shops]
   );
 
-  const discoverMoreShops = useMemo(() => shops, [shops]);
+  const discoverMoreShopsData = useMemo(() => shops, [shops]);
 
   const handleShopPress = (shopId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
@@ -154,18 +161,34 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
     return `Search Results (${filteredShops.length})`;
   }, [searchQuery, filteredShops.length]);
 
-  const renderRecommendedShopCard = ({ item }: { item: ShopData }) => (
-    <RecommendedShopCard shop={item} onPress={handleShopPress} />
+  const renderRecommendedShopCardForHorizontalList = ({
+    item,
+  }: {
+    item: ShopData;
+  }) => (
+    <RecommendedShopCard shop={item} onPress={handleShopPress} width={280} />
   );
 
   const renderSpecialOfferCard = ({ item }: { item: SpecialOfferItem }) => (
     <SpecialOfferCard offer={item} onPress={handleSpecialOfferPress} />
   );
 
+  // Optional: Handler for favorite toggling in DiscoverMoreList if needed
+  const handleDiscoverItemFavoriteToggle = (
+    shopId: string,
+    isFavorited: boolean
+  ) => {
+    console.log(
+      `Shop ${shopId} favorite status: ${isFavorited} (from DiscoverMoreList)`
+    );
+    // Implement actual favorite state update logic here if this feature is active
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
         style={styles.content}
+        contentContainerStyle={styles.scrollViewContent} // Added for overall bottom padding
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -234,7 +257,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Recommended for you</Text>
-                {recommendedShops.length > 0 && (
+                {recommendedShopsData.length > 0 && (
                   <TouchableOpacity
                     style={styles.viewAllButton}
                     onPress={handleViewAllRecommended}
@@ -249,10 +272,10 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                   </TouchableOpacity>
                 )}
               </View>
-              {recommendedShops.length > 0 ? (
+              {recommendedShopsData.length > 0 ? (
                 <FlatList
-                  data={recommendedShops}
-                  renderItem={renderRecommendedShopCard}
+                  data={recommendedShopsData}
+                  renderItem={renderRecommendedShopCardForHorizontalList}
                   keyExtractor={(item) => item.id}
                   horizontal
                   showsHorizontalScrollIndicator={false}
@@ -268,35 +291,27 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
               )}
             </View>
 
-            {/* 5. Discover More Section - UPDATED for Vertical Scrolling Full-Width Cards */}
+            {/* 5. Discover More Section - Using new DiscoverMoreList component */}
             <View style={styles.section}>
-              <ShopList
-                shops={discoverMoreShops}
+              <DiscoverMoreShopList
+                shops={discoverMoreShopsData}
                 onShopPress={handleShopPress}
-                title="Discover More"
-                horizontal={false} // Ensures vertical list
-                showRating={true}
-                showCategory={true} // You can decide if category is needed on full-width cards
-                showViewAll={false} // Appropriate for a long "infinite" list
-                gridLayout={false} // Ensures it's not a grid
-                // numColumns prop removed
-                // width prop removed (cards will take full width)
-                emptyMessage="No more shops to discover."
+                title="Discover More" // This title is now rendered by DiscoverMoreList
+                onToggleFavoriteItem={handleDiscoverItemFavoriteToggle} // Optional
               />
             </View>
           </>
         ) : (
           // Search Results Section
           <View style={styles.section}>
-            <ShopList
-              shops={filteredShops} // Search results are also a vertical list
+            <ShopList // ShopList is fine for search results (vertical, full-width ShopCard)
+              shops={filteredShops}
               onShopPress={handleShopPress}
-              title={searchResultsTitle}
+              title={searchResultsTitle} // Title rendered by ShopList
               horizontal={false}
               showRating={true}
               showCategory={true}
               emptyMessage="No shops found matching your search."
-              // gridLayout={false} // Default, or explicitly false
             />
           </View>
         )}
