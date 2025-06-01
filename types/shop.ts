@@ -3,6 +3,8 @@
 export interface ShopMenuItem {
   item: string;
   price: string;
+  description?: string;
+  category?: string;
 }
 
 export interface ShopLocation {
@@ -14,54 +16,89 @@ export interface ShopData {
   id: string;
   name: string;
   category: string;
-  description: string;
+  description?: string;
   image: string;
   rating: number;
   ratingCount: number;
-  reviews: any[];
-  additionalImages: string[];
-  location: string;
-  mapLocation: ShopLocation;
-  contact: string;
-  website: string;
-  openingHours: string;
-  priceRange: string;
-  menu: ShopMenuItem[];
-  // Additional optional properties for UI display
-  reviewCount?: number;
-  distance?: string;
-  price?: string;
+  reviews?: ShopReview[];
+  additionalImages?: string[];
+  location?: string;
+  mapLocation?: {
+    latitude: number;
+    longitude: number;
+  };
+  contact?: string;
+  website?: string;
+  openingHours?: string;
+  priceRange?: string;
+  menu?: MenuItem[];
   isOpen?: boolean;
+  distance?: number;
+}
+
+export interface MenuItem {
+  item: string;
+  price: string;
+  description?: string;
+}
+
+export interface ShopReview {
+  id: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
+
+export interface FeaturedShop {
+  id: string;
+  name: string;
+  image: string;
+  category: string;
+  rating: number;
 }
 
 export interface ShopCategory {
   id: string;
   name: string;
   icon: string;
-  shopCount?: number;
+  description?: string;
+  mainCategory?: string;
+  mainCategoryName?: string;
+  subcategories?: ShopCategory[];
 }
 
-// For component props that expect specific shapes
-export interface Shop {
+export interface MainCategory {
   id: string;
   name: string;
-  image: string;
-  category?: string;
-  rating?: number;
-  reviewCount?: number;
-  distance?: string;
-  price?: string;
-  isOpen?: boolean;
-  ratingCount?: number;
-  [key: string]: any;
+  icon: string;
+  description: string;
+  subcategories: ShopCategory[];
 }
 
-// Featured shop interface for carousel
-export interface FeaturedShop {
-  id: string;
-  name: string;
-  image: string;
-  category?: string;
-  rating?: number;
-  [key: string]: any;
+export interface ShopFilter {
+  categories: string[];
+  minRating: number;
+  maxRating: number;
+  priceRanges: string[];
+  openNow: boolean;
+  maxDistance?: number;
+}
+
+export interface SearchSuggestion {
+  text: string;
+  type: 'shop' | 'category' | 'location';
+  count?: number;
+}
+
+export type SortOption = 'rating' | 'distance' | 'name' | 'price';
+
+export interface ShopSearchFilters {
+  query: string;
+  categories: string[];
+  rating: number;
+  priceRange: string[];
+  sortBy: SortOption;
+  openNow: boolean;
 }
