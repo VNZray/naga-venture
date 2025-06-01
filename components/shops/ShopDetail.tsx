@@ -222,7 +222,9 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
           {shop.rating && (
             <View style={styles.ratingContainer}>
               <Ionicons name="star" size={20} color="#FFD700" />
-              <Text style={styles.ratingText}>{shop.rating.toFixed(1)}</Text>              <Text style={styles.reviewsText}>
+              <Text style={styles.ratingText}>{shop.rating.toFixed(1)}</Text>
+              {/* Corrected line: */}
+              <Text style={styles.reviewsText}>
                 ({shop.ratingCount || 0} reviews)
               </Text>
             </View>
