@@ -108,7 +108,8 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                 showViewAll={true}
               />
             </View>
-              <View style={styles.section}>
+            
+            <View style={styles.section}>
               <ShopCategories
                 categories={categories}
                 onCategoryPress={handleCategoryPress}
@@ -116,7 +117,8 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                 onViewAllPress={handleViewAllCategories}
               />
             </View>
-              <View style={styles.section}>
+
+            <View style={styles.section}>
               <ShopList
                 shops={recommendedShops}
                 onShopPress={handleShopPress}
@@ -140,7 +142,9 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                 showCategory={true}
                 showViewAll={true}
               />
-            </View>            <View style={styles.section}>
+            </View>            
+            
+            <View style={styles.section}>
               <ShopList
                 shops={discoverMoreShops}
                 onShopPress={handleShopPress}
@@ -155,13 +159,12 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
             </View>
           </>
         )}
-        
-        {searchQuery && (
+          {searchQuery && (
           <View style={styles.section}>
             <ShopList
               shops={filteredShops}
               onShopPress={handleShopPress}
-              title={`Search Results (${filteredShops.length})`}
+              title={searchQuery ? `Search Results (${filteredShops.length})` : 'Search Results'}
               horizontal={false}
               showRating={true}
               showCategory={true}

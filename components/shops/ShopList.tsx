@@ -87,6 +87,7 @@ const ShopList: React.FC<ShopListProps> = ({
       paddingHorizontal: 6,
     },
   });
+
   // Handle empty state with beautiful design
   if (shops.length === 0) {
     return (
@@ -116,7 +117,9 @@ const ShopList: React.FC<ShopListProps> = ({
             </TouchableOpacity>
           )}
         </View>
-      )}      {/* Horizontal, vertical, or grid list with beautiful styling */}
+      )}
+
+      {/* Horizontal, vertical, or grid list with beautiful styling */}
       {gridLayout ? (
         <FlatList
           data={shops}
@@ -131,7 +134,7 @@ const ShopList: React.FC<ShopListProps> = ({
               />
             </View>
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
           numColumns={numColumns}
           contentContainerStyle={styles.gridContainer}
           showsVerticalScrollIndicator={false}
@@ -145,7 +148,7 @@ const ShopList: React.FC<ShopListProps> = ({
         >
           {shops.map((shop) => (
             <ShopCard
-              key={shop.id}
+              key={shop.id?.toString() || Math.random().toString()}
               shop={shop}
               onPress={onShopPress}
               showRating={showRating}
@@ -157,7 +160,7 @@ const ShopList: React.FC<ShopListProps> = ({
       ) : (
         <View style={styles.verticalContainer}>
           {shops.map((shop) => (
-            <View key={shop.id} style={styles.verticalCard}>
+            <View key={shop.id?.toString() || Math.random().toString()} style={styles.verticalCard}>
               <ShopCard
                 shop={shop}
                 onPress={onShopPress}

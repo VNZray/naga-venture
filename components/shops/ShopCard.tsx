@@ -100,19 +100,18 @@ const ShopCard: React.FC<ShopCardProps> = ({
           style={styles.image}
           resizeMode="cover"
         />
-        
+
         {/* Beautiful rating badge overlay */}
-        {showRating && shop.rating && (
+        {showRating && shop.rating !== undefined && shop.rating !== null && (
           <View style={styles.ratingBadge}>
             <Ionicons name="star" size={12} color="#FFD700" />
             <Text style={styles.ratingBadgeText}>{shop.rating.toFixed(1)}</Text>
           </View>
         )}
       </View>
-      
-      <View style={styles.shopInfo}>
+        <View style={styles.shopInfo}>
         <Text style={styles.name} numberOfLines={1}>
-          {shop.name}
+          {shop.name || 'Unknown Shop'}
         </Text>
         
         {showCategory && shop.category && (
@@ -120,9 +119,8 @@ const ShopCard: React.FC<ShopCardProps> = ({
             {shop.category}
           </Text>
         )}
-        
-        <View style={styles.shopFooter}>
-          {showRating && shop.rating && (
+          <View style={styles.shopFooter}>
+          {showRating && shop.rating !== undefined && shop.rating !== null && (
             <View style={styles.ratingContainer}>
               <Ionicons name="star" size={12} color="#FFD700" />
               <Text style={styles.ratingText}>
