@@ -2,11 +2,7 @@ import { ShopColors } from '@/constants/ShopColors';
 import type { ShopData } from '@/types/shop';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
-import {
-    ScrollView,
-    StyleSheet,
-    View
-} from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import ShopCarousel from './ShopCarousel';
 import ShopCategories from './ShopCategories';
 import ShopList from './ShopList';
@@ -22,10 +18,10 @@ interface ShopDirectoryProps {
   featuredShops: ShopData[];
 }
 
-const ShopDirectory: React.FC<ShopDirectoryProps> = ({ 
-  shops, 
-  categories, 
-  featuredShops 
+const ShopDirectory: React.FC<ShopDirectoryProps> = ({
+  shops,
+  categories,
+  featuredShops,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -46,30 +42,25 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
   // Simple filtering
   const filteredShops = useMemo(() => {
     if (!searchQuery.trim()) return shops;
-    
-    return shops.filter(shop => 
-      shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      shop.category.toLowerCase().includes(searchQuery.toLowerCase())
+
+    return shops.filter(
+      (shop) =>
+        shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        shop.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [shops, searchQuery]);
 
   // Get recommended shops (high ratings)
-  const recommendedShops = useMemo(() => 
-    shops.filter(shop => shop.rating >= 4.5).slice(0, 6),
+  const recommendedShops = useMemo(
+    () => shops.filter((shop) => shop.rating >= 4.5).slice(0, 6),
     [shops]
   );
 
   // Get special offers shops (static for now - could be shops with promotions)
-  const specialOffersShops = useMemo(() => 
-    shops.slice(0, 6),
-    [shops]
-  );
+  const specialOffersShops = useMemo(() => shops.slice(0, 6), [shops]);
 
   // Get discover more shops (all shops for infinite scroll-like experience)
-  const discoverMoreShops = useMemo(() => 
-    shops,
-    [shops]
-  );
+  const discoverMoreShops = useMemo(() => shops, [shops]);
 
   const handleShopPress = (shopId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
@@ -105,12 +96,9 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
     <View style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.section}>
-          <ShopSearch 
-            onSearch={setSearchQuery}
-            value={searchQuery}
-          />
+          <ShopSearch onSearch={setSearchQuery} value={searchQuery} />
         </View>
-        
+
         {!searchQuery && (
           <>
             <View style={styles.section}>
@@ -122,7 +110,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                 showViewAll={true}
               />
             </View>
-            
+
             <View style={styles.section}>
               <ShopCategories
                 categories={categories}
@@ -144,7 +132,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                 showViewAll={true}
               />
             </View>
-            
+
             <View style={styles.section}>
               <ShopList
                 shops={specialOffersShops}
@@ -156,8 +144,8 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                 showCategory={true}
                 showViewAll={true}
               />
-            </View>            
-            
+            </View>
+
             <View style={styles.section}>
               <ShopList
                 shops={discoverMoreShops}

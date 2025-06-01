@@ -4,11 +4,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
 import {
-    FlatList,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ShopCard from './ShopCard';
@@ -22,38 +22,48 @@ interface ShopCategoryPageProps {
   shops: ShopData[];
 }
 
-const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({ 
-  category, 
-  shops 
-}) => {  // Handle case where category is not found
+const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
+  category,
+  shops,
+}) => {
+  // Handle case where category is not found
   if (!category) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: ShopColors.background }} edges={['top']}>
-        <View style={{ 
-          flex: 1, 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          padding: 20 
-        }}>
-          <Text style={{
-            fontSize: 18,
-            fontFamily: 'Poppins-SemiBold',
-            color: ShopColors.textPrimary,
-            marginBottom: 12,
-            textAlign: 'center',
-          }}>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: ShopColors.background }}
+        edges={['top']}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 20,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 18,
+              fontFamily: 'Poppins-SemiBold',
+              color: ShopColors.textPrimary,
+              marginBottom: 12,
+              textAlign: 'center',
+            }}
+          >
             Category Not Found
           </Text>
-          <Text style={{
-            fontSize: 16,
-            fontFamily: 'Poppins-Regular',
-            color: ShopColors.textSecondary,
-            textAlign: 'center',
-            marginBottom: 24,
-          }}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontFamily: 'Poppins-Regular',
+              color: ShopColors.textSecondary,
+              textAlign: 'center',
+              marginBottom: 24,
+            }}
+          >
             The category you are looking for does not exist.
           </Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => router.back()}
             style={{
               backgroundColor: ShopColors.accent,
@@ -62,18 +72,21 @@ const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
               borderRadius: 12,
             }}
           >
-            <Text style={{ 
-              color: '#FFFFFF', 
-              fontFamily: 'Poppins-Medium',
-              fontSize: 16,
-            }}>
+            <Text
+              style={{
+                color: '#FFFFFF',
+                fontFamily: 'Poppins-Medium',
+                fontSize: 16,
+              }}
+            >
               Go Back
             </Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
-  }const styles = StyleSheet.create({
+  }
+  const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: ShopColors.background,
@@ -81,14 +94,16 @@ const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
     content: {
       flex: 1,
       padding: 20,
-    },    statsContainer: {
+    },
+    statsContainer: {
       backgroundColor: ShopColors.cardBackground,
       borderRadius: 12,
       padding: 16,
       marginBottom: 20,
       borderWidth: 1,
       borderColor: ShopColors.border,
-    },    shopCount: {
+    },
+    shopCount: {
       fontSize: 16,
       fontFamily: 'Poppins-Medium',
       color: ShopColors.textPrimary,
@@ -111,7 +126,8 @@ const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
       justifyContent: 'center',
       alignItems: 'center',
       padding: 32,
-    },    emptyIcon: {
+    },
+    emptyIcon: {
       backgroundColor: ShopColors.cardBackground,
       borderRadius: 32,
       width: 64,
@@ -135,7 +151,8 @@ const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
       color: ShopColors.textSecondary,
       textAlign: 'center',
       lineHeight: 22,
-    },});
+    },
+  });
 
   const handleShopPress = (shopId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
@@ -150,7 +167,8 @@ const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
         showCategory={false}
       />
     </View>
-  );  return (
+  );
+  return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.content}>
         <View style={styles.statsContainer}>
@@ -174,17 +192,22 @@ const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
           />
         ) : (
           <View style={styles.emptyContainer}>
-            <View style={styles.emptyIcon}>            <Ionicons 
-                name="storefront-outline" 
-                size={32} 
-                color={ShopColors.textSecondary} 
+            <View style={styles.emptyIcon}>
+              {' '}
+              <Ionicons
+                name="storefront-outline"
+                size={32}
+                color={ShopColors.textSecondary}
               />
             </View>
             <Text style={styles.emptyTitle}>No Shops Found</Text>
             <Text style={styles.emptyText}>
-              There are currently no shops available in the {category.name.toLowerCase()} category. Please check back later or explore other categories.
+              There are currently no shops available in the{' '}
+              {category.name.toLowerCase()} category. Please check back later or
+              explore other categories.
             </Text>
-          </View>        )}
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );

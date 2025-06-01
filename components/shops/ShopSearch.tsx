@@ -1,18 +1,13 @@
-
 import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import {
-    StyleSheet,
-    TextInput,
-    View
-} from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import type { ShopSearchProps } from './types';
 
-const ShopSearch: React.FC<ShopSearchProps> = ({ 
-  onSearch, 
-  placeholder = 'Search shops...', 
-  value = '' 
+const ShopSearch: React.FC<ShopSearchProps> = ({
+  onSearch,
+  placeholder = 'Search shops...',
+  value = '',
 }) => {
   const styles = StyleSheet.create({
     container: {
@@ -54,10 +49,10 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <Ionicons 
-          name="search-outline" 
-          size={20} 
-          color={ShopColors.textSecondary} 
+        <Ionicons
+          name="search-outline"
+          size={20}
+          color={ShopColors.textSecondary}
           style={styles.searchIcon}
         />
         <TextInput
@@ -69,10 +64,10 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
           returnKeyType="search"
         />
         {value.length > 0 && (
-          <Ionicons 
-            name="close-circle" 
-            size={20} 
-            color={ShopColors.textSecondary} 
+          <Ionicons
+            name="close-circle"
+            size={20}
+            color={ShopColors.textSecondary}
             style={styles.clearButton}
             onPress={() => onSearch('')}
           />

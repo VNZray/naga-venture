@@ -2,23 +2,23 @@ import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-    FlatList,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import type { ShopCategoriesProps } from './types';
 
-const ShopCategories: React.FC<ShopCategoriesProps> = ({ 
-  categories, 
+const ShopCategories: React.FC<ShopCategoriesProps> = ({
+  categories,
   onCategoryPress,
   showViewAll = false,
-  onViewAllPress
+  onViewAllPress,
 }) => {
   const styles = StyleSheet.create({
     container: {
-      marginBottom: 32,
+      marginBottom: 8,
       backgroundColor: ShopColors.background,
       paddingBottom: 8,
     },
@@ -87,7 +87,7 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
   });
 
   const renderCategory = ({ item }: { item: any }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={styles.categoryCard}
       onPress={() => onCategoryPress(item.id)}
       activeOpacity={0.7}
@@ -96,11 +96,7 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
       accessibilityRole="button"
     >
       <View style={styles.iconContainer}>
-        <Ionicons 
-          name={item.icon as any} 
-          size={24} 
-          color={ShopColors.accent} 
-        />
+        <Ionicons name={item.icon as any} size={24} color={ShopColors.accent} />
       </View>
       <Text style={styles.categoryName} numberOfLines={2} ellipsizeMode="tail">
         {item.name}
@@ -112,28 +108,24 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
     <View style={styles.container}>
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>
-            Shop Categories
-          </Text>
+          <Text style={styles.title}>Shop Categories</Text>
         </View>
         {showViewAll && onViewAllPress && (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.viewAllButton}
             onPress={onViewAllPress}
             activeOpacity={0.7}
           >
-            <Text style={styles.viewAllText}>
-              View All
-            </Text>
-            <Ionicons 
-              name="chevron-forward" 
-              size={16} 
+            <Text style={styles.viewAllText}>View All</Text>
+            <Ionicons
+              name="chevron-forward"
+              size={16}
               color={ShopColors.accent}
             />
           </TouchableOpacity>
         )}
       </View>
-      
+
       <FlatList
         data={categories}
         renderItem={renderCategory}

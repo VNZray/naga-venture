@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ShopCard from '../../../../components/shops/ShopCard';
@@ -15,10 +15,7 @@ import { destinations } from '../../../Controller/ShopData';
 
 const SpecialOffers = () => {
   // Get special offers shops - using first shops as static representation
-  const specialOffersShops = useMemo(() => 
-    destinations.slice(0, 10),
-    []
-  );
+  const specialOffersShops = useMemo(() => destinations.slice(0, 10), []);
 
   const handleShopPress = (shopId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
@@ -91,18 +88,24 @@ const SpecialOffers = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
-          <Ionicons name="arrow-back" size={24} color={ShopColors.textPrimary} />
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color={ShopColors.textPrimary}
+          />
         </TouchableOpacity>
         <Text style={styles.title}>Special Offers</Text>
       </View>
-      
-      <Text style={styles.subtitle}>Don&apos;t miss these amazing deals and promotions</Text>
-      
+
+      <Text style={styles.subtitle}>
+        Don&apos;t miss these amazing deals and promotions
+      </Text>
+
       {specialOffersShops.length > 0 ? (
         <FlatList
           data={specialOffersShops}

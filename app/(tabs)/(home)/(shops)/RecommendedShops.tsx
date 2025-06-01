@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ShopCard from '../../../../components/shops/ShopCard';
@@ -15,8 +15,8 @@ import { destinations } from '../../../Controller/ShopData';
 
 const RecommendedShops = () => {
   // Get recommended shops (high ratings) - same logic as in ShopDirectory
-  const recommendedShops = useMemo(() => 
-    destinations.filter(shop => shop.rating >= 4.5),
+  const recommendedShops = useMemo(
+    () => destinations.filter((shop) => shop.rating >= 4.5),
     []
   );
 
@@ -91,18 +91,22 @@ const RecommendedShops = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
-          <Ionicons name="arrow-back" size={24} color={ShopColors.textPrimary} />
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color={ShopColors.textPrimary}
+          />
         </TouchableOpacity>
         <Text style={styles.title}>Recommended for you</Text>
       </View>
-      
+
       <Text style={styles.subtitle}>Highly rated shops perfect for you</Text>
-      
+
       {recommendedShops.length > 0 ? (
         <FlatList
           data={recommendedShops}

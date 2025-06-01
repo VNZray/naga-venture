@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ShopCard from '../../../../components/shops/ShopCard';
@@ -27,7 +27,8 @@ const FeaturedShops = () => {
         showCategory={true}
       />
     </View>
-  );  const styles = StyleSheet.create({
+  );
+  const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: ShopColors.background,
@@ -84,18 +85,24 @@ const FeaturedShops = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
-          <Ionicons name="arrow-back" size={24} color={ShopColors.textPrimary} />
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color={ShopColors.textPrimary}
+          />
         </TouchableOpacity>
         <Text style={styles.title}>Featured Shops</Text>
       </View>
-      
-      <Text style={styles.subtitle}>Our hand-picked selection of the best shops</Text>
-      
+
+      <Text style={styles.subtitle}>
+        Our hand-picked selection of the best shops
+      </Text>
+
       {featuredShops.length > 0 ? (
         <FlatList
           data={featuredShops}
