@@ -1,21 +1,32 @@
+import { specialOffersData as importedSpecialOffersData } from '@/app/Controller/ShopData';
 import { ShopColors } from '@/constants/ShopColors';
 import type { ShopData } from '@/types/shop';
-import { Ionicons } from '@expo/vector-icons'; // Make sure Ionicons is imported
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import {
-    FlatList,
-    ScrollView,
-    StyleSheet,
-    Text, 
-    TouchableOpacity, // Make sure TouchableOpacity is imported
-    View
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+import DiscoverMoreShopList from './DiscoverMoreShopList'; // Import the new list component
+import RecommendedShopCard from './RecommendedShopCard';
 import ShopCarousel from './ShopCarousel';
 import ShopCategories from './ShopCategories';
-import ShopList from './ShopList';
+import ShopList from './ShopList'; // Keep for search results
 import ShopSearch from './ShopSearch';
-import RecommendedShopCard from './RecommendedShopCard';
+import SpecialOfferCard from './SpecialOfferCard';
+
+interface SpecialOfferItem {
+  id: string;
+  promoImageUrl: string;
+  title?: string;
+  altText?: string;
+  targetPath?: string;
+}
 
 interface ShopDirectoryProps {
   shops: ShopData[];
@@ -27,12 +38,16 @@ interface ShopDirectoryProps {
   featuredShops: ShopData[];
 }
 
-const ShopDirectory: React.FC<ShopDirectoryProps> = ({ 
-  shops, 
-  categories, 
-  featuredShops 
+const ShopDirectory: React.FC<ShopDirectoryProps> = ({
+  shops,
+  categories,
+  featuredShops,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const specialOffersData: SpecialOfferItem[] = useMemo(
+    () => importedSpecialOffersData,
+    []
+  );
 
   const styles = StyleSheet.create({
     container: {
@@ -40,13 +55,19 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
       backgroundColor: ShopColors.background,
     },
     content: {
+      // Main ScrollView's style
       paddingTop: 8,
-      paddingBottom: 32,
+    },
+    scrollViewContent: {
+      // contentContainerStyle for the main ScrollView
+      paddingBottom: 32, // Ensures padding at the very end of all content
     },
     section: {
-      marginBottom: 24, // Standardized section spacing
+      // Style for each section block
+      marginBottom: 24, // Spacing between sections
     },
     sectionHeader: {
+      // For sections like Recommended, Special Offers (if they have a View All)
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -54,6 +75,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
       marginBottom: 16,
     },
     sectionTitle: {
+      // For titles within sectionHeader
       fontSize: 20,
       fontFamily: 'Poppins-SemiBold',
       color: ShopColors.textPrimary,
@@ -69,97 +91,112 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
       marginRight: 4,
     },
     horizontalListContentContainer: {
+      // For horizontal FlatLists
       paddingHorizontal: 20,
-      paddingVertical: 4, 
+      paddingVertical: 4,
     },
     horizontalListItemSeparator: {
       width: 16,
     },
-    emptyStateText: { // Style for empty state messages in lists
+    emptyStateText: {
+      // Generic empty state text
       paddingHorizontal: 20,
       paddingVertical: 10,
       fontFamily: 'Poppins-Regular',
       fontSize: 14,
       color: ShopColors.textSecondary,
       textAlign: 'center',
-    }
+    },
   });
 
-  // Simple filtering for search
   const filteredShops = useMemo(() => {
-    if (!searchQuery.trim()) return []; // Return empty if no search, or 'shops' if you want to show all
-    
-    return shops.filter(shop => 
-      shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (shop.category && shop.category.toLowerCase().includes(searchQuery.toLowerCase()))
-      // Add more fields to search if needed, e.g., description
+    if (!searchQuery.trim()) return [];
+    return shops.filter(
+      (shop) =>
+        shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (shop.category &&
+          shop.category.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   }, [shops, searchQuery]);
 
-  const recommendedShops = useMemo(() => 
-    shops.filter(shop => shop.rating >= 4.5).slice(0, 10),
+  const recommendedShopsData = useMemo(
+    () => shops.filter((shop) => shop.rating >= 4.5).slice(0, 10),
     [shops]
   );
 
-  const specialOffersShops = useMemo(() => 
-    // Example: Mark first 5 shops as special. In a real app, this would be based on actual offer data.
-    shops.slice(0, 5).map(s => ({...s, isSpecialOffer: true })), 
-    [shops]
-  );
-  
-  const discoverMoreShops = useMemo(() => 
-    shops,
-    [shops]
-  );
+  const discoverMoreShopsData = useMemo(() => shops, [shops]);
 
   const handleShopPress = (shopId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
+  };
+
+  const handleSpecialOfferPress = (offerId: string) => {
+    const offer = specialOffersData.find((o) => o.id === offerId);
+    if (offer && offer.targetPath) {
+      router.push(offer.targetPath as any);
+    } else {
+      console.log(
+        'Pressed Special Offer:',
+        offerId,
+        '- No targetPath defined or offer not found.'
+      );
+    }
   };
 
   const handleCategoryPress = (categoryId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(categories)/${categoryId}`);
   };
 
-  const handleViewAllFeatured = () => {
+  const handleViewAllFeatured = () =>
     router.push('/(tabs)/(home)/(shops)/FeaturedShops');
-  };
-
-  const handleViewAllRecommended = () => {
-    router.push('/(tabs)/(home)/(shops)/RecommendedShops'); 
-  };
-
-  const handleViewAllSpecialOffers = () => {
+  const handleViewAllRecommended = () =>
+    router.push('/(tabs)/(home)/(shops)/RecommendedShops');
+  const handleViewAllSpecialOffers = () =>
     router.push('/(tabs)/(home)/(shops)/SpecialOffers');
-  };
-
-  const handleViewAllCategories = () => {
+  const handleViewAllCategories = () =>
     router.push('/(tabs)/(home)/(shops)/AllCategories');
-  };
-  
-  const searchResultsTitle = useMemo(() => {
-    if (!searchQuery) return 'Search Results'; // Should not be shown if searchQuery is empty
-    return `Search Results (${filteredShops.length})`;
-  }, [searchQuery, filteredShops.length]); // Dependency on filteredShops.length is correct
 
-  const renderRecommendedShopCard = ({ item }: { item: ShopData }) => (
-    <RecommendedShopCard shop={item} onPress={handleShopPress} />
+  const searchResultsTitle = useMemo(() => {
+    if (!searchQuery) return 'Search Results';
+    return `Search Results (${filteredShops.length})`;
+  }, [searchQuery, filteredShops.length]);
+
+  const renderRecommendedShopCardForHorizontalList = ({
+    item,
+  }: {
+    item: ShopData;
+  }) => (
+    <RecommendedShopCard shop={item} onPress={handleShopPress} width={280} />
   );
+
+  const renderSpecialOfferCard = ({ item }: { item: SpecialOfferItem }) => (
+    <SpecialOfferCard offer={item} onPress={handleSpecialOfferPress} />
+  );
+
+  // Optional: Handler for favorite toggling in DiscoverMoreList if needed
+  const handleDiscoverItemFavoriteToggle = (
+    shopId: string,
+    isFavorited: boolean
+  ) => {
+    console.log(
+      `Shop ${shopId} favorite status: ${isFavorited} (from DiscoverMoreList)`
+    );
+    // Implement actual favorite state update logic here if this feature is active
+  };
 
   return (
     <View style={styles.container}>
-      <ScrollView 
-        style={styles.content} 
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={styles.scrollViewContent} // Added for overall bottom padding
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled" // Good for search inputs in ScrollView
+        keyboardShouldPersistTaps="handled"
       >
         <View style={styles.section}>
-          <ShopSearch 
-            onSearch={setSearchQuery}
-            value={searchQuery}
-          />
+          <ShopSearch onSearch={setSearchQuery} value={searchQuery} />
         </View>
-        
-        {!searchQuery.trim() ? ( // Show default content if no search query
+
+        {!searchQuery.trim() ? (
           <>
             <View style={styles.section}>
               <ShopCarousel
@@ -170,7 +207,44 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                 showViewAll={true}
               />
             </View>
-            
+
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Special Offers</Text>
+                {specialOffersData.length > 0 && (
+                  <TouchableOpacity
+                    style={styles.viewAllButton}
+                    onPress={handleViewAllSpecialOffers}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.viewAllText}>View All</Text>
+                    <Ionicons
+                      name="chevron-forward"
+                      size={16}
+                      color={ShopColors.accent}
+                    />
+                  </TouchableOpacity>
+                )}
+              </View>
+              {specialOffersData.length > 0 ? (
+                <FlatList
+                  data={specialOffersData}
+                  renderItem={renderSpecialOfferCard}
+                  keyExtractor={(item) => item.id}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.horizontalListContentContainer}
+                  ItemSeparatorComponent={() => (
+                    <View style={styles.horizontalListItemSeparator} />
+                  )}
+                />
+              ) : (
+                <Text style={styles.emptyStateText}>
+                  No special offers available currently.
+                </Text>
+              )}
+            </View>
+
             <View style={styles.section}>
               <ShopCategories
                 categories={categories}
@@ -183,70 +257,61 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Recommended for you</Text>
-                {recommendedShops.length > 0 && (
-                  <TouchableOpacity style={styles.viewAllButton} onPress={handleViewAllRecommended} activeOpacity={0.7}>
+                {recommendedShopsData.length > 0 && (
+                  <TouchableOpacity
+                    style={styles.viewAllButton}
+                    onPress={handleViewAllRecommended}
+                    activeOpacity={0.7}
+                  >
                     <Text style={styles.viewAllText}>View All</Text>
-                    <Ionicons name="chevron-forward" size={16} color={ShopColors.accent} />
+                    <Ionicons
+                      name="chevron-forward"
+                      size={16}
+                      color={ShopColors.accent}
+                    />
                   </TouchableOpacity>
                 )}
               </View>
-              {recommendedShops.length > 0 ? (
+              {recommendedShopsData.length > 0 ? (
                 <FlatList
-                  data={recommendedShops}
-                  renderItem={renderRecommendedShopCard}
+                  data={recommendedShopsData}
+                  renderItem={renderRecommendedShopCardForHorizontalList}
                   keyExtractor={(item) => item.id}
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.horizontalListContentContainer}
-                  ItemSeparatorComponent={() => <View style={styles.horizontalListItemSeparator} />}
+                  ItemSeparatorComponent={() => (
+                    <View style={styles.horizontalListItemSeparator} />
+                  )}
                 />
               ) : (
-                <Text style={styles.emptyStateText}>No recommendations available right now.</Text>
+                <Text style={styles.emptyStateText}>
+                  No recommendations available right now.
+                </Text>
               )}
             </View>
-            
+
+            {/* 5. Discover More Section - Using new DiscoverMoreList component */}
             <View style={styles.section}>
-              {/* This will be updated next with SpecialOfferShopCard */}
-              <ShopList 
-                shops={specialOffersShops}
+              <DiscoverMoreShopList
+                shops={discoverMoreShopsData}
                 onShopPress={handleShopPress}
-                onViewAllPress={handleViewAllSpecialOffers}
-                title="Special Offers"
-                horizontal={true}
-                showRating={true} // These props will be irrelevant once we use a custom card
-                showCategory={true} //
-                showViewAll={true}
-                width={200} // Example width for standard ShopCard in horizontal list
-              />
-            </View>            
-            
-            <View style={styles.section}>
-              <ShopList
-                shops={discoverMoreShops}
-                onShopPress={handleShopPress}
-                title="Discover More"
-                horizontal={false}
-                showRating={true}
-                showCategory={true}
-                showViewAll={false}
-                gridLayout={true}
-                numColumns={2}
-                emptyMessage="No more shops to discover."
+                title="Discover More" // This title is now rendered by DiscoverMoreList
+                onToggleFavoriteItem={handleDiscoverItemFavoriteToggle} // Optional
               />
             </View>
           </>
-        ) : ( // Show search results if there is a search query
+        ) : (
+          // Search Results Section
           <View style={styles.section}>
-            <ShopList
-              shops={filteredShops} // Use the defined filteredShops here
+            <ShopList // ShopList is fine for search results (vertical, full-width ShopCard)
+              shops={filteredShops}
               onShopPress={handleShopPress}
-              title={searchResultsTitle}
-              horizontal={false} // Display search results as a vertical list
+              title={searchResultsTitle} // Title rendered by ShopList
+              horizontal={false}
               showRating={true}
               showCategory={true}
               emptyMessage="No shops found matching your search."
-              // gridLayout={true} // Optionally use grid for search results
-              // numColumns={2}    //
             />
           </View>
         )}

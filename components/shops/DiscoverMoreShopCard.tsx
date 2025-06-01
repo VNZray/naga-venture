@@ -1,36 +1,27 @@
 import { ShopColors } from '@/constants/ShopColors';
-import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
-  DimensionValue, // Import DimensionValue for width type
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Image,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
+import type { ShopData } from '@/types/shop';
 
-interface RecommendedShopCardProps {
+interface DiscoverMoreShopCardProps {
   shop: ShopData;
   onPress: (shopId: string) => void;
   onToggleFavorite?: (shopId: string, isFavorited: boolean) => void;
-  width?: DimensionValue; // <<< This line is crucial for the 'width' prop
 }
 
-const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
+const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
   shop,
   onPress,
   onToggleFavorite,
-  width: widthProp, // Renamed for clarity in component logic
 }) => {
-  const defaultWidth = 280; // Default width if 'widthProp' is undefined
-  const cardHeight = 230;
-
-  // Determine effective width:
-  // If widthProp is provided (e.g., '100%' or a number), use it.
-  // Otherwise, use the defaultWidth.
-  const effectiveWidth = widthProp !== undefined ? widthProp : defaultWidth;
+  const cardHeight = 250; // Consistent height with RecommendedShopCard
 
   const [isFavorited, setIsFavorited] = useState(false);
 
@@ -50,7 +41,7 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
 
   const styles = StyleSheet.create({
     card: {
-      width: effectiveWidth, // Use the determined width here
+      width: '100%', // Designed to take full width of its container
       height: cardHeight,
       backgroundColor: ShopColors.cardBackground,
       borderRadius: 16,
@@ -61,10 +52,16 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
       shadowOpacity: 0.12,
       shadowRadius: 6,
       elevation: 4,
+      // Ensure the main TouchableOpacity can work correctly by not having children absolutely positioned outside its bounds
+      // without a parent View handling the layout.
+    },
+    touchableContent: { // Wrapper for pressable content if favorite button is separate
+        flex: 1,
+        flexDirection: 'column', // Main axis for image and contentWrapper
     },
     imageContainer: {
-      width: '100%', // Image container always takes full width of the card
-      height: cardHeight * 0.70,
+      width: '100%',
+      height: cardHeight * 0.70, // Adjust as needed
       borderTopLeftRadius: 16,
       borderTopRightRadius: 16,
       overflow: 'hidden',
@@ -77,13 +74,13 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
       position: 'absolute',
       top: 10,
       right: 10,
-      zIndex: 1,
+      zIndex: 1, // Ensure it's above the image
       backgroundColor: 'rgba(0, 0, 0, 0.3)',
       borderRadius: 20,
       padding: 6,
     },
     contentWrapper: {
-      flex: 1,
+      flex: 1, // Takes remaining space after image
       paddingVertical: 10,
       paddingHorizontal: 14,
       justifyContent: 'flex-start',
@@ -108,7 +105,6 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
     },
     starIcon: {
       marginRight: 3,
-      marginBottom: 3.5, 
     },
     ratingText: {
       fontSize: 13,
@@ -130,11 +126,7 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
 
   return (
     <View style={styles.card}>
-      <TouchableOpacity
-        onPress={() => onPress(shop.id)}
-        activeOpacity={0.85}
-        style={{ flex: 1 }}
-      >
+      <TouchableOpacity onPress={() => onPress(shop.id)} activeOpacity={0.85} style={styles.touchableContent}>
         <View style={styles.imageContainer}>
           <Image
             source={{ uri: shop.image }}
@@ -142,7 +134,6 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
             resizeMode="cover"
           />
         </View>
-
         <View style={styles.contentWrapper}>
           <View style={styles.topInfoRow}>
             <Text style={styles.name} numberOfLines={1}>
@@ -150,20 +141,16 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
             </Text>
             {shop.rating !== undefined && shop.rating !== null && (
               <View style={styles.ratingReviewBlock}>
-                <Ionicons
-                  name="star"
-                  size={15}
-                  color="#FFD700"
-                  style={styles.starIcon}
-                />
-                <Text style={styles.ratingText}>{shop.rating.toFixed(1)}</Text>
+                <Ionicons name="star" size={15} color="#FFD700" style={styles.starIcon} />
+                <Text style={styles.ratingText}>
+                  {shop.rating.toFixed(1)}
+                </Text>
                 <Text style={styles.reviewCountText}>
                   {formatReviewCount(shop.ratingCount)}
                 </Text>
               </View>
             )}
           </View>
-
           {shop.priceRange && (
             <Text style={styles.priceRange} numberOfLines={1}>
               {shop.priceRange}
@@ -171,13 +158,9 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
           )}
         </View>
       </TouchableOpacity>
-
-      <TouchableOpacity
-        style={styles.floatingFavoriteButton}
-        onPress={handleFavoritePress}
-      >
+      <TouchableOpacity style={styles.floatingFavoriteButton} onPress={handleFavoritePress}>
         <Ionicons
-          name={isFavorited ? 'heart' : 'heart-outline'}
+          name={isFavorited ? "heart" : "heart-outline"}
           size={22}
           color={isFavorited ? ShopColors.error : '#FFFFFF'}
         />
@@ -186,4 +169,4 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
   );
 };
 
-export default RecommendedShopCard;
+export default DiscoverMoreShopCard;

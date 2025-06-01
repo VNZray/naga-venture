@@ -178,7 +178,7 @@ const ShopList: React.FC<ShopListProps> = ({
                 onPress={onShopPress}
                 showRating={showRating}
                 showCategory={showCategory}
-                width={undefined} // Full width for vertical
+                width={width} // Full width for vertical
               />
             </View>
           ))}
