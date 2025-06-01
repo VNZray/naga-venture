@@ -26,6 +26,13 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Shops Module - Hans Gabriel Candor
 
+Dependencies I Used
+npm install eslint eslint-plugin-react eslint-plugin-react-hooks eslint-plugin-react-native @typescript-eslint/parser @typescript-eslint/eslint-plugin --save-dev
+
+npm install prettier eslint-config-prettier eslint-plugin-prettier --save-dev
+
+
+
 ## Events Module - Wayne Sanao
 
 In the output, you'll find options to open the app in a
