@@ -8,6 +8,7 @@ import {
 } from "@/components/shops";
 
 // Import the shop data
+import { getCategoryById, shopsData } from "@/controller/ShopData";
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -20,7 +21,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getCategoryById, shopsData } from "../../../../../../Controller/ShopData";
 
 /**
  * SubcategoryPage - Shows shops within a specific subcategory

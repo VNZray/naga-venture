@@ -16,7 +16,7 @@ import Carousel from "react-native-reanimated-carousel";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuth } from "@/context/AuthContext";
-import { FeaturedLocation } from "../../../../Controller/HomeData";
+import { FeaturedLocation } from "@/controller/HomeData";
 
 const width = Dimensions.get("screen").width;
 

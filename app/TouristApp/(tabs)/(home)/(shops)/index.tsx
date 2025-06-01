@@ -15,8 +15,8 @@ import {
   ShopItemList
 } from "@/components/shops";
 
+import { destinations, featuredShops, mainCategories } from "@/controller/ShopData";
 import { getMainCategoriesForDisplay } from "@/utils/shopUtils";
-import { destinations, featuredShops, mainCategories } from "../../../../../Controller/ShopData";
 
 
 const ShopsDirectory = () => {

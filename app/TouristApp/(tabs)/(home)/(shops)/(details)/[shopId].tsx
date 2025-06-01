@@ -13,7 +13,7 @@ import {
 } from "@/components/shops";
 
 // Import the shop data
-import { shopsData } from "../../../../../../Controller/ShopData";
+import { shopsData } from "@/controller/ShopData";
 
 /**
  * ShopDetails - Refactored using shop detail composition patterns

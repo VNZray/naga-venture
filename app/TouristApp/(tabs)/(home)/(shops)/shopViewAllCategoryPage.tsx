@@ -1,4 +1,5 @@
 import { CompactCategoriesGrid } from '@/components/shops';
+import { mainCategories } from '@/controller/ShopData';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -11,7 +12,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { mainCategories } from '../../../../../Controller/ShopData';
 
 /**
  * AllCategoriesPage - Comprehensive view of all shop categories

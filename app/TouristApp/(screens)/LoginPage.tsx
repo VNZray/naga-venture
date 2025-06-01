@@ -2,6 +2,7 @@ import logo from "@/assets/images/logo.png";
 import PressableButton from "@/components/PressableButton";
 import { ThemedText } from "@/components/ThemedText";
 import { useAuth } from "@/context/AuthContext";
+import { users } from "@/controller/User";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFonts } from "expo-font";
 import { Image } from "expo-image";
@@ -10,7 +11,6 @@ import * as React from "react";
 import { Alert, Platform, SafeAreaView, Text, View } from "react-native";
 import { TextInput } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { users } from "../../../Controller/User";
 
 const LoginPage = () => {
   const [email, setEmail] = React.useState("");

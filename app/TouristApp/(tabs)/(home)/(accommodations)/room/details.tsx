@@ -1,7 +1,7 @@
 import Amenities from '@/components/Amenities';
 import CardContainer from '@/components/CardContainer';
 import { ThemedText } from '@/components/ThemedText';
-import { rooms } from "@/Controller/AccommodationData";
+import { rooms } from "@/controller/AccommodationData";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Link } from "expo-router";
 import { View } from 'react-native';

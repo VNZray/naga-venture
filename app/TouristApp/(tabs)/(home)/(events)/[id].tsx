@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/ThemedText';
-import { events } from '@/Controller/EventData';
-import { reviews } from '@/Controller/ReviewData';
+import { events } from '@/controller/EventData';
+import { reviews } from '@/controller/ReviewData';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';

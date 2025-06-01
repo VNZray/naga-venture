@@ -9,6 +9,7 @@ import {
 } from "@/components/shops";
 
 // Import the shop data
+import { getMainCategoryById, shopsData } from "@/controller/ShopData";
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 import {
@@ -21,7 +22,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getMainCategoryById, shopsData } from "../../../../../../Controller/ShopData";
 
 /**
  * MainCategoryPage - Shows all subcategories within a main category

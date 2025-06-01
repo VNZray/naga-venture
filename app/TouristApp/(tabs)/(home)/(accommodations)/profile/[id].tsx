@@ -15,7 +15,7 @@ import Details from "./details";
 import Ratings from "./ratings";
 import Rooms from "./rooms";
 
-import { accommodations } from "@/Controller/AccommodationData";
+import { accommodations } from "@/controller/AccommodationData";
 
 const AccommodationProfile = () => {
   const { id } = useLocalSearchParams();
