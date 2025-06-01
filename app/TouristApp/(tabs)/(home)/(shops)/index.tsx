@@ -15,7 +15,7 @@ import {
   ShopItemList
 } from "@/components/shops";
 
-import { destinations, featuredShops, mainCategories } from "@/controller/ShopData";
+import { destinations, featuredShops, mainCategories } from "@/Controller/ShopData";
 import { getMainCategoriesForDisplay } from "@/utils/shopUtils";
 
 

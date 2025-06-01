@@ -1,7 +1,7 @@
 import RoomCard from "@/components/RoomCard";
 import { ThemedText } from "@/components/ThemedText";
 import { useAccommodation } from "@/context/AccommodationContext";
-import { rooms as allRooms } from "@/controller/AccommodationData";
+import { rooms as allRooms } from "@/Controller/AccommodationData";
 import { Link } from "expo-router";
 import { Dimensions, StyleSheet, View } from "react-native";
 

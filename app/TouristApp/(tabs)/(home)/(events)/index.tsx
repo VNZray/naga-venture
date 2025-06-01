@@ -1,7 +1,7 @@
 import CardContainer from '@/components/CardContainer';
 import SearchBar from '@/components/SearchBar';
 import { ThemedText } from '@/components/ThemedText';
-import { events } from '@/controller/EventData';
+import { events } from '@/Controller/EventData';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';

@@ -2,7 +2,7 @@ import logo from "@/assets/images/logo.png";
 import PressableButton from "@/components/PressableButton";
 import { ThemedText } from "@/components/ThemedText";
 import { useAuth } from "@/context/AuthContext";
-import { users } from "@/controller/User";
+import { users } from "@/Controller/User";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFonts } from "expo-font";
 import { Image } from "expo-image";

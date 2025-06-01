@@ -4,7 +4,7 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import MapView, { Callout, Marker } from 'react-native-maps';
 
 import { ThemedText } from '@/components/ThemedText';
-import { accommodations } from '@/controller/AccommodationData';
+import { accommodations } from '@/Controller/AccommodationData';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { router } from 'expo-router';
 

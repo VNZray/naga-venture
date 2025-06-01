@@ -3,8 +3,8 @@ import OverallRating from '@/components/OverallRating';
 import ReviewCard from '@/components/ReviewCard';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/context/AuthContext';
-import { reviews as initialReviews } from '@/controller/AccommodationData';
-import { users } from '@/controller/User';
+import { reviews as initialReviews } from '@/Controller/AccommodationData';
+import { users } from '@/Controller/User';
 import React, { useState } from 'react';
 import {
   Button,

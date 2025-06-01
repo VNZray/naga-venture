@@ -8,7 +8,7 @@ import {
 } from "@/components/shops";
 
 // Import the shop data
-import { getCategoryById, shopsData } from "@/controller/ShopData";
+import { getCategoryById, shopsData } from "@/Controller/ShopData";
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 import {
