@@ -20,7 +20,7 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
     container: {
       marginBottom: 32,
       backgroundColor: ShopColors.background,
-      paddingBottom: 8, // Add padding for shadow space
+      paddingBottom: 8,
     },
     header: {
       flexDirection: 'row',
@@ -36,19 +36,19 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
     },
     list: {
       paddingHorizontal: 20,
-      paddingBottom: 12, // Add bottom padding for shadow space
-      paddingTop: 4, // Add small top padding for better visual balance
+      paddingBottom: 12,
+      paddingTop: 4,
     },
     categoryCard: {
       backgroundColor: ShopColors.cardBackground,
       borderRadius: 12,
       padding: 12,
       marginRight: 16,
-      marginBottom: 8, // Add bottom margin for shadow space
+      marginBottom: 8,
       alignItems: 'center',
       justifyContent: 'center',
-      width: 100, // Fixed width for consistency
-      height: 120, // Fixed height for consistency
+      width: 100,
+      height: 120,
       borderWidth: 1,
       borderColor: ShopColors.border,
       shadowColor: ShopColors.shadow,
@@ -72,7 +72,7 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
       color: ShopColors.textPrimary,
       textAlign: 'center',
       lineHeight: 16,
-      maxWidth: 80, // Ensure text doesn't overflow
+      maxWidth: 80,
     },
     viewAllButton: {
       flexDirection: 'row',
@@ -84,7 +84,9 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
       color: ShopColors.accent,
       marginRight: 4,
     },
-  });const renderCategory = ({ item }: { item: any }) => (
+  });
+
+  const renderCategory = ({ item }: { item: any }) => (
     <TouchableOpacity 
       style={styles.categoryCard}
       onPress={() => onCategoryPress(item.id)}
@@ -92,7 +94,8 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
       accessible={true}
       accessibilityLabel={`Browse ${item.name} shops`}
       accessibilityRole="button"
-    >      <View style={styles.iconContainer}>
+    >
+      <View style={styles.iconContainer}>
         <Ionicons 
           name={item.icon as any} 
           size={24} 
@@ -106,9 +109,12 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
   );
 
   return (
-    <View style={styles.container}>      <View style={styles.header}>
+    <View style={styles.container}>
+      <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Shop Categories</Text>
+          <Text style={styles.title}>
+            Shop Categories
+          </Text>
         </View>
         {showViewAll && onViewAllPress && (
           <TouchableOpacity 
@@ -116,7 +122,10 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
             onPress={onViewAllPress}
             activeOpacity={0.7}
           >
-            <Text style={styles.viewAllText}>View All</Text>            <Ionicons 
+            <Text style={styles.viewAllText}>
+              View All
+            </Text>
+            <Ionicons 
               name="chevron-forward" 
               size={16} 
               color={ShopColors.accent}
@@ -124,16 +133,17 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
           </TouchableOpacity>
         )}
       </View>
-        <FlatList
+      
+      <FlatList
         data={categories}
         renderItem={renderCategory}
         keyExtractor={(item) => item.id}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.list}
-        ItemSeparatorComponent={() => <View style={{ width: 0 }} />} // Remove default separator
+        ItemSeparatorComponent={() => <View style={{ width: 0 }} />}
         getItemLayout={(data, index) => ({
-          length: 116, // width (100) + marginRight (16)
+          length: 116,
           offset: 116 * index,
           index,
         })}

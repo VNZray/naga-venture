@@ -44,14 +44,20 @@ const ShopCarousel: React.FC<ShopCarouselProps> = ({
       color: ShopColors.accent,
       marginRight: 4,
     },
-  });return (
+  });
+
+  return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.title}>
+          {title}
+        </Text>
         
         {showViewAll && onViewAllPress && (
           <TouchableOpacity style={styles.viewAllButton} onPress={onViewAllPress}>
-            <Text style={styles.viewAllText}>View All</Text>
+            <Text style={styles.viewAllText}>
+              View All
+            </Text>
             <Ionicons name="chevron-forward" size={16} color={ShopColors.accent} />
           </TouchableOpacity>
         )}

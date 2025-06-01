@@ -1,69 +1,82 @@
+
 import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-  StyleSheet,
-  TextInput,
-  View
+    StyleSheet,
+    TextInput,
+    View
 } from 'react-native';
 import type { ShopSearchProps } from './types';
 
 const ShopSearch: React.FC<ShopSearchProps> = ({ 
   onSearch, 
   placeholder = 'Search shops...', 
-  value 
+  value = '' 
 }) => {
-
   const styles = StyleSheet.create({
     container: {
       paddingHorizontal: 20,
-      marginBottom: 20,
-      marginTop: 8,
+      paddingVertical: 12,
+      backgroundColor: ShopColors.background,
     },
     searchContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: ShopColors.cardBackground,
-      borderRadius: 16,
+      borderRadius: 12,
       paddingHorizontal: 16,
-      paddingVertical: 14,
+      paddingVertical: 12,
       borderWidth: 1,
       borderColor: ShopColors.border,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.04,
-      shadowRadius: 8,
-      elevation: 2,
+      shadowColor: ShopColors.shadow,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 1,
     },
-    icon: {
+    searchIcon: {
       marginRight: 12,
     },
-    input: {
+    searchInput: {
       flex: 1,
       fontSize: 16,
       fontFamily: 'Poppins-Regular',
       color: ShopColors.textPrimary,
-      lineHeight: 20,
+      padding: 0,
+    },
+    clearButton: {
+      marginLeft: 8,
+      padding: 4,
     },
   });
+
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
         <Ionicons 
-          name="search" 
+          name="search-outline" 
           size={20} 
-          color={ShopColors.iconPrimary} 
-          style={styles.icon}
+          color={ShopColors.textSecondary} 
+          style={styles.searchIcon}
         />
         <TextInput
-          style={styles.input}
+          style={styles.searchInput}
           placeholder={placeholder}
           placeholderTextColor={ShopColors.textSecondary}
           value={value}
           onChangeText={onSearch}
-          autoCapitalize="none"
-          autoCorrect={false}
+          returnKeyType="search"
         />
+        {value.length > 0 && (
+          <Ionicons 
+            name="close-circle" 
+            size={20} 
+            color={ShopColors.textSecondary} 
+            style={styles.clearButton}
+            onPress={() => onSearch('')}
+          />
+        )}
       </View>
     </View>
   );

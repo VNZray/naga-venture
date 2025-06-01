@@ -27,7 +27,9 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
   categories, 
   featuredShops 
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');  const styles = StyleSheet.create({
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: ShopColors.background,
@@ -50,6 +52,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
       shop.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [shops, searchQuery]);
+
   // Get recommended shops (high ratings)
   const recommendedShops = useMemo(() => 
     shops.filter(shop => shop.rating >= 4.5).slice(0, 6),
@@ -74,18 +77,29 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
 
   const handleCategoryPress = (categoryId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(categories)/${categoryId}`);
-  };  const handleViewAllFeatured = () => {
+  };
+
+  const handleViewAllFeatured = () => {
     router.push('/(tabs)/(home)/(shops)/FeaturedShops');
   };
+
   const handleViewAllRecommended = () => {
     router.push('/(tabs)/(home)/(shops)/RecommendedShops');
-  };  const handleViewAllSpecialOffers = () => {
+  };
+
+  const handleViewAllSpecialOffers = () => {
     router.push('/(tabs)/(home)/(shops)/SpecialOffers');
   };
 
   const handleViewAllCategories = () => {
     router.push('/(tabs)/(home)/(shops)/AllCategories');
   };
+
+  // Generate search results title
+  const searchResultsTitle = useMemo(() => {
+    if (!searchQuery) return 'Search Results';
+    return `Search Results (${filteredShops.length})`;
+  }, [searchQuery, filteredShops.length]);
 
   return (
     <View style={styles.container}>
@@ -159,12 +173,13 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
             </View>
           </>
         )}
-          {searchQuery && (
+
+        {searchQuery && (
           <View style={styles.section}>
             <ShopList
               shops={filteredShops}
               onShopPress={handleShopPress}
-              title={searchQuery ? `Search Results (${filteredShops.length})` : 'Search Results'}
+              title={searchResultsTitle}
               horizontal={false}
               showRating={true}
               showCategory={true}

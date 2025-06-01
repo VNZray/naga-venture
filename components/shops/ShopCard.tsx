@@ -1,3 +1,4 @@
+
 import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
@@ -59,7 +60,8 @@ const ShopCard: React.FC<ShopCardProps> = ({
     },
     shopInfo: {
       padding: 12,
-    },    name: {
+    },
+    name: {
       fontSize: 14,
       fontFamily: 'Poppins-SemiBold',
       color: ShopColors.textPrimary,
@@ -80,7 +82,8 @@ const ShopCard: React.FC<ShopCardProps> = ({
     ratingContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-    },    ratingText: {
+    },
+    ratingText: {
       fontSize: 12,
       fontFamily: 'Poppins-Medium',
       color: ShopColors.textPrimary,
@@ -101,15 +104,17 @@ const ShopCard: React.FC<ShopCardProps> = ({
           resizeMode="cover"
         />
 
-        {/* Beautiful rating badge overlay */}
         {showRating && shop.rating !== undefined && shop.rating !== null && (
           <View style={styles.ratingBadge}>
             <Ionicons name="star" size={12} color="#FFD700" />
-            <Text style={styles.ratingBadgeText}>{shop.rating.toFixed(1)}</Text>
+            <Text style={styles.ratingBadgeText}>
+              {shop.rating.toFixed(1)}
+            </Text>
           </View>
         )}
       </View>
-        <View style={styles.shopInfo}>
+      
+      <View style={styles.shopInfo}>
         <Text style={styles.name} numberOfLines={1}>
           {shop.name || 'Unknown Shop'}
         </Text>
@@ -119,7 +124,8 @@ const ShopCard: React.FC<ShopCardProps> = ({
             {shop.category}
           </Text>
         )}
-          <View style={styles.shopFooter}>
+        
+        <View style={styles.shopFooter}>
           {showRating && shop.rating !== undefined && shop.rating !== null && (
             <View style={styles.ratingContainer}>
               <Ionicons name="star" size={12} color="#FFD700" />
