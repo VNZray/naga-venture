@@ -7,6 +7,8 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 1. Install dependencies
 
    ```bash
+   npm uninstall -g expo-cli
+   npm install -g expo-cli
    npm install
    ```
 
@@ -15,10 +17,6 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    ```bash
    npx expo start
    ```
-
-## email: <a@gmail.com>
-
-## password: 1234
 
 ## Accommodation Module - Rayven Clores
 
