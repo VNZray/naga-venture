@@ -1,4 +1,4 @@
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
@@ -13,18 +13,6 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
   placeholder = 'Search shops...', 
   value 
 }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-
-  // Beautiful color scheme matching the enhanced design
-  const colors = {
-    textColor: isDark ? '#ffffff' : '#1A1A1A',
-    placeholderColor: isDark ? '#94A3B8' : '#6B7280',
-    backgroundColor: isDark ? '#334155' : '#F8FAFB',
-    borderColor: isDark ? '#475569' : '#E5E7EB',
-    iconColor: isDark ? '#94A3B8' : '#6B7280',
-    focusColor: '#3B82F6',
-  };
 
   const styles = StyleSheet.create({
     container: {
@@ -35,12 +23,12 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
     searchContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: colors.backgroundColor,
+      backgroundColor: ShopColors.cardBackground,
       borderRadius: 16,
       paddingHorizontal: 16,
       paddingVertical: 14,
       borderWidth: 1,
-      borderColor: colors.borderColor,
+      borderColor: ShopColors.border,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.04,
@@ -54,7 +42,7 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
       flex: 1,
       fontSize: 16,
       fontFamily: 'Poppins-Regular',
-      color: colors.textColor,
+      color: ShopColors.textPrimary,
       lineHeight: 20,
     },
   });
@@ -64,13 +52,13 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
         <Ionicons 
           name="search" 
           size={20} 
-          color={colors.iconColor} 
+          color={ShopColors.iconPrimary} 
           style={styles.icon}
         />
         <TextInput
           style={styles.input}
           placeholder={placeholder}
-          placeholderTextColor={colors.placeholderColor}
+          placeholderTextColor={ShopColors.textSecondary}
           value={value}
           onChangeText={onSearch}
           autoCapitalize="none"

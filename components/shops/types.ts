@@ -20,6 +20,8 @@ export interface ShopListProps {
   onViewAllPress?: () => void;
   emptyMessage?: string;
   width?: number;
+  gridLayout?: boolean;
+  numColumns?: number;
 }
 
 export interface ShopSearchProps {
@@ -35,6 +37,8 @@ export interface ShopCategoriesProps {
     icon: string;
   }[];
   onCategoryPress: (categoryId: string) => void;
+  showViewAll?: boolean;
+  onViewAllPress?: () => void;
 }
 
 export interface ShopCarouselProps {

@@ -1,4 +1,4 @@
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { ShopColors } from '@/constants/ShopColors';
 import type { ShopCategory } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -6,13 +6,13 @@ import React from 'react';
 import {
   Dimensions,
   FlatList,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { mainCategories } from '../../../Controller/ShopData';
 
 const { width } = Dimensions.get('window');
@@ -21,22 +21,6 @@ const SUBCATEGORIES_PER_ROW = 3;
 const SUBCATEGORY_WIDTH = (width - (SUBCATEGORY_GAP * (SUBCATEGORIES_PER_ROW + 1))) / SUBCATEGORIES_PER_ROW;
 
 const AllCategoriesPage = () => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
-  // Clean, modern color palette with custom accent color
-  const colors = {
-    background: isDark ? "#121212" : "#F8F9FA",
-    cardBackground: isDark ? "#1E1E1E" : "#FFFFFF",
-    textPrimary: isDark ? "#FFFFFF" : "#1A1A1A",
-    textSecondary: isDark ? "#B0B0B0" : "#6B7280",
-    accent: "#2E5AA7", // Custom blue accent color
-    border: isDark ? "#2D2D2D" : "#E5E7EB",
-    divider: isDark ? "#374151" : "#E5E7EB",
-    subcategoryCard: isDark ? "#2A2A2A" : "#F9FAFB",
-    subcategoryBorder: isDark ? "#404040" : "#E5E7EB",
-    shadow: isDark ? "rgba(0,0,0,0.4)" : "rgba(0,0,0,0.1)",
-    seeAllText: "#2E5AA7", // Custom blue for "See All" text
-  };
 
   const handleMainCategoryPress = (mainCategoryId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(categories)/${mainCategoryId}`);
@@ -48,13 +32,12 @@ const AllCategoriesPage = () => {
   const renderSubcategoryItem = ({ item, index }: { item: ShopCategory; index: number }) => {
     const isLastInRow = (index + 1) % SUBCATEGORIES_PER_ROW === 0;
     
-    return (
-      <TouchableOpacity
+    return (      <TouchableOpacity
         style={[
           styles.subcategoryCard,
           {
-            backgroundColor: colors.subcategoryCard,
-            borderColor: colors.subcategoryBorder,
+            backgroundColor: ShopColors.subcategoryCard,
+            borderColor: ShopColors.subcategoryBorder,
             width: SUBCATEGORY_WIDTH,
             marginRight: isLastInRow ? 0 : SUBCATEGORY_GAP,
           },
@@ -65,15 +48,15 @@ const AllCategoriesPage = () => {
         accessibilityLabel={item.name}
         accessibilityRole="button"
       >
-        <View style={[styles.iconContainer, { backgroundColor: colors.accent + '20' }]}>
+        <View style={[styles.iconContainer, { backgroundColor: ShopColors.accent + '20' }]}>
           <Ionicons
             name={item.icon as any}
             size={24}
-            color={colors.accent}
+            color={ShopColors.accent}
           />
         </View>
         <Text 
-          style={[styles.subcategoryTitle, { color: colors.textPrimary }]}
+          style={[styles.subcategoryTitle, { color: ShopColors.textPrimary }]}
           numberOfLines={2}
         >
           {item.name}
@@ -97,11 +80,10 @@ const AllCategoriesPage = () => {
             accessible={true}
             accessibilityLabel={`View all ${mainCategory.name} businesses`}
             accessibilityRole="button"
-          >
-            <Text style={[styles.mainCategoryTitle, { color: colors.textPrimary }]}>
+          >            <Text style={[styles.mainCategoryTitle, { color: ShopColors.textPrimary }]}>
               {mainCategory.name}
             </Text>
-            <Text style={[styles.subcategoryCount, { color: colors.textSecondary }]}>
+            <Text style={[styles.subcategoryCount, { color: ShopColors.textSecondary }]}>
               {subcategoryCount} {subcategoryCount === 1 ? 'category' : 'categories'}
             </Text>
           </TouchableOpacity>
@@ -114,19 +96,19 @@ const AllCategoriesPage = () => {
             accessibilityLabel={`See all ${mainCategory.name}`}
             accessibilityRole="button"
           >
-            <Text style={[styles.seeAllText, { color: colors.seeAllText }]}>
+            <Text style={[styles.seeAllText, { color: ShopColors.textAccent }]}>
               See All
             </Text>
             <Ionicons
               name="chevron-forward"
               size={16}
-              color={colors.seeAllText}
+              color={ShopColors.textAccent}
             />
           </TouchableOpacity>
         </View>        
         
         {/* Divider Line */}
-        <View style={[styles.divider, { backgroundColor: colors.divider }]} />
+        <View style={[styles.divider, { backgroundColor: ShopColors.divider }]} />
 
         {/* Subcategories Grid */}
         <FlatList
@@ -142,11 +124,10 @@ const AllCategoriesPage = () => {
       </View>
     );
   };
-
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: colors.background,
+      backgroundColor: ShopColors.background,
     },
     scrollContent: {
       paddingVertical: 16,
@@ -201,7 +182,7 @@ const AllCategoriesPage = () => {
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: 100,
-      shadowColor: colors.shadow,
+      shadowColor: ShopColors.shadow,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 3,
@@ -222,9 +203,8 @@ const AllCategoriesPage = () => {
       lineHeight: 16,
     },
   });
-
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}

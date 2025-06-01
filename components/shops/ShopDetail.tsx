@@ -1,15 +1,15 @@
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { ShopColors } from '@/constants/ShopColors';
 import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 
 interface ShopDetailProps {
@@ -17,43 +17,28 @@ interface ShopDetailProps {
 }
 
 const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-
-  // Beautiful color scheme matching the enhanced design
-  const colors = {
-    textColor: isDark ? '#ffffff' : '#1A1A1A',
-    subtextColor: isDark ? '#94A3B8' : '#6B7280',
-    backgroundColor: isDark ? '#0F172A' : '#F8FAFC',
-    cardBackground: isDark ? '#1E293B' : '#FFFFFF',
-    borderColor: isDark ? '#475569' : '#E5E7EB',
-    accentColor: '#3B82F6',
-    ratingColor: '#F59E0B',
-    iconColor: isDark ? '#94A3B8' : '#6B7280',
-  };
-
   // Handle case where shop is not found
   if (!shop) {
     return (
       <View style={{
         flex: 1,
-        backgroundColor: colors.backgroundColor,
+        backgroundColor: ShopColors.background,
       }}>
         <View style={{
           flexDirection: 'row',
           alignItems: 'center',
           padding: 20,
           borderBottomWidth: 1,
-          borderBottomColor: colors.borderColor,
-          backgroundColor: colors.cardBackground,
+          borderBottomColor: ShopColors.border,
+          backgroundColor: ShopColors.cardBackground,
         }}>
           <TouchableOpacity onPress={() => router.back()} style={{ marginRight: 16 }}>
-            <Ionicons name="arrow-back" size={24} color={colors.textColor} />
+            <Ionicons name="arrow-back" size={24} color={ShopColors.textPrimary} />
           </TouchableOpacity>
           <Text style={{
             fontSize: 18,
             fontFamily: 'Poppins-SemiBold',
-            color: colors.textColor,
+            color: ShopColors.textPrimary,
           }}>
             Shop Not Found
           </Text>
@@ -65,26 +50,27 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
           padding: 20,
         }}>
           <Text style={{
-            fontSize: 20,
+            fontSize: 18,
             fontFamily: 'Poppins-SemiBold',
-            color: colors.textColor,
+            color: ShopColors.textPrimary,
             marginBottom: 12,
             textAlign: 'center',
           }}>
             Shop Not Found
-          </Text>          <Text style={{
+          </Text>
+          <Text style={{
             fontSize: 16,
             fontFamily: 'Poppins-Regular',
-            color: colors.subtextColor,
-            marginBottom: 24,
+            color: ShopColors.textSecondary,
             textAlign: 'center',
+            marginBottom: 24,
           }}>
-            The shop you are looking for does not exist or has been removed.
+            The shop you are looking for does not exist.
           </Text>
           <TouchableOpacity 
             onPress={() => router.back()}
             style={{
-              backgroundColor: colors.accentColor,
+              backgroundColor: ShopColors.accent,
               paddingHorizontal: 24,
               paddingVertical: 12,
               borderRadius: 12,
@@ -102,217 +88,175 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
       </View>
     );
   }
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: colors.backgroundColor,
+      backgroundColor: ShopColors.background,
     },
-    header: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      padding: 20,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.borderColor,
-      backgroundColor: colors.cardBackground,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.04,
-      shadowRadius: 8,
-      elevation: 2,
+    heroSection: {
+      position: 'relative',
+      height: 250,
+    },
+    heroImage: {
+      width: '100%',
+      height: '100%',
     },
     backButton: {
-      marginRight: 16,
-      padding: 4,
+      position: 'absolute',
+      top: 50,
+      left: 20,
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
+      borderRadius: 20,
+      width: 40,
+      height: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1,
     },
-    headerTitle: {
-      fontSize: 18,
-      fontFamily: 'Poppins-SemiBold',
-      color: colors.textColor,
+    contentContainer: {
+      flex: 1,
+      backgroundColor: ShopColors.cardBackground,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      marginTop: -20,
+      paddingTop: 20,
     },
-    imageContainer: {
-      position: 'relative',
-    },    image: {
-      width: '100%',
-      height: 280,
+    shopHeader: {
+      paddingHorizontal: 20,
+      paddingBottom: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: ShopColors.border,
     },
-    content: {
-      padding: 20,
-      backgroundColor: colors.cardBackground,
-    },
-    name: {
-      fontSize: 28,
+    shopName: {
+      fontSize: 24,
       fontFamily: 'Poppins-Bold',
-      color: colors.textColor,
-      marginBottom: 8,
-      lineHeight: 34,
+      color: ShopColors.textPrimary,
+      marginBottom: 4,
     },
-    category: {
+    shopCategory: {
       fontSize: 16,
-      fontFamily: 'Poppins-Medium',
-      color: colors.subtextColor,
+      fontFamily: 'Poppins-Regular',
+      color: ShopColors.textSecondary,
       textTransform: 'capitalize',
-      marginBottom: 12,
+      marginBottom: 8,
     },
     ratingContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: colors.backgroundColor,
-      paddingHorizontal: 16,
-      paddingVertical: 10,
-      borderRadius: 12,
-      marginBottom: 20,
-      borderWidth: 1,
-      borderColor: colors.borderColor,
+      marginBottom: 12,
     },
-    ratingStars: {
-      flexDirection: 'row',
-      marginRight: 8,
-    },
-    rating: {
+    ratingText: {
       fontSize: 16,
       fontFamily: 'Poppins-SemiBold',
-      color: colors.textColor,
-      marginLeft: 4,
+      color: ShopColors.textPrimary,
+      marginLeft: 6,
     },
-    ratingCount: {
+    reviewsText: {
       fontSize: 14,
       fontFamily: 'Poppins-Regular',
-      color: colors.subtextColor,
-      marginLeft: 4,
+      color: ShopColors.textSecondary,
+      marginLeft: 8,
+    },
+    descriptionSection: {
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: ShopColors.border,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontFamily: 'Poppins-SemiBold',
+      color: ShopColors.textPrimary,
+      marginBottom: 12,
     },
     description: {
       fontSize: 16,
-      lineHeight: 24,
       fontFamily: 'Poppins-Regular',
-      color: colors.subtextColor,
-      marginBottom: 32,
+      color: ShopColors.textSecondary,
+      lineHeight: 24,
     },
-    infoSection: {
-      backgroundColor: colors.backgroundColor,
-      borderRadius: 16,
+    contactSection: {
       padding: 20,
-      marginBottom: 20,
-      borderWidth: 1,
-      borderColor: colors.borderColor,
     },
-    infoTitle: {
-      fontSize: 18,
-      fontFamily: 'Poppins-SemiBold',
-      color: colors.textColor,
-      marginBottom: 16,
-    },
-    infoRow: {
+    contactItem: {
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: 16,
-      paddingVertical: 4,
     },
-    infoIconContainer: {
-      backgroundColor: colors.cardBackground,
-      borderRadius: 10,
-      padding: 8,
-      marginRight: 12,
-      borderWidth: 1,
-      borderColor: colors.borderColor,
-    },
-    infoText: {
-      fontSize: 14,
+    contactText: {
+      fontSize: 16,
       fontFamily: 'Poppins-Regular',
-      color: colors.textColor,
+      color: ShopColors.textPrimary,
+      marginLeft: 12,
       flex: 1,
-      lineHeight: 20,
+    },
+    contactLink: {
+      color: ShopColors.accent,
     },
   });
 
-  const handleBack = () => {
-    router.back();
-  };
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Ionicons 
-            name="arrow-back" 
-            size={24} 
-            color={colors.textColor} 
-          />
+      <View style={styles.heroSection}>
+        <Image
+          source={{ uri: shop.image }}
+          style={styles.heroImage}
+          resizeMode="cover"
+        />
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => router.back()}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Shop Details</Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.imageContainer}>
-          <Image source={{ uri: shop.image }} style={styles.image} resizeMode="cover" />
-        </View>
-        
-        <View style={styles.content}>
-          <Text style={styles.name}>{shop.name}</Text>
-          <Text style={styles.category}>{shop.category}</Text>
+      <ScrollView style={styles.contentContainer} showsVerticalScrollIndicator={false}>
+        <View style={styles.shopHeader}>
+          <Text style={styles.shopName}>{shop.name}</Text>
+          {shop.category && (
+            <Text style={styles.shopCategory}>{shop.category}</Text>
+          )}
           
-          <View style={styles.ratingContainer}>
-            <View style={styles.ratingStars}>
-              {[...Array(5)].map((_, index) => (
-                <Ionicons 
-                  key={index}
-                  name={index < Math.floor(shop.rating) ? "star" : "star-outline"} 
-                  size={16} 
-                  color={colors.ratingColor} 
-                />
-              ))}
+          {shop.rating && (
+            <View style={styles.ratingContainer}>
+              <Ionicons name="star" size={20} color="#FFD700" />
+              <Text style={styles.ratingText}>{shop.rating.toFixed(1)}</Text>              <Text style={styles.reviewsText}>
+                ({shop.ratingCount || 0} reviews)
+              </Text>
             </View>
-            <Text style={styles.rating}>{shop.rating.toFixed(1)}</Text>
-            <Text style={styles.ratingCount}>({shop.ratingCount} reviews)</Text>
+          )}
+        </View>
+
+        {shop.description && (
+          <View style={styles.descriptionSection}>
+            <Text style={styles.sectionTitle}>About</Text>
+            <Text style={styles.description}>{shop.description}</Text>
           </View>
-
-          <Text style={styles.description}>{shop.description}</Text>
-
-          <View style={styles.infoSection}>
-            <Text style={styles.infoTitle}>Shop Information</Text>
-            
-            <View style={styles.infoRow}>
-              <View style={styles.infoIconContainer}>
-                <Ionicons 
-                  name="location" 
-                  size={16} 
-                  color={colors.accentColor} 
-                />
-              </View>
-              <Text style={styles.infoText}>{shop.location}</Text>
+        )}        <View style={styles.contactSection}>
+          <Text style={styles.sectionTitle}>Contact Information</Text>
+          
+          {shop.location && (
+            <View style={styles.contactItem}>
+              <Ionicons name="location-outline" size={20} color={ShopColors.iconPrimary} />
+              <Text style={styles.contactText}>{shop.location}</Text>
             </View>
-
-            <View style={styles.infoRow}>
-              <View style={styles.infoIconContainer}>
-                <Ionicons 
-                  name="call" 
-                  size={16} 
-                  color={colors.accentColor} 
-                />
-              </View>
-              <Text style={styles.infoText}>{shop.contact}</Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <View style={styles.infoIconContainer}>
-                <Ionicons 
-                  name="time" 
-                  size={16} 
-                  color={colors.accentColor} 
-                />
-              </View>
-              <Text style={styles.infoText}>{shop.openingHours}</Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <View style={styles.infoIconContainer}>
-                <Ionicons 
-                  name="card" 
-                  size={16} 
-                  color={colors.accentColor} 
-                />
-              </View>
-              <Text style={styles.infoText}>{shop.priceRange}</Text>
-            </View>
-          </View>
+          )}
+          
+          {shop.contact && (
+            <TouchableOpacity style={styles.contactItem}>
+              <Ionicons name="call-outline" size={20} color={ShopColors.iconPrimary} />
+              <Text style={[styles.contactText, styles.contactLink]}>{shop.contact}</Text>
+            </TouchableOpacity>
+          )}
+          
+          {shop.website && (
+            <TouchableOpacity style={styles.contactItem}>
+              <Ionicons name="globe-outline" size={20} color={ShopColors.iconPrimary} />
+              <Text style={[styles.contactText, styles.contactLink]}>{shop.website}</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </View>

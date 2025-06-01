@@ -1,4 +1,4 @@
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
@@ -17,24 +17,12 @@ const ShopCard: React.FC<ShopCardProps> = ({
   showCategory = true,
   width = 180 
 }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-
-  // Beautiful color scheme matching the old design
-  const colors = {
-    textColor: isDark ? '#ffffff' : '#1A1A1A',
-    subtextColor: isDark ? '#94A3B8' : '#6B7280',
-    backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
-    cardBackground: isDark ? '#334155' : '#F8FAFB',
-    borderColor: isDark ? '#475569' : '#E5E7EB',
-  };
-
   const styles = StyleSheet.create({
     card: {
-      backgroundColor: colors.cardBackground,
+      backgroundColor: ShopColors.cardBackground,
       borderRadius: 12,
       borderWidth: 1,
-      borderColor: colors.borderColor,
+      borderColor: ShopColors.border,
       width: width,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
@@ -71,17 +59,16 @@ const ShopCard: React.FC<ShopCardProps> = ({
     },
     shopInfo: {
       padding: 12,
-    },
-    name: {
+    },    name: {
       fontSize: 14,
       fontFamily: 'Poppins-SemiBold',
-      color: colors.textColor,
+      color: ShopColors.textPrimary,
       marginBottom: 4,
     },
     category: {
       fontSize: 12,
       fontFamily: 'Poppins-Regular',
-      color: colors.subtextColor,
+      color: ShopColors.textSecondary,
       textTransform: 'capitalize',
       marginBottom: 6,
     },
@@ -93,11 +80,10 @@ const ShopCard: React.FC<ShopCardProps> = ({
     ratingContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-    },
-    ratingText: {
+    },    ratingText: {
       fontSize: 12,
       fontFamily: 'Poppins-Medium',
-      color: colors.textColor,
+      color: ShopColors.textPrimary,
       marginLeft: 2,
     },
   });

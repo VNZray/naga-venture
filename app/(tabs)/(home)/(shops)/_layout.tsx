@@ -46,7 +46,7 @@ const ShopDirectoryLayout = () => {
           headerTitle: "Subcategory",
           headerBackTitle: "Back",
         }}
-      />
+      />      
       <Stack.Screen
         name="(details)/[shopId]"
         options={{
@@ -55,6 +55,27 @@ const ShopDirectoryLayout = () => {
           headerTitleAlign: "center",
           headerTitle: "Shop Details",
           headerBackTitle: "Back",
+        }}
+      />
+      <Stack.Screen
+        name="FeaturedShops"
+        options={{
+          headerShown: false,
+          animation: "slide_from_right",
+        }}
+      />
+      <Stack.Screen
+        name="RecommendedShops"
+        options={{
+          headerShown: false,
+          animation: "slide_from_right",
+        }}
+      />
+      <Stack.Screen
+        name="SpecialOffers"
+        options={{
+          headerShown: false,
+          animation: "slide_from_right",
         }}
       />
     </Stack>

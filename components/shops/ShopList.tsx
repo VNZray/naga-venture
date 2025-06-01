@@ -1,7 +1,8 @@
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
+    FlatList,
     ScrollView,
     StyleSheet,
     Text,
@@ -21,20 +22,10 @@ const ShopList: React.FC<ShopListProps> = ({
   showViewAll = true,
   onViewAllPress,
   emptyMessage = 'No shops found',
-  width = 180
+  width = 180,
+  gridLayout = false,
+  numColumns = 2
 }) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-
-  // Beautiful color scheme matching the old design
-  const colors = {
-    textColor: isDark ? '#ffffff' : '#1A1A1A',
-    subtextColor: isDark ? '#94A3B8' : '#6B7280',
-    backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
-    cardBackground: isDark ? '#334155' : '#F8FAFB',
-    borderColor: isDark ? '#475569' : '#E5E7EB',
-  };
-
   const styles = StyleSheet.create({
     container: {
       marginBottom: 32, // Standardized spacing for drop shadow
@@ -49,7 +40,7 @@ const ShopList: React.FC<ShopListProps> = ({
     title: {
       fontSize: 18, // Standardized title size
       fontFamily: 'Poppins-SemiBold',
-      color: colors.textColor,
+      color: ShopColors.textPrimary,
     },
     viewAllButton: {
       flexDirection: 'row',
@@ -58,7 +49,7 @@ const ShopList: React.FC<ShopListProps> = ({
     viewAllText: {
       fontSize: 16,
       fontFamily: 'Poppins-Medium',
-      color: '#2E5AA7',
+      color: ShopColors.accent,
       marginRight: 4,
     },
     scrollContent: {
@@ -78,13 +69,22 @@ const ShopList: React.FC<ShopListProps> = ({
       borderRadius: 12,
       marginHorizontal: 20,
       alignItems: 'center',
-      backgroundColor: colors.cardBackground,
+      backgroundColor: ShopColors.cardBackground,
     },
     emptyText: {
       fontSize: 14,
       fontFamily: 'Poppins-Regular',
-      color: colors.subtextColor,
+      color: ShopColors.textSecondary,
       textAlign: 'center',
+    },
+    gridContainer: {
+      paddingHorizontal: 14, // Reduced to account for item padding
+      paddingTop: 0,
+    },
+    gridItemContainer: {
+      flex: 1,
+      marginBottom: 16,
+      paddingHorizontal: 6,
     },
   });
   // Handle empty state with beautiful design
@@ -112,14 +112,32 @@ const ShopList: React.FC<ShopListProps> = ({
           {showViewAll && onViewAllPress && (
             <TouchableOpacity style={styles.viewAllButton} onPress={onViewAllPress}>
               <Text style={styles.viewAllText}>View All</Text>
-              <Ionicons name="chevron-forward" size={16} color="#2E5AA7" />
+              <Ionicons name="chevron-forward" size={16} color={ShopColors.accent} />
             </TouchableOpacity>
           )}
         </View>
-      )}
-
-      {/* Horizontal or vertical list with beautiful styling */}
-      {horizontal ? (
+      )}      {/* Horizontal, vertical, or grid list with beautiful styling */}
+      {gridLayout ? (
+        <FlatList
+          data={shops}
+          renderItem={({ item }) => (
+            <View style={styles.gridItemContainer}>
+              <ShopCard
+                shop={item}
+                onPress={onShopPress}
+                showRating={showRating}
+                showCategory={showCategory}
+                width={undefined}
+              />
+            </View>
+          )}
+          keyExtractor={(item) => item.id}
+          numColumns={numColumns}
+          contentContainerStyle={styles.gridContainer}
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={false}
+        />
+      ) : horizontal ? (
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false}

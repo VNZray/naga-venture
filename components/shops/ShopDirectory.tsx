@@ -1,4 +1,4 @@
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { ShopColors } from '@/constants/ShopColors';
 import type { ShopData } from '@/types/shop';
 import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
@@ -27,20 +27,10 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
   categories, 
   featuredShops 
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-
-  // Beautiful color scheme matching the enhanced design
-  const colors = {
-    backgroundColor: isDark ? '#0F172A' : '#F8FAFC',
-    containerBackground: isDark ? '#1E293B' : '#FFFFFF',
-  };
-
-  const styles = StyleSheet.create({
+  const [searchQuery, setSearchQuery] = useState('');  const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: colors.backgroundColor,
+      backgroundColor: ShopColors.background,
     },
     content: {
       paddingTop: 8,
@@ -60,16 +50,21 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
       shop.category.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [shops, searchQuery]);
-
-  // Get trending shops (high ratings)
-  const trendingShops = useMemo(() => 
+  // Get recommended shops (high ratings)
+  const recommendedShops = useMemo(() => 
     shops.filter(shop => shop.rating >= 4.5).slice(0, 6),
     [shops]
   );
 
-  // Get nearby shops (you can replace this with actual location logic)
-  const nearbyShops = useMemo(() => 
+  // Get special offers shops (static for now - could be shops with promotions)
+  const specialOffersShops = useMemo(() => 
     shops.slice(0, 6),
+    [shops]
+  );
+
+  // Get discover more shops (all shops for infinite scroll-like experience)
+  const discoverMoreShops = useMemo(() => 
+    shops,
     [shops]
   );
 
@@ -79,17 +74,17 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
 
   const handleCategoryPress = (categoryId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(categories)/${categoryId}`);
+  };  const handleViewAllFeatured = () => {
+    router.push('/(tabs)/(home)/(shops)/FeaturedShops');
   };
-  const handleViewAllFeatured = () => {
-    router.push('/(tabs)/(home)/(shops)/(categories)/featured');
+  const handleViewAllRecommended = () => {
+    router.push('/(tabs)/(home)/(shops)/RecommendedShops');
+  };  const handleViewAllSpecialOffers = () => {
+    router.push('/(tabs)/(home)/(shops)/SpecialOffers');
   };
 
-  const handleViewAllTrending = () => {
-    router.push('/(tabs)/(home)/(shops)/(categories)/trending');
-  };
-
-  const handleViewAllNearby = () => {
-    router.push('/(tabs)/(home)/(shops)/(categories)/nearby');
+  const handleViewAllCategories = () => {
+    router.push('/(tabs)/(home)/(shops)/AllCategories');
   };
 
   return (
@@ -113,20 +108,20 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                 showViewAll={true}
               />
             </View>
-            
-            <View style={styles.section}>
+              <View style={styles.section}>
               <ShopCategories
                 categories={categories}
                 onCategoryPress={handleCategoryPress}
+                showViewAll={true}
+                onViewAllPress={handleViewAllCategories}
               />
             </View>
-            
-            <View style={styles.section}>
+              <View style={styles.section}>
               <ShopList
-                shops={trendingShops}
+                shops={recommendedShops}
                 onShopPress={handleShopPress}
-                onViewAllPress={handleViewAllTrending}
-                title="Trending Shops"
+                onViewAllPress={handleViewAllRecommended}
+                title="Recommended for you"
                 horizontal={true}
                 showRating={true}
                 showCategory={true}
@@ -136,14 +131,26 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
             
             <View style={styles.section}>
               <ShopList
-                shops={nearbyShops}
+                shops={specialOffersShops}
                 onShopPress={handleShopPress}
-                onViewAllPress={handleViewAllNearby}
-                title="Near You"
+                onViewAllPress={handleViewAllSpecialOffers}
+                title="Special Offers"
                 horizontal={true}
                 showRating={true}
                 showCategory={true}
                 showViewAll={true}
+              />
+            </View>            <View style={styles.section}>
+              <ShopList
+                shops={discoverMoreShops}
+                onShopPress={handleShopPress}
+                title="Discover More"
+                horizontal={false}
+                showRating={true}
+                showCategory={true}
+                showViewAll={false}
+                gridLayout={true}
+                numColumns={2}
               />
             </View>
           </>
