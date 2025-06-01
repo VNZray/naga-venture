@@ -16,4 +16,15 @@ config.resolver.nodeModulesPaths = [
   path.resolve(monorepoRoot, 'node_modules'),
 ];
 
+// Add watchman configuration
+config.resolver.useWatchman = true;
+config.watchFolders = [projectRoot];
+config.resolver.blockList = [
+  /C:\\DumpStack\.log\.tmp/,
+  /C:\\Windows/,
+  /C:\\Program Files/,
+  /C:\\ProgramData/,
+  /C:\\Users\\[^\\]+\\AppData/
+];
+
 module.exports = config;
