@@ -5,8 +5,6 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { Dimensions, Image, Platform, ScrollView, StyleSheet, View } from "react-native";
 
-const { width, height } = Dimensions.get("window");
-
 import TabSwitcher from "@/components/TabSwitcherComponent";
 import { ThemedText } from "@/components/ThemedText";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -16,6 +14,8 @@ import Ratings from "./ratings";
 import Rooms from "./rooms";
 
 import { accommodations } from "@/app/Controller/AccommodationData";
+
+const { width, height } = Dimensions.get("window");
 
 const AccommodationProfile = () => {
   const { id } = useLocalSearchParams();

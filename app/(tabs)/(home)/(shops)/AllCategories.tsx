@@ -1,8 +1,8 @@
-import { ShopColors } from '@/constants/ShopColors';
-import type { ShopCategory } from '@/types/shop';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React from 'react';
+import { ShopColors } from "@/constants/ShopColors";
+import type { ShopCategory } from "@/types/shop";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React from "react";
 import {
   Dimensions,
   FlatList,
@@ -11,17 +11,18 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { mainCategories } from '../../../Controller/ShopData';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { mainCategories } from "../../../Controller/ShopData";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 const SUBCATEGORY_GAP = 12;
 const SUBCATEGORIES_PER_ROW = 3;
-const SUBCATEGORY_WIDTH = (width - (SUBCATEGORY_GAP * (SUBCATEGORIES_PER_ROW + 1))) / SUBCATEGORIES_PER_ROW;
+const SUBCATEGORY_WIDTH =
+  (width - SUBCATEGORY_GAP * (SUBCATEGORIES_PER_ROW + 1)) /
+  SUBCATEGORIES_PER_ROW;
 
 const AllCategoriesPage = () => {
-
   const handleMainCategoryPress = (mainCategoryId: string) => {
     router.push(`/(tabs)/(home)/(shops)/(categories)/${mainCategoryId}`);
   };
@@ -29,10 +30,21 @@ const AllCategoriesPage = () => {
     router.push(`/(tabs)/(home)/(shops)/(subcategory)/${subcategoryId}`);
   };
 
-  const renderSubcategoryItem = ({ item, index }: { item: ShopCategory; index: number }) => {
+  const renderSubcategoryItem = ({
+    item,
+    index,
+  }: {
+    item: ShopCategory;
+    index: number;
+  }) => {
     const isLastInRow = (index + 1) % SUBCATEGORIES_PER_ROW === 0;
-    
-    return (      <TouchableOpacity
+    const iconName =
+      item.icon && typeof item.icon === "string" && item.icon.trim() !== ""
+        ? item.icon
+        : "help-circle-outline"; // A default fallback icon
+
+    return (
+      <TouchableOpacity
         style={[
           styles.subcategoryCard,
           {
@@ -48,14 +60,19 @@ const AllCategoriesPage = () => {
         accessibilityLabel={item.name}
         accessibilityRole="button"
       >
-        <View style={[styles.iconContainer, { backgroundColor: ShopColors.accent + '20' }]}>
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: ShopColors.accent + "20" },
+          ]}
+        >
           <Ionicons
-            name={item.icon as any}
+            name={iconName as any} // Use the verified or fallback iconName
             size={24}
             color={ShopColors.accent}
           />
         </View>
-        <Text 
+        <Text
           style={[styles.subcategoryTitle, { color: ShopColors.textPrimary }]}
           numberOfLines={2}
         >
@@ -67,10 +84,9 @@ const AllCategoriesPage = () => {
 
   const renderMainCategorySection = (mainCategory: any, index: number) => {
     const subcategoryCount = mainCategory.subcategories.length;
-    
+
     return (
       <View key={mainCategory.id} style={styles.sectionContainer}>
-
         {/* Main Category Header */}
         <View style={styles.sectionHeader}>
           <TouchableOpacity
@@ -80,14 +96,26 @@ const AllCategoriesPage = () => {
             accessible={true}
             accessibilityLabel={`View all ${mainCategory.name} businesses`}
             accessibilityRole="button"
-          >            <Text style={[styles.mainCategoryTitle, { color: ShopColors.textPrimary }]}>
+          >
+            <Text
+              style={[
+                styles.mainCategoryTitle,
+                { color: ShopColors.textPrimary },
+              ]}
+            >
               {mainCategory.name}
             </Text>
-            <Text style={[styles.subcategoryCount, { color: ShopColors.textSecondary }]}>
-              {subcategoryCount} {subcategoryCount === 1 ? 'category' : 'categories'}
+            <Text
+              style={[
+                styles.subcategoryCount,
+                { color: ShopColors.textSecondary },
+              ]}
+            >
+              {subcategoryCount}{" "}
+              {subcategoryCount === 1 ? "category" : "categories"}
             </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={styles.seeAllButton}
             onPress={() => handleMainCategoryPress(mainCategory.id)}
@@ -105,10 +133,12 @@ const AllCategoriesPage = () => {
               color={ShopColors.textAccent}
             />
           </TouchableOpacity>
-        </View>        
-        
+        </View>
+
         {/* Divider Line */}
-        <View style={[styles.divider, { backgroundColor: ShopColors.divider }]} />
+        <View
+          style={[styles.divider, { backgroundColor: ShopColors.divider }]}
+        />
 
         {/* Subcategories Grid */}
         <FlatList
@@ -137,9 +167,9 @@ const AllCategoriesPage = () => {
       paddingHorizontal: 16,
     },
     sectionHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-end',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-end",
       marginBottom: 12,
     },
     mainCategoryButton: {
@@ -155,8 +185,8 @@ const AllCategoriesPage = () => {
       fontFamily: "Poppins-Regular",
     },
     seeAllButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       paddingVertical: 4,
       paddingHorizontal: 8,
       gap: 4,
@@ -171,16 +201,17 @@ const AllCategoriesPage = () => {
     },
     subcategoriesGrid: {
       paddingBottom: 8,
-    },    gridRow: {
-      justifyContent: 'flex-start',
+    },
+    gridRow: {
+      justifyContent: "flex-start",
       marginBottom: SUBCATEGORY_GAP,
     },
     subcategoryCard: {
       borderRadius: 12,
       borderWidth: 1,
       padding: 12,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
       minHeight: 100,
       shadowColor: ShopColors.shadow,
       shadowOffset: { width: 0, height: 2 },
@@ -192,24 +223,24 @@ const AllCategoriesPage = () => {
       width: 48,
       height: 48,
       borderRadius: 24,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
       marginBottom: 8,
     },
     subcategoryTitle: {
       fontSize: 12,
       fontFamily: "Poppins-Medium",
-      textAlign: 'center',
+      textAlign: "center",
       lineHeight: 16,
     },
   });
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {mainCategories.map((mainCategory, index) => 
+        {mainCategories.map((mainCategory, index) =>
           renderMainCategorySection(mainCategory, index)
         )}
       </ScrollView>
