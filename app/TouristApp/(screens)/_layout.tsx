@@ -29,7 +29,6 @@ const Screens = () => {
   if (Platform.OS === "web") {
     return (
       <Stack>
-        <Stack.Screen name='index' options={{ headerShown: false }} />
         <Stack.Screen name='LoadingScreen' options={{ headerShown: false }} />
         <Stack.Screen name='LoginPage' options={{ headerBackTitle: 'Back', headerTitle: 'Login', headerTintColor: color, headerShown: false, title: 'Login' }} />
         <Stack.Screen name='RegistrationPage' options={{ headerBackTitle: 'Back', headerTintColor: color, headerShown: false, title: 'Sign Up' }} />
