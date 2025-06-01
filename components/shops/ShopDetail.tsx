@@ -1,8 +1,8 @@
-import { ShopColors } from "@/constants/ShopColors";
-import type { ShopData } from "@/types/shop";
-import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
-import React from "react";
+import { ShopColors } from '@/constants/ShopColors';
+import type { ShopData } from '@/types/shop';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React from 'react';
 import {
   Image,
   ScrollView,
@@ -10,7 +10,7 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
+} from 'react-native';
 
 interface ShopDetailProps {
   shop: ShopData | null;
@@ -28,8 +28,8 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
       >
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
+            flexDirection: 'row',
+            alignItems: 'center',
             padding: 20,
             borderBottomWidth: 1,
             borderBottomColor: ShopColors.border,
@@ -49,7 +49,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
           <Text
             style={{
               fontSize: 18,
-              fontFamily: "Poppins-SemiBold",
+              fontFamily: 'Poppins-SemiBold',
               color: ShopColors.textPrimary,
             }}
           >
@@ -59,18 +59,18 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
         <View
           style={{
             flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
+            justifyContent: 'center',
+            alignItems: 'center',
             padding: 20,
           }}
         >
           <Text
             style={{
               fontSize: 18,
-              fontFamily: "Poppins-SemiBold",
+              fontFamily: 'Poppins-SemiBold',
               color: ShopColors.textPrimary,
               marginBottom: 12,
-              textAlign: "center",
+              textAlign: 'center',
             }}
           >
             Shop Not Found
@@ -78,9 +78,9 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
           <Text
             style={{
               fontSize: 16,
-              fontFamily: "Poppins-Regular",
+              fontFamily: 'Poppins-Regular',
               color: ShopColors.textSecondary,
-              textAlign: "center",
+              textAlign: 'center',
               marginBottom: 24,
             }}
           >
@@ -97,8 +97,8 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
           >
             <Text
               style={{
-                color: "#FFFFFF",
-                fontFamily: "Poppins-Medium",
+                color: '#FFFFFF',
+                fontFamily: 'Poppins-Medium',
                 fontSize: 16,
               }}
             >
@@ -116,23 +116,23 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
       backgroundColor: ShopColors.background,
     },
     heroSection: {
-      position: "relative",
+      position: 'relative',
       height: 250,
     },
     heroImage: {
-      width: "100%",
-      height: "100%",
+      width: '100%',
+      height: '100%',
     },
     backButton: {
-      position: "absolute",
+      position: 'absolute',
       top: 50,
       left: 20,
-      backgroundColor: "rgba(0, 0, 0, 0.6)",
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
       borderRadius: 20,
       width: 40,
       height: 40,
-      alignItems: "center",
-      justifyContent: "center",
+      alignItems: 'center',
+      justifyContent: 'center',
       zIndex: 1,
     },
     contentContainer: {
@@ -151,31 +151,31 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
     },
     shopName: {
       fontSize: 24,
-      fontFamily: "Poppins-Bold",
+      fontFamily: 'Poppins-Bold',
       color: ShopColors.textPrimary,
       marginBottom: 4,
     },
     shopCategory: {
       fontSize: 16,
-      fontFamily: "Poppins-Regular",
+      fontFamily: 'Poppins-Regular',
       color: ShopColors.textSecondary,
-      textTransform: "capitalize",
+      textTransform: 'capitalize',
       marginBottom: 8,
     },
     ratingContainer: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
       marginBottom: 12,
     },
     ratingText: {
       fontSize: 16,
-      fontFamily: "Poppins-SemiBold",
+      fontFamily: 'Poppins-SemiBold',
       color: ShopColors.textPrimary,
       marginLeft: 6,
     },
     reviewsText: {
       fontSize: 14,
-      fontFamily: "Poppins-Regular",
+      fontFamily: 'Poppins-Regular',
       color: ShopColors.textSecondary,
       marginLeft: 8,
     },
@@ -186,13 +186,13 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
     },
     sectionTitle: {
       fontSize: 18,
-      fontFamily: "Poppins-SemiBold",
+      fontFamily: 'Poppins-SemiBold',
       color: ShopColors.textPrimary,
       marginBottom: 12,
     },
     description: {
       fontSize: 16,
-      fontFamily: "Poppins-Regular",
+      fontFamily: 'Poppins-Regular',
       color: ShopColors.textSecondary,
       lineHeight: 24,
     },
@@ -200,13 +200,13 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop }) => {
       padding: 20,
     },
     contactItem: {
-      flexDirection: "row",
-      alignItems: "center",
+      flexDirection: 'row',
+      alignItems: 'center',
       marginBottom: 16,
     },
     contactText: {
       fontSize: 16,
-      fontFamily: "Poppins-Regular",
+      fontFamily: 'Poppins-Regular',
       color: ShopColors.textPrimary,
       marginLeft: 12,
       flex: 1,
