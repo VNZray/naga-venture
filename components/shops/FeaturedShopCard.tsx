@@ -55,7 +55,7 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
     },
     name: {
       fontSize: 18,
-      fontFamily: 'Poppins-Bold', // Bolder for featured
+      fontFamily: 'Poppins-SemiBold', // Bolder for featured
       color: '#FFFFFF',
       textShadowColor: 'rgba(0, 0, 0, 0.5)',
       textShadowOffset: { width: 0, height: 1 },

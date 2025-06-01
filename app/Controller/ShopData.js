@@ -645,3 +645,37 @@ export const featuredShops = [
 
 // Destinations mapping for consistency with tourist spots
 export const destinations = Object.values(shopsData);
+
+
+// --- START: New Special Offers Data ---
+export const specialOffersData = [
+  {
+    id: 'so_001',
+    promoImageUrl: 'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=600&h=320&fit=crop', // Example Unsplash image (replace with actual promo images)
+    title: 'Weekend Getaway Deals',
+    altText: 'Advertisement for weekend getaway travel packages with a scenic view.',
+    targetPath: '/(tabs)/(home)/(offers)/weekend-deals', // Example navigation path
+  },
+  {
+    id: 'so_002',
+    promoImageUrl: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=600&h=320&fit=crop',
+    title: 'Restaurant Discounts: Up to 50% Off!',
+    altText: 'Advertisement for restaurant discounts showing delicious food.',
+    targetPath: '/(tabs)/(home)/(shops)/categories/dining',
+  },
+  {
+    id: 'so_003',
+    promoImageUrl: 'https://images.unsplash.com/photo-1526178094224-95108a9590cf?q=80&w=600&h=320&fit=crop',
+    title: 'New Tech Gadgets - Launch Offer',
+    altText: 'Advertisement for new tech gadgets with a sleek product shot.',
+    targetPath: '/(tabs)/(home)/(shops)/categories/mobile',
+  },
+  {
+    id: 'so_004',
+    promoImageUrl: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=600&h=320&fit=crop',
+    title: 'Fashion Frenzy: Seasonal Sale',
+    altText: 'Advertisement for a fashion sale with stylish apparel.',
+    targetPath: '/(tabs)/(home)/(shops)/categories/clothing',
+  },
+];
+// --- END: New Special Offers Data ---
