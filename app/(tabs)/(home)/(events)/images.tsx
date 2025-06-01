@@ -4,15 +4,15 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import { ActivityIndicator, Dimensions, Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Dimensions, Image, Pressable, ScrollView, StyleSheet, View , ImageStyle, StyleProp } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+
+
 
 const { width } = Dimensions.get('window');
 const COLUMN_COUNT = 2;
 const GAP = 8;
 const IMAGE_WIDTH = (width - 32 - GAP * (COLUMN_COUNT - 1)) / COLUMN_COUNT;
-
-import { ImageStyle, StyleProp } from 'react-native';
 
 type EventImageProps = {
     source: any;
