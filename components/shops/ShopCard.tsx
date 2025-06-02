@@ -118,7 +118,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
           {/* Display review count if available */}
           {shop.ratingCount !== undefined && shop.ratingCount !== null && (
             <Text style={styles.reviewCountText}>
-              ({shop.ratingCount}{' '}
+              ({shop.ratingCount}
               {shop.ratingCount === 1 ? 'review' : 'reviews'})
             </Text>
           )}

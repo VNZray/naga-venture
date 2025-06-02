@@ -1,5 +1,6 @@
-// app/(tabs)/(home)/(shops)/index.tsx - Clean and simple
-import React from 'react';
+import React, { useMemo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { Text, TouchableOpacity, View } from 'react-native';
 import ShopDirectory from '../../../../components/shops/ShopDirectory';
 import {
   destinations,
@@ -7,21 +8,55 @@ import {
   mainCategories,
 } from '../../../Controller/ShopData';
 
+// Error fallback
+const ShopErrorFallback = ({ error, resetErrorBoundary }: any) => (
+  <View
+    style={{
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+    }}
+  >
+    <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>
+      Oops! Something went wrong
+    </Text>
+    <TouchableOpacity
+      onPress={resetErrorBoundary}
+      style={{ backgroundColor: '#007AFF', padding: 12, borderRadius: 8 }}
+    >
+      <Text style={{ color: 'white' }}>Try Again</Text>
+    </TouchableOpacity>
+  </View>
+);
+
 const ShopsIndex = () => {
-  // Simple category data transformation
-  const categories = mainCategories.map((cat) => ({
-    id: cat.id,
-    name: cat.name,
-    icon: cat.icon,
-  }));
+  // Memoize category transformation
+  const categories = useMemo(
+    () =>
+      mainCategories.map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+        icon: cat.icon,
+      })),
+    []
+  );
 
   return (
-    <ShopDirectory
-      shops={destinations}
-      categories={categories}
-      featuredShops={featuredShops}
-    />
+    <ErrorBoundary
+      FallbackComponent={ShopErrorFallback}
+      onError={(error) => {
+        // TODO: Add crash reporting (Crashlytics, Sentry)
+        console.error('Shop Directory Error:', error);
+      }}
+    >
+      <ShopDirectory
+        shops={destinations}
+        categories={categories}
+        featuredShops={featuredShops}
+      />
+    </ErrorBoundary>
   );
 };
 
-export default ShopsIndex;
+export default React.memo(ShopsIndex);

@@ -211,12 +211,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                     onPress={handleViewAllSpecialOffers}
                     activeOpacity={0.7}
                   >
-                    <Text style={styles.viewAllText}>View All</Text>
-                    <Ionicons
-                      name="chevron-forward"
-                      size={14} // Smaller icon
-                      color={ShopColors.accent}
-                    />
+                    
                   </TouchableOpacity>
                 )}
               </View>
