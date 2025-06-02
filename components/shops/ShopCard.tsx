@@ -1,22 +1,15 @@
-
 import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import {
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { ShopCardProps } from './types';
 
-const ShopCard: React.FC<ShopCardProps> = ({ 
-  shop, 
-  onPress, 
-  showRating = true,
+const ShopCard: React.FC<ShopCardProps> = ({
+  shop,
+  onPress,
+  showRating = true, // This prop now primarily controls the badge on the image
   showCategory = true,
-  width = 180 
+  width = 180,
 }) => {
   const styles = StyleSheet.create({
     card: {
@@ -55,7 +48,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
       color: '#FFFFFF',
       fontSize: 12,
       fontWeight: '600',
-      marginLeft: 2,
+      marginLeft: 4, // Adjusted spacing
       fontFamily: 'Poppins-SemiBold',
     },
     shopInfo: {
@@ -76,19 +69,17 @@ const ShopCard: React.FC<ShopCardProps> = ({
     },
     shopFooter: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'space-between', // Adjust as needed if only one item
       alignItems: 'center',
+      marginTop: 4, // Added some top margin for spacing
     },
-    ratingContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    ratingText: {
+    reviewCountText: {
+      // New style for review count
       fontSize: 12,
-      fontFamily: 'Poppins-Medium',
-      color: ShopColors.textPrimary,
-      marginLeft: 2,
+      fontFamily: 'Poppins-Regular',
+      color: ShopColors.textSecondary,
     },
+    // ratingContainer and ratingText can be removed if no longer used
   });
 
   return (
@@ -107,33 +98,31 @@ const ShopCard: React.FC<ShopCardProps> = ({
         {showRating && shop.rating !== undefined && shop.rating !== null && (
           <View style={styles.ratingBadge}>
             <Ionicons name="star" size={12} color="#FFD700" />
-            <Text style={styles.ratingBadgeText}>
-              {shop.rating.toFixed(1)}
-            </Text>
+            <Text style={styles.ratingBadgeText}>{shop.rating.toFixed(1)}</Text>
           </View>
         )}
       </View>
-      
+
       <View style={styles.shopInfo}>
         <Text style={styles.name} numberOfLines={1}>
           {shop.name || 'Unknown Shop'}
         </Text>
-        
+
         {showCategory && shop.category && (
           <Text style={styles.category} numberOfLines={1}>
             {shop.category}
           </Text>
         )}
-        
+
         <View style={styles.shopFooter}>
-          {showRating && shop.rating !== undefined && shop.rating !== null && (
-            <View style={styles.ratingContainer}>
-              <Ionicons name="star" size={12} color="#FFD700" />
-              <Text style={styles.ratingText}>
-                {shop.rating.toFixed(1)}
-              </Text>
-            </View>
+          {/* Display review count if available */}
+          {shop.ratingCount !== undefined && shop.ratingCount !== null && (
+            <Text style={styles.reviewCountText}>
+              ({shop.ratingCount}
+              {shop.ratingCount === 1 ? 'review' : 'reviews'})
+            </Text>
           )}
+          {/* You can add other elements to the footer here if needed, e.g., price range */}
         </View>
       </View>
     </TouchableOpacity>

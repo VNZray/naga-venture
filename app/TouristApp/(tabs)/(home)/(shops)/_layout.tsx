@@ -71,13 +71,6 @@ const ShopDirectoryLayout = () => {
           animation: "slide_from_right",
         }}
       />
-      <Stack.Screen
-        name="SpecialOffers"
-        options={{
-          headerShown: false,
-          animation: "slide_from_right",
-        }}
-      />
     </Stack>
   );
 };

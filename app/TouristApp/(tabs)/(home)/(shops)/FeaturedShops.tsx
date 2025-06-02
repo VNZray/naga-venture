@@ -1,33 +1,94 @@
 import ShopCard from '@/components/shops/ShopCard';
 import { ShopColors } from '@/constants/ShopColors';
+<<<<<<< HEAD:app/TouristApp/(tabs)/(home)/(shops)/FeaturedShops.tsx
 import { featuredShops } from '@/Controller/ShopData';
+=======
+import type { ShopData } from '@/types/shop';
+>>>>>>> f59dd0fc3358ae4f3b219a7a866609ed4b399428:app/(tabs)/(home)/(shops)/FeaturedShops.tsx
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+<<<<<<< HEAD:app/TouristApp/(tabs)/(home)/(shops)/FeaturedShops.tsx
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+=======
+  ActivityIndicator,
+  RefreshControl,
+  Dimensions,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ShopCard from '../../../../components/shops/ShopCard'; // Ensure this path is correct
+import { featuredShops as staticFeaturedShops } from '../../../Controller/ShopData'; // Your static data
 
-const FeaturedShops = () => {
+const { width } = Dimensions.get('window');
+const CARD_MARGIN = 8;
+const NUM_COLUMNS = 2;
+// Calculate card width based on screen width, columns, and margins
+const CARD_WIDTH = (width - CARD_MARGIN * (NUM_COLUMNS + 1)) / NUM_COLUMNS; // Calculate card width based on screen width, columns, and margins
+
+const FeaturedShopsScreen = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [shops, setShops] = useState<ShopData[]>([]);
+
+  // Simulate data fetching
+  const fetchFeaturedShops = useCallback(async () => {
+    // In a real app, this would be an API call
+    return new Promise<ShopData[]>((resolve) => {
+      setTimeout(() => {
+        resolve(staticFeaturedShops); // Using your imported static data
+      }, 1000); // Simulate network delay
+    });
+  }, []);
+
+  const loadShops = useCallback(async (refreshing = false) => {
+    if (refreshing) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
+    try {
+      const data = await fetchFeaturedShops();
+      setShops(data);
+    } catch (error) {
+      console.error("Failed to fetch featured shops:", error);
+      // Optionally set an error state here to show a message to the user
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  }, [fetchFeaturedShops]);
+
+  useEffect(() => {
+    loadShops();
+  }, [loadShops]);
+>>>>>>> f59dd0fc3358ae4f3b219a7a866609ed4b399428:app/(tabs)/(home)/(shops)/FeaturedShops.tsx
+
   const handleShopPress = (shopId: string) => {
     router.push(`/TouristApp/(tabs)/(home)/(shops)/(details)/${shopId}`);
   };
 
-  const renderShopItem = ({ item }: { item: any }) => (
-    <View style={styles.shopCard}>
+  const renderShopItem = ({ item }: { item: ShopData }) => (
+    <View style={styles.cardWrapper}>
       <ShopCard
         shop={item}
         onPress={handleShopPress}
         showRating={true}
         showCategory={true}
+        width={CARD_WIDTH} // Pass calculated width
       />
     </View>
   );
+<<<<<<< HEAD:app/TouristApp/(tabs)/(home)/(shops)/FeaturedShops.tsx
+=======
+
+>>>>>>> f59dd0fc3358ae4f3b219a7a866609ed4b399428:app/(tabs)/(home)/(shops)/FeaturedShops.tsx
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -36,52 +97,87 @@ const FeaturedShops = () => {
     header: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: 20,
+      paddingHorizontal: 16, // Consistent padding
       paddingVertical: 12,
-      backgroundColor: ShopColors.cardBackground,
-      borderBottomWidth: 1,
-      borderBottomColor: ShopColors.border,
+      backgroundColor: ShopColors.cardBackground, // Or ShopColors.background if header shouldn't be elevated
+      // Add a subtle border if header is elevated
+      // borderBottomWidth: 1,
+      // borderBottomColor: ShopColors.border,
     },
     backButton: {
-      padding: 8,
-      marginRight: 8,
-      borderRadius: 8,
+      padding: 8, // Generous touch target
+      marginRight: 12, // Space between button and title
     },
-    title: {
+    headerTitle: {
       fontSize: 20,
       fontFamily: 'Poppins-SemiBold',
       color: ShopColors.textPrimary,
-      flex: 1,
+      flex: 1, // Allow title to take available space
     },
     subtitle: {
       fontSize: 14,
       fontFamily: 'Poppins-Regular',
       color: ShopColors.textSecondary,
-      paddingHorizontal: 20,
+      paddingHorizontal: 20, // Match content padding
       paddingVertical: 12,
+      // marginBottom: 8,
     },
-    content: {
-      flex: 1,
-      paddingHorizontal: 20,
-      paddingTop: 8,
+    listContentContainer: {
+      paddingHorizontal: CARD_MARGIN, // Horizontal padding for the grid
+      paddingVertical: 16,
     },
-    shopCard: {
-      width: '48%',
-      marginBottom: 16,
+    cardWrapper: {
+      margin: CARD_MARGIN / 2, // Distribute margin around each card for even spacing
+      width: CARD_WIDTH,
     },
-    emptyContainer: {
+    centeredView: { // For loading and empty states
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 32,
+      padding: 20,
     },
     emptyText: {
       fontSize: 16,
       fontFamily: 'Poppins-Regular',
       color: ShopColors.textSecondary,
       textAlign: 'center',
+      marginTop: 8,
     },
+    emptyIcon: {
+      marginBottom: 16,
+    },
+    loadingText: {
+        marginTop: 10,
+        fontFamily: 'Poppins-Regular',
+        color: ShopColors.textSecondary
+    }
   });
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={24}
+              color={ShopColors.textPrimary}
+            />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Featured Shops</Text>
+        </View>
+        <View style={styles.centeredView}>
+          <ActivityIndicator size="large" color={ShopColors.accent} />
+          <Text style={styles.loadingText}>Loading Featured Shops...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
@@ -96,30 +192,43 @@ const FeaturedShops = () => {
             color={ShopColors.textPrimary}
           />
         </TouchableOpacity>
-        <Text style={styles.title}>Featured Shops</Text>
+        <Text style={styles.headerTitle}>Featured Shops</Text>
       </View>
 
+<<<<<<< HEAD:app/TouristApp/(tabs)/(home)/(shops)/FeaturedShops.tsx
       <Text style={styles.subtitle}>
         Our hand-picked selection of the best shops
       </Text>
 
       {featuredShops.length > 0 ? (
+=======
+      {shops.length > 0 ? (
+>>>>>>> f59dd0fc3358ae4f3b219a7a866609ed4b399428:app/(tabs)/(home)/(shops)/FeaturedShops.tsx
         <FlatList
-          data={featuredShops}
+          data={shops}
           renderItem={renderShopItem}
           keyExtractor={(item) => item.id}
-          numColumns={2}
-          contentContainerStyle={styles.content}
-          columnWrapperStyle={{ justifyContent: 'space-between' }}
+          numColumns={NUM_COLUMNS}
+          contentContainerStyle={styles.listContentContainer}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={() => loadShops(true)}
+              colors={[ShopColors.accent]} // iOS
+              tintColor={ShopColors.accent} // Android
+            />
+          }
         />
       ) : (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No featured shops available</Text>
+        <View style={styles.centeredView}>
+          <Ionicons name="star-outline" size={48} color={ShopColors.textSecondary} style={styles.emptyIcon} />
+          <Text style={styles.headerTitle}>No Featured Shops</Text>
+          <Text style={styles.emptyText}>Check back later for our hand-picked selections!</Text>
         </View>
       )}
     </SafeAreaView>
   );
 };
 
-export default FeaturedShops;
+export default FeaturedShopsScreen;

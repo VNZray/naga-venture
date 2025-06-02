@@ -193,7 +193,11 @@ const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
         ) : (
           <View style={styles.emptyContainer}>
             <View style={styles.emptyIcon}>
+<<<<<<< HEAD
               {' '}
+=======
+
+>>>>>>> f59dd0fc3358ae4f3b219a7a866609ed4b399428
               <Ionicons
                 name="storefront-outline"
                 size={32}
@@ -202,7 +206,11 @@ const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
             </View>
             <Text style={styles.emptyTitle}>No Shops Found</Text>
             <Text style={styles.emptyText}>
+<<<<<<< HEAD
               There are currently no shops available in the{' '}
+=======
+              There are currently no shops available in the
+>>>>>>> f59dd0fc3358ae4f3b219a7a866609ed4b399428
               {category.name.toLowerCase()} category. Please check back later or
               explore other categories.
             </Text>

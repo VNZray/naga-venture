@@ -1,21 +1,20 @@
-
 import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-    FlatList,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import ShopCard from './ShopCard';
 import type { ShopListProps } from './types';
 
-const ShopList: React.FC<ShopListProps> = ({ 
-  shops, 
-  onShopPress, 
+const ShopList: React.FC<ShopListProps> = ({
+  shops,
+  onShopPress,
   title,
   horizontal = false,
   showRating = true,
@@ -25,11 +24,11 @@ const ShopList: React.FC<ShopListProps> = ({
   emptyMessage = 'No shops found',
   width = 180,
   gridLayout = false,
-  numColumns = 2
+  numColumns = 2,
 }) => {
   const styles = StyleSheet.create({
     container: {
-      marginBottom: 32, // Standardized spacing for drop shadow
+      marginBottom: 8, // Standardized spacing for drop shadow
     },
     headerContainer: {
       flexDirection: 'row',
@@ -112,9 +111,16 @@ const ShopList: React.FC<ShopListProps> = ({
         <View style={styles.headerContainer}>
           <Text style={styles.title}>{title}</Text>
           {showViewAll && onViewAllPress && (
-            <TouchableOpacity style={styles.viewAllButton} onPress={onViewAllPress}>
+            <TouchableOpacity
+              style={styles.viewAllButton}
+              onPress={onViewAllPress}
+            >
               <Text style={styles.viewAllText}>View All</Text>
-              <Ionicons name="chevron-forward" size={16} color={ShopColors.accent} />
+              <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={ShopColors.accent}
+              />
             </TouchableOpacity>
           )}
         </View>
@@ -135,15 +141,17 @@ const ShopList: React.FC<ShopListProps> = ({
               />
             </View>
           )}
-          keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
+          keyExtractor={(item) =>
+            item.id?.toString() || Math.random().toString()
+          }
           numColumns={numColumns}
           contentContainerStyle={styles.gridContainer}
           showsVerticalScrollIndicator={false}
           scrollEnabled={false}
         />
       ) : horizontal ? (
-        <ScrollView 
-          horizontal 
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
@@ -161,13 +169,16 @@ const ShopList: React.FC<ShopListProps> = ({
       ) : (
         <View style={styles.verticalContainer}>
           {shops.map((shop) => (
-            <View key={shop.id?.toString() || Math.random().toString()} style={styles.verticalCard}>
+            <View
+              key={shop.id?.toString() || Math.random().toString()}
+              style={styles.verticalCard}
+            >
               <ShopCard
                 shop={shop}
                 onPress={onShopPress}
                 showRating={showRating}
                 showCategory={showCategory}
-                width={undefined} // Full width for vertical
+                width={width} // Full width for vertical
               />
             </View>
           ))}
