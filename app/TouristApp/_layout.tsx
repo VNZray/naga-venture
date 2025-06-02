@@ -3,38 +3,31 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import 'react-native-reanimated';
 
 import { AuthProvider } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
-import LoadingScreen from './TouristApp/(screens)/LoadingScreen';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [isLoading, setIsLoading] = useState(true);
+  const [loaded] = useFonts({
+    PoppinsRegular: require('@/assets/fonts/Poppins/Poppins-Medium.ttf'),
+  });
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-  }, []);
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1 }}>
-        <LoadingScreen />
-      </View>
-    );
+  if (!loaded) {
+    return null;
   }
 
   return (
     <AuthProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack>
+          <Stack.Screen name="(screens)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
         </Stack>
       </ThemeProvider>
     </AuthProvider>

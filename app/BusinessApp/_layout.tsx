@@ -10,7 +10,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import LoadingScreen from './TouristApp/(screens)/LoadingScreen';
+import LoadingScreen from '@/app/TouristApp/(screens)/LoadingScreen';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

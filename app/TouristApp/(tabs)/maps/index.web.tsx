@@ -1,12 +1,12 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 
-const EventContext = () => {
+const index = () => {
   return (
     <View>
-      <Text>EventContext</Text>
+      <Text>Maps not available on web</Text>
     </View>
   );
 };
 
-export default EventContext;
+export default index;

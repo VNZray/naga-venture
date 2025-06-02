@@ -1,24 +1,29 @@
 // Component that displays an interactive map showing the location of a tourist spot
 // Uses Google Maps to show the exact location with a marker and address
 
-import { ThemedText } from "@/components/ThemedText";
-import { MapLocation } from "@/context/TouristSpotContext";
-import { StyleSheet, View } from "react-native";
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-
+import { MapView, Marker, PROVIDER_GOOGLE } from '@/components/map/MapWrapper';
+import { ThemedText } from '@/components/ThemedText';
+import { MapLocation } from '@/context/TouristSpotContext';
+import { StyleSheet, View } from 'react-native';
 interface SpotMapSectionProps {
   mapLocation: MapLocation | null;
   address?: string;
   iconColor: string;
 }
 
-export default function SpotMapSection({ mapLocation, address, iconColor }: SpotMapSectionProps) {
+export default function SpotMapSection({
+  mapLocation,
+  address,
+  iconColor,
+}: SpotMapSectionProps) {
   // Don't render if no location data is available
   if (!mapLocation) return null;
 
   return (
     <View style={styles.section}>
-      <ThemedText type="subtitle" style={styles.sectionTitle}>Location</ThemedText>
+      <ThemedText type="subtitle" style={styles.sectionTitle}>
+        Location
+      </ThemedText>
       <View style={styles.mapContainer}>
         {/* Google Maps component with initial region centered on the spot */}
         <MapView
@@ -47,7 +52,9 @@ export default function SpotMapSection({ mapLocation, address, iconColor }: Spot
       </View>
       {/* Display the address below the map if available */}
       {address && (
-        <ThemedText type="default2" style={styles.addressText}>{address}</ThemedText>
+        <ThemedText type="default2" style={styles.addressText}>
+          {address}
+        </ThemedText>
       )}
     </View>
   );
@@ -59,13 +66,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 10,
   },
   mapContainer: {
     height: 200,
     borderRadius: 8,
-    overflow: "hidden",
+    overflow: 'hidden',
     marginBottom: 8,
   },
   map: {
@@ -73,7 +80,7 @@ const styles = StyleSheet.create({
   },
   addressText: {
     fontSize: 14,
-    color: "gray",
-    textAlign: "center",
+    color: 'gray',
+    textAlign: 'center',
   },
-}); 
+});

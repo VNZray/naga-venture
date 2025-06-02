@@ -5,12 +5,12 @@ import React, {
   useEffect,
   useMemo,
   useState,
-} from "react";
+} from 'react';
 
 import {
   rooms as roomData,
   accommodations as staticAccommodationsData,
-} from "@/app/Controller/AccommodationData";
+} from '@/Controller/AccommodationData';
 
 // Types
 type Room = {
@@ -46,15 +46,19 @@ type AccommodationContextType = {
   loading: boolean;
 };
 
-const AccommodationContext = createContext<AccommodationContextType | undefined>(undefined);
+const AccommodationContext = createContext<
+  AccommodationContextType | undefined
+>(undefined);
 
 type ProviderProps = {
   children: ReactNode;
 };
 
 export const AccommodationProvider = ({ children }: ProviderProps) => {
-  const [search, setSearch] = useState<string>("");
-  const [filteredAccommodations, setFilteredAccommodations] = useState<Accommodation[]>([]);
+  const [search, setSearch] = useState<string>('');
+  const [filteredAccommodations, setFilteredAccommodations] = useState<
+    Accommodation[]
+  >([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   // ✅ Memoize combined accommodations to avoid infinite loop
@@ -105,7 +109,9 @@ export const AccommodationProvider = ({ children }: ProviderProps) => {
 export const useAccommodation = () => {
   const context = useContext(AccommodationContext);
   if (!context) {
-    throw new Error("useAccommodation must be used within an AccommodationProvider");
+    throw new Error(
+      'useAccommodation must be used within an AccommodationProvider'
+    );
   }
   return context;
 };
