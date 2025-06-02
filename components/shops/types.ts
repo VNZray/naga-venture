@@ -54,7 +54,7 @@ export interface ShopCarouselProps {
 interface SpecialOfferData {
   id: string;
   promoImageUrl: string; // URL for the promotional image
-  title?: string;        // Optional: A very short title for the offer
-  altText?: string;      // Accessibility text for the image
+  title?: string; // Optional: A very short title for the offer
+  altText?: string; // Accessibility text for the image
   // navigationPath?: string; // Or some way to define where to go on press
 }

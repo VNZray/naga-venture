@@ -1,30 +1,21 @@
-import ShopCard from '@/components/shops/ShopCard';
+import ShopCard from '@/components/shops/ShopCard'; // Ensure this path is correct
 import { ShopColors } from '@/constants/ShopColors';
-<<<<<<< HEAD:app/TouristApp/(tabs)/(home)/(shops)/FeaturedShops.tsx
-import { featuredShops } from '@/Controller/ShopData';
-=======
+import { featuredShops as staticFeaturedShops } from '@/Controller/ShopData'; // Your static data
 import type { ShopData } from '@/types/shop';
->>>>>>> f59dd0fc3358ae4f3b219a7a866609ed4b399428:app/(tabs)/(home)/(shops)/FeaturedShops.tsx
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
+  Dimensions,
   FlatList,
+  RefreshControl,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-<<<<<<< HEAD:app/TouristApp/(tabs)/(home)/(shops)/FeaturedShops.tsx
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-=======
-  ActivityIndicator,
-  RefreshControl,
-  Dimensions,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import ShopCard from '../../../../components/shops/ShopCard'; // Ensure this path is correct
-import { featuredShops as staticFeaturedShops } from '../../../Controller/ShopData'; // Your static data
 
 const { width } = Dimensions.get('window');
 const CARD_MARGIN = 8;
@@ -47,28 +38,30 @@ const FeaturedShopsScreen = () => {
     });
   }, []);
 
-  const loadShops = useCallback(async (refreshing = false) => {
-    if (refreshing) {
-      setIsRefreshing(true);
-    } else {
-      setIsLoading(true);
-    }
-    try {
-      const data = await fetchFeaturedShops();
-      setShops(data);
-    } catch (error) {
-      console.error("Failed to fetch featured shops:", error);
-      // Optionally set an error state here to show a message to the user
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [fetchFeaturedShops]);
+  const loadShops = useCallback(
+    async (refreshing = false) => {
+      if (refreshing) {
+        setIsRefreshing(true);
+      } else {
+        setIsLoading(true);
+      }
+      try {
+        const data = await fetchFeaturedShops();
+        setShops(data);
+      } catch (error) {
+        console.error('Failed to fetch featured shops:', error);
+        // Optionally set an error state here to show a message to the user
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [fetchFeaturedShops]
+  );
 
   useEffect(() => {
     loadShops();
   }, [loadShops]);
->>>>>>> f59dd0fc3358ae4f3b219a7a866609ed4b399428:app/(tabs)/(home)/(shops)/FeaturedShops.tsx
 
   const handleShopPress = (shopId: string) => {
     router.push(`/TouristApp/(tabs)/(home)/(shops)/(details)/${shopId}`);
@@ -85,10 +78,7 @@ const FeaturedShopsScreen = () => {
       />
     </View>
   );
-<<<<<<< HEAD:app/TouristApp/(tabs)/(home)/(shops)/FeaturedShops.tsx
-=======
 
->>>>>>> f59dd0fc3358ae4f3b219a7a866609ed4b399428:app/(tabs)/(home)/(shops)/FeaturedShops.tsx
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -130,7 +120,8 @@ const FeaturedShopsScreen = () => {
       margin: CARD_MARGIN / 2, // Distribute margin around each card for even spacing
       width: CARD_WIDTH,
     },
-    centeredView: { // For loading and empty states
+    centeredView: {
+      // For loading and empty states
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
@@ -147,10 +138,10 @@ const FeaturedShopsScreen = () => {
       marginBottom: 16,
     },
     loadingText: {
-        marginTop: 10,
-        fontFamily: 'Poppins-Regular',
-        color: ShopColors.textSecondary
-    }
+      marginTop: 10,
+      fontFamily: 'Poppins-Regular',
+      color: ShopColors.textSecondary,
+    },
   });
 
   if (isLoading) {
@@ -195,15 +186,7 @@ const FeaturedShopsScreen = () => {
         <Text style={styles.headerTitle}>Featured Shops</Text>
       </View>
 
-<<<<<<< HEAD:app/TouristApp/(tabs)/(home)/(shops)/FeaturedShops.tsx
-      <Text style={styles.subtitle}>
-        Our hand-picked selection of the best shops
-      </Text>
-
-      {featuredShops.length > 0 ? (
-=======
       {shops.length > 0 ? (
->>>>>>> f59dd0fc3358ae4f3b219a7a866609ed4b399428:app/(tabs)/(home)/(shops)/FeaturedShops.tsx
         <FlatList
           data={shops}
           renderItem={renderShopItem}
@@ -222,9 +205,16 @@ const FeaturedShopsScreen = () => {
         />
       ) : (
         <View style={styles.centeredView}>
-          <Ionicons name="star-outline" size={48} color={ShopColors.textSecondary} style={styles.emptyIcon} />
+          <Ionicons
+            name="star-outline"
+            size={48}
+            color={ShopColors.textSecondary}
+            style={styles.emptyIcon}
+          />
           <Text style={styles.headerTitle}>No Featured Shops</Text>
-          <Text style={styles.emptyText}>Check back later for our hand-picked selections!</Text>
+          <Text style={styles.emptyText}>
+            Check back later for our hand-picked selections!
+          </Text>
         </View>
       )}
     </SafeAreaView>

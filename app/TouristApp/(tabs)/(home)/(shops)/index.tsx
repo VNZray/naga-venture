@@ -1,18 +1,12 @@
-<<<<<<< HEAD:app/TouristApp/(tabs)/(home)/(shops)/index.tsx
-// app/(tabs)/(home)/(shops)/index.tsx - Clean and simple
 import ShopDirectory from '@/components/shops/ShopDirectory';
-=======
-import React, { useMemo } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
-import { Text, TouchableOpacity, View } from 'react-native';
-import ShopDirectory from '../../../../components/shops/ShopDirectory';
->>>>>>> f59dd0fc3358ae4f3b219a7a866609ed4b399428:app/(tabs)/(home)/(shops)/index.tsx
 import {
   destinations,
   featuredShops,
   mainCategories,
 } from '@/Controller/ShopData';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 // Error fallback
 const ShopErrorFallback = ({ error, resetErrorBoundary }: any) => (
