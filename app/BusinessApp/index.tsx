@@ -2,7 +2,7 @@ import { ThemedText } from '@/components/ThemedText';
 import React from 'react';
 import { View } from 'react-native';
 
-const index = () => {
+const BusinessApp = () => {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <ThemedText type="title">Business App</ThemedText>
@@ -10,4 +10,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default BusinessApp;

@@ -1,11 +1,19 @@
+import { ThemedView } from '@/components/ThemedView';
 import React from 'react';
+import { Text } from 'react-native';
 
-const TourismAppFallback = () => {
+const BusinessWebApp = () => {
   return (
-    <div>
-      <h1>Hello World</h1>
-    </div>
+    <ThemedView
+      style={{
+        backgroundColor: 'white',
+        height: '100%',
+        width: '100%',
+      }}
+    >
+      <Text>Hello World</Text>
+    </ThemedView>
   );
 };
 
-export default TourismAppFallback;
+export default BusinessWebApp;
