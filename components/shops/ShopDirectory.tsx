@@ -12,11 +12,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import DiscoverMoreShopList from './DiscoverMoreShopList'; // Import the new list component
+import DiscoverMoreShopList from './DiscoverMoreShopList';
 import RecommendedShopCard from './RecommendedShopCard';
 import ShopCarousel from './ShopCarousel';
 import ShopCategories from './ShopCategories';
-import ShopList from './ShopList'; // Keep for search results
+import ShopList from './ShopList';
 import ShopSearch from './ShopSearch';
 import SpecialOfferCard from './SpecialOfferCard';
 
@@ -55,53 +55,48 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
       backgroundColor: ShopColors.background,
     },
     content: {
-      // Main ScrollView's style
-      paddingTop: 8,
+      paddingTop: 0, // Removed top padding
     },
     scrollViewContent: {
-      // contentContainerStyle for the main ScrollView
-      paddingBottom: 32, // Ensures padding at the very end of all content
+      paddingBottom: 16, // Reduced from 32
     },
     section: {
-      // Style for each section block
-      marginBottom: 24, // Spacing between sections
+      marginBottom: 12, // Reduced from 24 - much tighter sections
     },
     sectionHeader: {
-      // For sections like Recommended, Special Offers (if they have a View All)
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingHorizontal: 20,
-      marginBottom: 16,
+      paddingHorizontal: 16, // Reduced from 20
+      marginBottom: 8, // Reduced from 16
     },
     sectionTitle: {
-      // For titles within sectionHeader
-      fontSize: 20,
+      fontSize: 18, // Reduced from 20
       fontFamily: 'Poppins-SemiBold',
       color: ShopColors.textPrimary,
     },
     viewAllButton: {
       flexDirection: 'row',
       alignItems: 'center',
+      paddingVertical: 4, // Compact button
+      paddingHorizontal: 8,
     },
     viewAllText: {
-      fontSize: 16,
+      fontSize: 14, // Reduced from 16
       fontFamily: 'Poppins-Medium',
       color: ShopColors.accent,
       marginRight: 4,
     },
     horizontalListContentContainer: {
-      // For horizontal FlatLists
-      paddingHorizontal: 20,
-      paddingVertical: 4,
+      paddingHorizontal: 16, // Reduced from 20
+      paddingVertical: 0, // Removed vertical padding
     },
     horizontalListItemSeparator: {
-      width: 16,
+      width: 12, // Reduced from 16
     },
     emptyStateText: {
-      // Generic empty state text
-      paddingHorizontal: 20,
-      paddingVertical: 10,
+      paddingHorizontal: 16, // Reduced from 20
+      paddingVertical: 8, // Reduced from 10
       fontFamily: 'Poppins-Regular',
       fontSize: 14,
       color: ShopColors.textSecondary,
@@ -166,14 +161,13 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
   }: {
     item: ShopData;
   }) => (
-    <RecommendedShopCard shop={item} onPress={handleShopPress} width={280} />
+    <RecommendedShopCard shop={item} onPress={handleShopPress} width={260} /> // Slightly smaller cards
   );
 
   const renderSpecialOfferCard = ({ item }: { item: SpecialOfferItem }) => (
     <SpecialOfferCard offer={item} onPress={handleSpecialOfferPress} />
   );
 
-  // Optional: Handler for favorite toggling in DiscoverMoreList if needed
   const handleDiscoverItemFavoriteToggle = (
     shopId: string,
     isFavorited: boolean
@@ -181,23 +175,22 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
     console.log(
       `Shop ${shopId} favorite status: ${isFavorited} (from DiscoverMoreList)`
     );
-    // Implement actual favorite state update logic here if this feature is active
   };
 
   return (
     <View style={styles.container}>
       <ScrollView
         style={styles.content}
-        contentContainerStyle={styles.scrollViewContent} // Added for overall bottom padding
+        contentContainerStyle={styles.scrollViewContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.section}>
-          <ShopSearch onSearch={setSearchQuery} value={searchQuery} />
-        </View>
+        {/* Search Section - No extra wrapper */}
+        <ShopSearch onSearch={setSearchQuery} value={searchQuery} />
 
         {!searchQuery.trim() ? (
           <>
+            {/* Featured Shops Section */}
             <View style={styles.section}>
               <ShopCarousel
                 shops={featuredShops}
@@ -208,6 +201,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
               />
             </View>
 
+            {/* Special Offers Section */}
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Special Offers</Text>
@@ -220,7 +214,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                     <Text style={styles.viewAllText}>View All</Text>
                     <Ionicons
                       name="chevron-forward"
-                      size={16}
+                      size={14} // Smaller icon
                       color={ShopColors.accent}
                     />
                   </TouchableOpacity>
@@ -245,6 +239,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
               )}
             </View>
 
+            {/* Categories Section */}
             <View style={styles.section}>
               <ShopCategories
                 categories={categories}
@@ -254,6 +249,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
               />
             </View>
 
+            {/* Recommended Section */}
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Recommended for you</Text>
@@ -266,7 +262,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                     <Text style={styles.viewAllText}>View All</Text>
                     <Ionicons
                       name="chevron-forward"
-                      size={16}
+                      size={14}
                       color={ShopColors.accent}
                     />
                   </TouchableOpacity>
@@ -291,23 +287,22 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
               )}
             </View>
 
-            {/* 5. Discover More Section - Using new DiscoverMoreList component */}
+            {/* Discover More Section */}
             <View style={styles.section}>
               <DiscoverMoreShopList
                 shops={discoverMoreShopsData}
                 onShopPress={handleShopPress}
-                title="Discover More" // This title is now rendered by DiscoverMoreList
-                onToggleFavoriteItem={handleDiscoverItemFavoriteToggle} // Optional
+                title="Discover More"
+                onToggleFavoriteItem={handleDiscoverItemFavoriteToggle}
               />
             </View>
           </>
         ) : (
-          // Search Results Section
           <View style={styles.section}>
-            <ShopList // ShopList is fine for search results (vertical, full-width ShopCard)
+            <ShopList
               shops={filteredShops}
               onShopPress={handleShopPress}
-              title={searchResultsTitle} // Title rendered by ShopList
+              title={searchResultsTitle}
               horizontal={false}
               showRating={true}
               showCategory={true}

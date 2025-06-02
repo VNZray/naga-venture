@@ -51,14 +51,6 @@ export interface ShopReview {
   date: string;
 }
 
-export interface FeaturedShop {
-  id: string;
-  name: string;
-  image: string;
-  category: string;
-  rating: number;
-}
-
 export interface ShopCategory {
   id: string;
   name: string;
@@ -75,30 +67,4 @@ export interface MainCategory {
   icon: string;
   description: string;
   subcategories: ShopCategory[];
-}
-
-export interface ShopFilter {
-  categories: string[];
-  minRating: number;
-  maxRating: number;
-  priceRanges: string[];
-  openNow: boolean;
-  maxDistance?: number;
-}
-
-export interface SearchSuggestion {
-  text: string;
-  type: 'shop' | 'category' | 'location';
-  count?: number;
-}
-
-export type SortOption = 'rating' | 'distance' | 'name' | 'price';
-
-export interface ShopSearchFilters {
-  query: string;
-  categories: string[];
-  rating: number;
-  priceRange: string[];
-  sortBy: SortOption;
-  openNow: boolean;
 }

@@ -3,7 +3,7 @@ import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
-  DimensionValue, // Import DimensionValue for width type
+  DimensionValue,
   Image,
   StyleSheet,
   Text,
@@ -15,21 +15,18 @@ interface RecommendedShopCardProps {
   shop: ShopData;
   onPress: (shopId: string) => void;
   onToggleFavorite?: (shopId: string, isFavorited: boolean) => void;
-  width?: DimensionValue; // <<< This line is crucial for the 'width' prop
+  width?: DimensionValue;
 }
 
 const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
   shop,
   onPress,
   onToggleFavorite,
-  width: widthProp, // Renamed for clarity in component logic
+  width: widthProp,
 }) => {
-  const defaultWidth = 280; // Default width if 'widthProp' is undefined
-  const cardHeight = 230;
+  const defaultWidth = 260; // Reduced from 280 to match compact design
+  const cardHeight = 200; // Reduced from 230
 
-  // Determine effective width:
-  // If widthProp is provided (e.g., '100%' or a number), use it.
-  // Otherwise, use the defaultWidth.
   const effectiveWidth = widthProp !== undefined ? widthProp : defaultWidth;
 
   const [isFavorited, setIsFavorited] = useState(false);
@@ -50,23 +47,24 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
 
   const styles = StyleSheet.create({
     card: {
-      width: effectiveWidth, // Use the determined width here
+      width: effectiveWidth,
       height: cardHeight,
       backgroundColor: ShopColors.cardBackground,
-      borderRadius: 16,
+      borderRadius: 12, // Reduced from 16
       borderWidth: 1,
       borderColor: ShopColors.border,
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 3 },
-      shadowOpacity: 0.12,
-      shadowRadius: 6,
-      elevation: 4,
+      shadowOffset: { width: 0, height: 2 }, // Reduced shadow
+      shadowOpacity: 0.08, // Lighter shadow
+      shadowRadius: 4,
+      elevation: 2, // Reduced elevation
+      marginBottom: 8, // Added margin to prevent shadow clipping
     },
     imageContainer: {
-      width: '100%', // Image container always takes full width of the card
-      height: cardHeight * 0.70,
-      borderTopLeftRadius: 16,
-      borderTopRightRadius: 16,
+      width: '100%',
+      height: cardHeight * 0.7,
+      borderTopLeftRadius: 12, // Reduced from 16
+      borderTopRightRadius: 12, // Reduced from 16
       overflow: 'hidden',
     },
     image: {
@@ -75,17 +73,17 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
     },
     floatingFavoriteButton: {
       position: 'absolute',
-      top: 10,
-      right: 10,
+      top: 8, // Reduced from 10
+      right: 8, // Reduced from 10
       zIndex: 1,
       backgroundColor: 'rgba(0, 0, 0, 0.3)',
-      borderRadius: 20,
-      padding: 6,
+      borderRadius: 18, // Reduced from 20
+      padding: 5, // Reduced from 6
     },
     contentWrapper: {
       flex: 1,
-      paddingVertical: 10,
-      paddingHorizontal: 14,
+      paddingVertical: 8, // Reduced from 10
+      paddingHorizontal: 12, // Reduced from 14
       justifyContent: 'flex-start',
     },
     topInfoRow: {
@@ -95,7 +93,7 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
       marginBottom: 2,
     },
     name: {
-      fontSize: 16,
+      fontSize: 15, // Reduced from 16
       fontFamily: 'Poppins-SemiBold',
       color: ShopColors.textPrimary,
       flexShrink: 1,
@@ -107,22 +105,22 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
       flexShrink: 0,
     },
     starIcon: {
-      marginRight: 3,
-      marginBottom: 3.5, 
+      marginRight: 2, // Reduced from 3
+      marginBottom: 2, // Reduced from 3.5
     },
     ratingText: {
-      fontSize: 13,
+      fontSize: 12, // Reduced from 13
       fontFamily: 'Poppins-SemiBold',
       color: ShopColors.textPrimary,
-      marginRight: 4,
+      marginRight: 3, // Reduced from 4
     },
     reviewCountText: {
-      fontSize: 12,
+      fontSize: 11, // Reduced from 12
       fontFamily: 'Poppins-Regular',
       color: ShopColors.textSecondary,
     },
     priceRange: {
-      fontSize: 12,
+      fontSize: 11, // Reduced from 12
       fontFamily: 'Poppins-Medium',
       color: ShopColors.textSecondary,
     },
@@ -152,7 +150,7 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
               <View style={styles.ratingReviewBlock}>
                 <Ionicons
                   name="star"
-                  size={15}
+                  size={14} // Reduced from 15
                   color="#FFD700"
                   style={styles.starIcon}
                 />
@@ -178,7 +176,7 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
       >
         <Ionicons
           name={isFavorited ? 'heart' : 'heart-outline'}
-          size={22}
+          size={20} // Reduced from 22
           color={isFavorited ? ShopColors.error : '#FFFFFF'}
         />
       </TouchableOpacity>
