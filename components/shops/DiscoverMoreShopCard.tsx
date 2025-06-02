@@ -1,14 +1,8 @@
 import { ShopColors } from '@/constants/ShopColors';
+import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import {
-    Image,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
-import type { ShopData } from '@/types/shop';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface DiscoverMoreShopCardProps {
   shop: ShopData;
@@ -21,7 +15,7 @@ const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
   onPress,
   onToggleFavorite,
 }) => {
-  const cardHeight = 250; // Consistent height with RecommendedShopCard
+  const cardHeight = 220; // Reduced from 250
 
   const [isFavorited, setIsFavorited] = useState(false);
 
@@ -41,29 +35,27 @@ const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
 
   const styles = StyleSheet.create({
     card: {
-      width: '100%', // Designed to take full width of its container
+      width: '100%',
       height: cardHeight,
       backgroundColor: ShopColors.cardBackground,
-      borderRadius: 16,
+      borderRadius: 12, // Reduced from 16
       borderWidth: 1,
       borderColor: ShopColors.border,
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 3 },
-      shadowOpacity: 0.12,
-      shadowRadius: 6,
-      elevation: 4,
-      // Ensure the main TouchableOpacity can work correctly by not having children absolutely positioned outside its bounds
-      // without a parent View handling the layout.
+      shadowOffset: { width: 0, height: 2 }, // Reduced shadow
+      shadowOpacity: 0.08, // Lighter shadow
+      shadowRadius: 4,
+      elevation: 2, // Reduced elevation
     },
-    touchableContent: { // Wrapper for pressable content if favorite button is separate
-        flex: 1,
-        flexDirection: 'column', // Main axis for image and contentWrapper
+    touchableContent: {
+      flex: 1,
+      flexDirection: 'column',
     },
     imageContainer: {
       width: '100%',
-      height: cardHeight * 0.70, // Adjust as needed
-      borderTopLeftRadius: 16,
-      borderTopRightRadius: 16,
+      height: cardHeight * 0.7,
+      borderTopLeftRadius: 12, // Reduced from 16
+      borderTopRightRadius: 12, // Reduced from 16
       overflow: 'hidden',
     },
     image: {
@@ -72,17 +64,17 @@ const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
     },
     floatingFavoriteButton: {
       position: 'absolute',
-      top: 10,
-      right: 10,
-      zIndex: 1, // Ensure it's above the image
+      top: 8, // Reduced from 10
+      right: 8, // Reduced from 10
+      zIndex: 1,
       backgroundColor: 'rgba(0, 0, 0, 0.3)',
-      borderRadius: 20,
-      padding: 6,
+      borderRadius: 18, // Reduced from 20
+      padding: 5, // Reduced from 6
     },
     contentWrapper: {
-      flex: 1, // Takes remaining space after image
-      paddingVertical: 10,
-      paddingHorizontal: 14,
+      flex: 1,
+      paddingVertical: 8, // Reduced from 10
+      paddingHorizontal: 12, // Reduced from 14
       justifyContent: 'flex-start',
     },
     topInfoRow: {
@@ -92,7 +84,7 @@ const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
       marginBottom: 2,
     },
     name: {
-      fontSize: 16,
+      fontSize: 15, // Reduced from 16
       fontFamily: 'Poppins-SemiBold',
       color: ShopColors.textPrimary,
       flexShrink: 1,
@@ -104,21 +96,21 @@ const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
       flexShrink: 0,
     },
     starIcon: {
-      marginRight: 3,
+      marginRight: 2, // Reduced from 3
     },
     ratingText: {
-      fontSize: 13,
+      fontSize: 12, // Reduced from 13
       fontFamily: 'Poppins-SemiBold',
       color: ShopColors.textPrimary,
-      marginRight: 4,
+      marginRight: 3, // Reduced from 4
     },
     reviewCountText: {
-      fontSize: 12,
+      fontSize: 11, // Reduced from 12
       fontFamily: 'Poppins-Regular',
       color: ShopColors.textSecondary,
     },
     priceRange: {
-      fontSize: 12,
+      fontSize: 11, // Reduced from 12
       fontFamily: 'Poppins-Medium',
       color: ShopColors.textSecondary,
     },
@@ -126,7 +118,11 @@ const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
 
   return (
     <View style={styles.card}>
-      <TouchableOpacity onPress={() => onPress(shop.id)} activeOpacity={0.85} style={styles.touchableContent}>
+      <TouchableOpacity
+        onPress={() => onPress(shop.id)}
+        activeOpacity={0.85}
+        style={styles.touchableContent}
+      >
         <View style={styles.imageContainer}>
           <Image
             source={{ uri: shop.image }}
@@ -141,10 +137,14 @@ const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
             </Text>
             {shop.rating !== undefined && shop.rating !== null && (
               <View style={styles.ratingReviewBlock}>
-                <Ionicons name="star" size={15} color="#FFD700" style={styles.starIcon} />
-                <Text style={styles.ratingText}>
-                  {shop.rating.toFixed(1)}
-                </Text>
+                <Ionicons
+                  name="star"
+                  size={14}
+                  color="#FFD700"
+                  style={styles.starIcon}
+                />{' '}
+                {/* Reduced from 15 */}
+                <Text style={styles.ratingText}>{shop.rating.toFixed(1)}</Text>
                 <Text style={styles.reviewCountText}>
                   {formatReviewCount(shop.ratingCount)}
                 </Text>
@@ -158,10 +158,13 @@ const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
           )}
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.floatingFavoriteButton} onPress={handleFavoritePress}>
+      <TouchableOpacity
+        style={styles.floatingFavoriteButton}
+        onPress={handleFavoritePress}
+      >
         <Ionicons
-          name={isFavorited ? "heart" : "heart-outline"}
-          size={22}
+          name={isFavorited ? 'heart' : 'heart-outline'}
+          size={20} // Reduced from 22
           color={isFavorited ? ShopColors.error : '#FFFFFF'}
         />
       </TouchableOpacity>

@@ -11,17 +11,17 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
 }) => {
   const styles = StyleSheet.create({
     container: {
-      paddingHorizontal: 20,
-      paddingVertical: 12,
+      paddingHorizontal: 16, // Reduced from 20
+      paddingVertical: 8, // Reduced from 12
       backgroundColor: ShopColors.background,
     },
     searchContainer: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: ShopColors.cardBackground,
-      borderRadius: 12,
-      paddingHorizontal: 16,
-      paddingVertical: 12,
+      borderRadius: 10, // Slightly smaller radius
+      paddingHorizontal: 14, // Reduced from 16
+      paddingVertical: 10, // Reduced from 12
       borderWidth: 1,
       borderColor: ShopColors.border,
       shadowColor: ShopColors.shadow,
@@ -31,17 +31,17 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
       elevation: 1,
     },
     searchIcon: {
-      marginRight: 12,
+      marginRight: 10, // Reduced from 12
     },
     searchInput: {
       flex: 1,
-      fontSize: 16,
+      fontSize: 15, // Reduced from 16
       fontFamily: 'Poppins-Regular',
       color: ShopColors.textPrimary,
       padding: 0,
     },
     clearButton: {
-      marginLeft: 8,
+      marginLeft: 6, // Reduced from 8
       padding: 4,
     },
   });
@@ -51,7 +51,7 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
       <View style={styles.searchContainer}>
         <Ionicons
           name="search-outline"
-          size={20}
+          size={18} // Reduced from 20
           color={ShopColors.textSecondary}
           style={styles.searchIcon}
         />
@@ -66,7 +66,7 @@ const ShopSearch: React.FC<ShopSearchProps> = ({
         {value.length > 0 && (
           <Ionicons
             name="close-circle"
-            size={20}
+            size={18} // Reduced from 20
             color={ShopColors.textSecondary}
             style={styles.clearButton}
             onPress={() => onSearch('')}
