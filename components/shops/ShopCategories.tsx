@@ -96,7 +96,7 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
       accessibilityRole="button"
     >
       <View style={styles.iconContainer}>
-        <Ionicons name={item.icon as any} size={20} color={ShopColors.accent} />{' '}
+        <Ionicons name={item.icon as any} size={20} color={ShopColors.accent} />
         {/* Reduced from 22 */}
       </View>
       <Text style={styles.categoryName} numberOfLines={2} ellipsizeMode="tail">

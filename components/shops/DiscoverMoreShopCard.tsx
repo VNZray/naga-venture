@@ -142,7 +142,7 @@ const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
                   size={14}
                   color="#FFD700"
                   style={styles.starIcon}
-                />{' '}
+                />
                 {/* Reduced from 15 */}
                 <Text style={styles.ratingText}>{shop.rating.toFixed(1)}</Text>
                 <Text style={styles.reviewCountText}>
