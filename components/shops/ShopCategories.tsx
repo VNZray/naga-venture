@@ -27,7 +27,7 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
       justifyContent: 'space-between',
       alignItems: 'center',
       paddingHorizontal: 20,
-      marginBottom: 16,
+      marginBottom: 12, // Reduced from 16
     },
     title: {
       fontSize: 20,
@@ -36,43 +36,42 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
     },
     list: {
       paddingHorizontal: 20,
-      paddingBottom: 12,
-      paddingTop: 4,
+      paddingBottom: 8, // Reduced from 12
+      paddingTop: 0, // Reduced from 4
     },
     categoryCard: {
       backgroundColor: ShopColors.cardBackground,
       borderRadius: 12,
-      padding: 12,
-      marginRight: 16,
-      marginBottom: 8,
+      padding: 10, // Reduced from 14
+      marginRight: 6,
       alignItems: 'center',
       justifyContent: 'center',
-      width: 100,
-      height: 120,
+      width: 85, // Reduced from 100
+      height: 95, // Reduced from 120
       borderWidth: 1,
       borderColor: ShopColors.border,
       shadowColor: ShopColors.shadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
+      shadowOffset: { width: 0, height: 2 }, // Reduced shadow
+      shadowOpacity: 0.08, // Lighter shadow
       shadowRadius: 3,
       elevation: 2,
     },
     iconContainer: {
-      backgroundColor: ShopColors.accent + '20',
-      borderRadius: 24,
-      width: 48,
-      height: 48,
+      backgroundColor: ShopColors.accent + '15',
+      borderRadius: 20, // Reduced from 26
+      width: 40, // Reduced from 52
+      height: 40, // Reduced from 52
       alignItems: 'center',
       justifyContent: 'center',
-      marginBottom: 8,
+      marginBottom: 6, // Reduced from 10
     },
     categoryName: {
-      fontSize: 12,
+      fontSize: 11, // Reduced from 12
       fontFamily: 'Poppins-Medium',
       color: ShopColors.textPrimary,
       textAlign: 'center',
-      lineHeight: 16,
-      maxWidth: 80,
+      lineHeight: 14, // Reduced from 16
+      maxWidth: 75, // Reduced from 80
     },
     viewAllButton: {
       flexDirection: 'row',
@@ -96,7 +95,8 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
       accessibilityRole="button"
     >
       <View style={styles.iconContainer}>
-        <Ionicons name={item.icon as any} size={24} color={ShopColors.accent} />
+        <Ionicons name={item.icon as any} size={22} color={ShopColors.accent} />{' '}
+        {/* Reduced from 26 */}
       </View>
       <Text style={styles.categoryName} numberOfLines={2} ellipsizeMode="tail">
         {item.name}
@@ -130,13 +130,13 @@ const ShopCategories: React.FC<ShopCategoriesProps> = ({
         data={categories}
         renderItem={renderCategory}
         keyExtractor={(item) => item.id}
-        horizontal
+        horizontal={true}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.list}
         ItemSeparatorComponent={() => <View style={{ width: 0 }} />}
         getItemLayout={(data, index) => ({
-          length: 116,
-          offset: 116 * index,
+          length: 101, // width (85) + marginRight (16)
+          offset: 101 * index,
           index,
         })}
       />
