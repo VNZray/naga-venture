@@ -155,7 +155,7 @@ const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
   });
 
   const handleShopPress = (shopId: string) => {
-    router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
+    router.push(`/TouristApp/(tabs)/(home)/(shops)/(details)/${shopId}`);
   };
 
   const renderShopCard = ({ item }: { item: ShopData }) => (

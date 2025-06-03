@@ -2,7 +2,7 @@
 import ShopDetail from "@/components/shops/ShopDetail";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
-import { shopsData } from "../../../../Controller/ShopData";
+import { shopsData } from "@/Controller/ShopData";
 
 /**
  * ShopDetails - Clean and simple using our new ShopDetail component
