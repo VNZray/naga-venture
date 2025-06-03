@@ -14,8 +14,8 @@ import {
   Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ShopCard from '../../../../components/shops/ShopCard'; // Ensure this path is correct
-import { destinations as allShopsData } from '../../../Controller/ShopData'; // Your static data for all shops
+import ShopCard from '@/components/shops/ShopCard'; // Ensure this path is correct
+import { destinations as allShopsData } from '@/Controller/ShopData'; // Your static data for all shops
 
 const { width } = Dimensions.get('window');
 const CARD_MARGIN = 8;
@@ -63,7 +63,7 @@ const RecommendedShopsScreen = () => {
   }, [loadShops]);
 
   const handleShopPress = (shopId: string) => {
-    router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
+    router.push(`/TouristApp/(tabs)/(home)/(shops)/(details)/${shopId}`);
   };
 
   const renderShopItem = ({ item }: { item: ShopData }) => (

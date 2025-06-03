@@ -2,7 +2,7 @@
 import ShopCategoryPage from "@/components/shops/ShopCategoryPage";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
-import { getMainCategoryById, shopsData } from "../../../../Controller/ShopData";
+import { getMainCategoryById, shopsData } from "@/Controller/ShopData";
 
 /**
  * MainCategoryPage - Simple implementation using ShopCategoryPage component

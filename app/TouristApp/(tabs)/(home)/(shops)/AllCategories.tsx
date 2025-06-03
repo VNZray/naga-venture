@@ -13,7 +13,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { mainCategories } from "../../../Controller/ShopData";
+import { mainCategories } from "@/Controller/ShopData";
 
 const { width } = Dimensions.get("window");
 const SUBCATEGORY_GAP = 12;
@@ -24,10 +24,10 @@ const SUBCATEGORY_WIDTH =
 
 const AllCategoriesPage = () => {
   const handleMainCategoryPress = (mainCategoryId: string) => {
-    router.push(`/(tabs)/(home)/(shops)/(categories)/${mainCategoryId}`);
+    router.push(`/TouristApp/(tabs)/(home)/(shops)/(categories)/${mainCategoryId}`);
   };
   const handleSubcategoryPress = (subcategoryId: string) => {
-    router.push(`/(tabs)/(home)/(shops)/(subcategory)/${subcategoryId}`);
+    router.push(`/TouristApp/(tabs)/(home)/(shops)/(subcategory)/${subcategoryId}`);
   };
 
   const renderSubcategoryItem = ({
