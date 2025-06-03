@@ -63,14 +63,16 @@ const styles = StyleSheet.create({
   amenityGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: 20,
-    gap: 12,
+    paddingHorizontal: 0,
+    gap: 16, // Simple gap for clean spacing
   },
+  
   amenityItem: {
     alignItems: 'center',
-    width: (screenWidth - 40 - 24) / 3, // 3 columns with gaps
+    width: (screenWidth - 72) / 3, // Simple 3-column calculation
     marginBottom: 16,
   },
+  
   amenityIcon: {
     width: 40,
     height: 40,
@@ -79,17 +81,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 8,
   },
+  
   amenityText: {
     fontSize: 11,
     fontFamily: 'Poppins-Medium',
     textAlign: 'center',
     lineHeight: 14,
   },
+  
   emptyContainer: {
-    paddingHorizontal: 20,
     paddingVertical: 16,
     alignItems: 'center',
   },
+  
   emptyText: {
     fontSize: 14,
     fontFamily: 'Poppins-Regular',

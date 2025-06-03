@@ -61,15 +61,7 @@ const ShopDetailContactInfo: React.FC<ShopDetailContactInfoProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Contact Items - Clean rows */}
-      {location && (
-        <TouchableOpacity style={styles.contactRow} onPress={onDirectionsPress}>
-          <Ionicons name="location-outline" size={18} color={ShopColors.textSecondary} />
-          <Text style={styles.contactText}>{location}</Text>
-          <Ionicons name="chevron-forward" size={16} color={ShopColors.textSecondary} />
-        </TouchableOpacity>
-      )}
-
+      {/* Contact rows - Clean design */}
       {contact && (
         <TouchableOpacity style={styles.contactRow} onPress={handleCall}>
           <Ionicons name="call-outline" size={18} color={ShopColors.textSecondary} />
@@ -86,7 +78,7 @@ const ShopDetailContactInfo: React.FC<ShopDetailContactInfoProps> = ({
         </TouchableOpacity>
       )}
 
-      {/* Social Links - Minimal design */}
+      {/* Social Links - Moved up before location */}
       {socialLinks && Object.keys(socialLinks).length > 0 && (
         <View style={styles.socialSection}>
           <Text style={styles.socialTitle}>Follow</Text>
@@ -116,6 +108,23 @@ const ShopDetailContactInfo: React.FC<ShopDetailContactInfoProps> = ({
           </View>
         </View>
       )}
+
+      {/* Location section - Now at the bottom, will be followed by map */}
+      {location && (
+        <View style={styles.locationSection}>
+          <View style={styles.locationHeader}>
+            <Ionicons name="location" size={18} color={ShopColors.accent} />
+            <Text style={styles.locationLabel}>Location</Text>
+          </View>
+          <View style={styles.addressContainer}>
+            <Text style={styles.addressText}>{location}</Text>
+            <TouchableOpacity style={styles.directionsButton} onPress={onDirectionsPress}>
+              <Ionicons name="navigate" size={16} color={ShopColors.accent} />
+              <Text style={styles.directionsText}>Get Directions</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   );
 };
@@ -139,7 +148,7 @@ const styles = StyleSheet.create({
     color: ShopColors.textPrimary,
   },
   
-  // Social section
+  // Social section - now before location
   socialSection: {
     marginTop: 8,
   },
@@ -168,6 +177,51 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: 'Poppins-Medium',
     color: ShopColors.textPrimary,
+  },
+  
+  // Location section with icon header
+  locationSection: {
+    marginTop: 8,
+  },
+  locationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  locationLabel: {
+    flex: 1,
+    fontSize: 18,
+    fontFamily: 'Poppins-SemiBold',
+    color: ShopColors.textPrimary,
+  },
+  addressContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  addressText: {
+    flex: 1,
+    fontSize: 15,
+    fontFamily: 'Poppins-Regular',
+    color: ShopColors.textPrimary,
+    lineHeight: 22,
+  },
+  directionsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: ShopColors.accent,
+    gap: 6,
+  },
+  directionsText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-SemiBold',
+    color: ShopColors.accent,
   },
 });
 
