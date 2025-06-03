@@ -2,7 +2,7 @@ import { ShopColors } from '@/constants/ShopColors';
 import type { ShopData, MenuItem } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import {
   Image,
   StyleSheet,
@@ -16,9 +16,10 @@ import {
   Share,
   Modal,
   Alert,
+  Animated,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { LinearGradient } from 'expo-linear-gradient';
 
 // Import our organism components
@@ -31,6 +32,7 @@ import {
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const HERO_HEIGHT = 280;
+const COLLAPSED_HEADER_HEIGHT = 60;
 
 interface ShopDetailProps {
   shop: ShopData | null;
@@ -53,11 +55,15 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
     { key: 'photos', title: 'Photos' },
   ]);
 
+  // Animated Values for Smooth Scrolling
+  const scrollY = useRef(new Animated.Value(0)).current;
+
   // Computed Values
   const isOpen = useMemo(() => {
     if (!shop?.businessHours || shop.isOpen === undefined) return shop?.isOpen ?? true;
     
     const now = new Date();
+    // Fixed day format as per user's suggestion
     const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof shop.businessHours;
     const currentTime = now.getHours() * 100 + now.getMinutes();
     
@@ -85,7 +91,6 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
     setIsFavorited(!isFavorited);
     if (shop) {
       console.log(`Shop ${shop.id} favorite status: ${!isFavorited}`);
-      // TODO: Persist to backend/storage
     }
   }, [isFavorited, shop]);
 
@@ -144,70 +149,44 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
 
   const handleReviewHelpful = useCallback((reviewId: string) => {
     console.log(`Review ${reviewId} marked as helpful`);
-    // TODO: Implement helpful review logic
   }, []);
 
-  // Tab Content Renderers using Organisms
-  const renderMenuTab = useCallback(() => {
-    if (!shop) return null;
-    return (
-      <ShopDetailMenuSection 
-        shop={shop} 
-        onMenuItemPress={handleMenuItemPress} 
-      />
-    );
-  }, [shop, handleMenuItemPress]);
-
-  const renderInfoTab = useCallback(() => {
-    if (!shop) return null;
-    return (
-      <ShopDetailInfoSection 
-        shop={shop} 
-        onDirectionsPress={handleDirections} 
-      />
-    );
-  }, [shop, handleDirections]);
-
-  const renderReviewsTab = useCallback(() => {
-    if (!shop) return null;
-    return (
-      <ShopDetailReviewsSection 
-        shop={shop} 
-        onImagePress={handleImagePress}
-        onHelpfulPress={handleReviewHelpful}
-      />
-    );
-  }, [shop, handleImagePress, handleReviewHelpful]);
-
-  const renderPhotosTab = useCallback(() => {
-    if (!shop) return null;
-    return (
-      <ShopDetailPhotosSection
-        shop={shop}
-        onImagePress={handleImagePress}
-      />
-    );
-  }, [shop, handleImagePress]);
-
-  const renderScene = SceneMap({
-    menu: renderMenuTab,
-    info: renderInfoTab,
-    reviews: renderReviewsTab,
-    photos: renderPhotosTab,
+  // Animation calculations
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, HERO_HEIGHT - 100],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
   });
 
-  const renderTabBar = useCallback((props: any) => (
-    <TabBar
-      {...props}
-      indicatorStyle={styles.tabIndicator}
-      style={styles.tabBar}
-      labelStyle={styles.tabLabel}
-      activeColor={ShopColors.accent}
-      inactiveColor={ShopColors.textSecondary}
-      scrollEnabled
-      tabStyle={styles.tabStyle}
-    />
-  ), []);
+  const collapsedHeaderOpacity = scrollY.interpolate({
+    inputRange: [HERO_HEIGHT - 100, HERO_HEIGHT],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
+
+  const collapsedHeaderTranslateY = scrollY.interpolate({
+    inputRange: [HERO_HEIGHT - 100, HERO_HEIGHT],
+    outputRange: [-COLLAPSED_HEADER_HEIGHT, 0],
+    extrapolate: 'clamp',
+  });
+
+  // Tab Content Renderers
+  const renderTabContent = () => {
+    if (!shop) return null;
+
+    switch (index) {
+      case 0:
+        return <ShopDetailMenuSection shop={shop} onMenuItemPress={handleMenuItemPress} />;
+      case 1:
+        return <ShopDetailInfoSection shop={shop} onDirectionsPress={handleDirections} />;
+      case 2:
+        return <ShopDetailReviewsSection shop={shop} onImagePress={handleImagePress} onHelpfulPress={handleReviewHelpful} />;
+      case 3:
+        return <ShopDetailPhotosSection shop={shop} onImagePress={handleImagePress} />;
+      default:
+        return null;
+    }
+  };
 
   // Loading State
   if (isLoading) {
@@ -241,137 +220,196 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
 
   // Main Render
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Hero Section with Shop Info */}
-      <View style={styles.heroContainer}>
-        <Image 
-          source={{ uri: shop.coverImage || shop.image }} 
-          style={styles.heroImage} 
-          resizeMode="cover" 
-        />
-        
-        {/* Status Overlay for Closed Shops */}
-        {!shopStatus.isOpen && (
-          <View style={styles.statusOverlay}>
-            <LinearGradient
-              colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.7)']}
-              style={styles.statusOverlayGradient}
-            >
-              <Text style={styles.statusOverlayText}>CLOSED</Text>
-              <Text style={styles.statusOverlaySubtext}>
-                {shop.temporaryHours || 'See business hours in info tab'}
-              </Text>
-            </LinearGradient>
-          </View>
+    <View style={styles.container}>
+      {/* Main Scroll View */}
+      <Animated.ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: false }
         )}
-
-        {/* Header Actions */}
-        <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
-            <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
-          </TouchableOpacity>
+        scrollEventThrottle={16}
+        bounces={false}
+      >
+        {/* Hero Section */}
+        <View style={styles.heroContainer}>
+          <Image 
+            source={{ uri: shop.coverImage || shop.image }} 
+            style={styles.heroImage} 
+            resizeMode="cover" 
+          />
           
-          <View style={styles.headerRightActions}>
-            <TouchableOpacity style={styles.headerButton} onPress={handleShare}>
-              <Ionicons name="share-outline" size={24} color="#FFFFFF" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.headerButton} onPress={handleFavoriteToggle}>
-              <Ionicons 
-                name={isFavorited ? 'heart' : 'heart-outline'} 
-                size={24} 
-                color={isFavorited ? ShopColors.error : '#FFFFFF'} 
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
+          {/* Status Overlay for Closed Shops */}
+          {!shopStatus.isOpen && (
+            <View style={styles.statusOverlay}>
+              <LinearGradient
+                colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.7)']}
+                style={styles.statusOverlayGradient}
+              >
+                <Text style={styles.statusOverlayText}>CLOSED</Text>
+                <Text style={styles.statusOverlaySubtext}>
+                  {shop.temporaryHours || 'See business hours in info tab'}
+                </Text>
+              </LinearGradient>
+            </View>
+          )}
 
-        {/* Shop Info Overlay */}
-        <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.8)']}
-          style={styles.shopInfoOverlay}
-        >
-          <View style={styles.shopMainInfo}>
-            {shop.logo && (
-              <Image source={{ uri: shop.logo }} style={styles.shopLogo} />
-            )}
-            <View style={styles.shopTitleContainer}>
-              <Text style={styles.shopName}>{shop.name}</Text>
-              {shop.tagline && (
-                <Text style={styles.shopTagline}>{shop.tagline}</Text>
+          {/* Shop Info Overlay */}
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.8)']}
+            style={styles.shopInfoOverlay}
+          >
+            <View style={styles.shopMainInfo}>
+              {shop.logo && (
+                <Image source={{ uri: shop.logo }} style={styles.shopLogo} />
               )}
+              <View style={styles.shopTitleContainer}>
+                <Text style={styles.shopName}>{shop.name}</Text>
+                {shop.tagline && (
+                  <Text style={styles.shopTagline}>{shop.tagline}</Text>
+                )}
+              </View>
             </View>
-          </View>
 
-          <View style={styles.shopMetrics}>
-            <View style={styles.metric}>
-              <Ionicons name="star" size={16} color={ShopColors.warning} />
-              <Text style={styles.metricText}>
-                {shop.rating.toFixed(1)} ({shop.ratingCount})
-              </Text>
-            </View>
-            
-            {shop.stats?.followerCount && (
+            <View style={styles.shopMetrics}>
               <View style={styles.metric}>
-                <Ionicons name="people" size={16} color="#FFFFFF" />
+                <Ionicons name="star" size={16} color={ShopColors.warning} />
                 <Text style={styles.metricText}>
-                  {shop.stats.followerCount.toLocaleString()} followers
+                  {shop.rating.toFixed(1)} ({shop.ratingCount})
                 </Text>
               </View>
-            )}
-            
-            {shop.distance && (
-              <View style={styles.metric}>
-                <Ionicons name="location" size={16} color="#FFFFFF" />
-                <Text style={styles.metricText}>{shop.distance.toFixed(1)} km</Text>
+              
+              {shop.distance && (
+                <View style={styles.metric}>
+                  <Ionicons name="location" size={16} color="#FFFFFF" />
+                  <Text style={styles.metricText}>{shop.distance.toFixed(1)} km</Text>
+                </View>
+              )}
+              
+              <View style={[styles.metric, styles.statusMetric]}>
+                <View style={[styles.statusDot, { backgroundColor: shopStatus.color }]} />
+                <Text style={styles.metricText}>{shopStatus.text}</Text>
               </View>
-            )}
+            </View>
+          </LinearGradient>
+        </View>
+
+        {/* Quick Actions Bar - Only in ScrollView */}
+        <View style={styles.quickActionsBar}>
+          {shop.contact && (
+            <TouchableOpacity style={styles.quickActionButton} onPress={handleCall}>
+              <Ionicons name="call" size={20} color={ShopColors.accent} />
+              <Text style={styles.quickActionText}>Call</Text>
+            </TouchableOpacity>
+          )}
+          
+          {shop.mapLocation && (
+            <TouchableOpacity style={styles.quickActionButton} onPress={handleDirections}>
+              <Ionicons name="navigate" size={20} color={ShopColors.accent} />
+              <Text style={styles.quickActionText}>Directions</Text>
+            </TouchableOpacity>
+          )}
+          
+          {shop.socialLinks?.website && (
+            <TouchableOpacity style={styles.quickActionButton} onPress={handleWebsite}>
+              <Ionicons name="globe" size={20} color={ShopColors.accent} />
+              <Text style={styles.quickActionText}>Website</Text>
+            </TouchableOpacity>
+          )}
+          
+          <TouchableOpacity style={styles.quickActionButton} onPress={handleShare}>
+            <Ionicons name="share-social" size={20} color={ShopColors.accent} />
+            <Text style={styles.quickActionText}>Share</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Tab Navigation - In ScrollView */}
+        <View style={styles.tabNavigation}>
+          {routes.map((route, i) => (
+            <TouchableOpacity
+              key={route.key}
+              style={[
+                styles.tabButton,
+                index === i && styles.tabButtonActive
+              ]}
+              onPress={() => setIndex(i)}
+            >
+              <Text style={[
+                styles.tabButtonText,
+                index === i && styles.tabButtonTextActive
+              ]}>
+                {route.title}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Tab Content */}
+        <View style={styles.tabContent}>
+          {renderTabContent()}
+        </View>
+      </Animated.ScrollView>
+
+      {/* Fixed Header Actions (Always Visible on Hero) */}
+      <Animated.View style={[styles.fixedHeaderActions, { opacity: headerOpacity }]}>
+        <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+        
+        <View style={styles.headerRightActions}>
+          <TouchableOpacity style={styles.headerButton} onPress={handleShare}>
+            <Ionicons name="share-outline" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.headerButton} onPress={handleFavoriteToggle}>
+            <Ionicons 
+              name={isFavorited ? 'heart' : 'heart-outline'} 
+              size={24} 
+              color={isFavorited ? ShopColors.error : '#FFFFFF'} 
+            />
+          </TouchableOpacity>
+        </View>
+      </Animated.View>
+
+      {/* Collapsed Header - z-index 15 */}
+      <Animated.View 
+        style={[
+          styles.collapsedHeader,
+          {
+            opacity: collapsedHeaderOpacity,
+            transform: [{ translateY: collapsedHeaderTranslateY }]
+          }
+        ]}
+        pointerEvents={collapsedHeaderOpacity._value > 0.5 ? 'auto' : 'none'}
+      >
+        <SafeAreaView edges={['top']} style={styles.collapsedHeaderSafeArea}>
+          <View style={styles.collapsedHeaderContent}>
+            <TouchableOpacity style={styles.collapsedBackButton} onPress={() => router.back()}>
+              <Ionicons name="arrow-back" size={24} color={ShopColors.textPrimary} />
+            </TouchableOpacity>
             
-            <View style={[styles.metric, styles.statusMetric]}>
-              <View style={[styles.statusDot, { backgroundColor: shopStatus.color }]} />
-              <Text style={styles.metricText}>{shopStatus.text}</Text>
+            <View style={styles.collapsedShopInfo}>
+              {shop.logo && (
+                <Image source={{ uri: shop.logo }} style={styles.collapsedShopLogo} />
+              )}
+              <Text style={styles.collapsedShopName} numberOfLines={1}>{shop.name}</Text>
+            </View>
+            
+            <View style={styles.collapsedActions}>
+              <TouchableOpacity style={styles.collapsedActionButton} onPress={handleShare}>
+                <Ionicons name="share-outline" size={20} color={ShopColors.textSecondary} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.collapsedActionButton} onPress={handleFavoriteToggle}>
+                <Ionicons 
+                  name={isFavorited ? 'heart' : 'heart-outline'} 
+                  size={20} 
+                  color={isFavorited ? ShopColors.error : ShopColors.textSecondary} 
+                />
+              </TouchableOpacity>
             </View>
           </View>
-        </LinearGradient>
-      </View>
-
-      {/* Quick Actions Bar */}
-      <View style={styles.quickActionsBar}>
-        {shop.contact && (
-          <TouchableOpacity style={styles.quickActionButton} onPress={handleCall}>
-            <Ionicons name="call" size={20} color={ShopColors.accent} />
-            <Text style={styles.quickActionText}>Call</Text>
-          </TouchableOpacity>
-        )}
-        
-        {shop.mapLocation && (
-          <TouchableOpacity style={styles.quickActionButton} onPress={handleDirections}>
-            <Ionicons name="navigate" size={20} color={ShopColors.accent} />
-            <Text style={styles.quickActionText}>Directions</Text>
-          </TouchableOpacity>
-        )}
-        
-        {shop.socialLinks?.website && (
-          <TouchableOpacity style={styles.quickActionButton} onPress={handleWebsite}>
-            <Ionicons name="globe" size={20} color={ShopColors.accent} />
-            <Text style={styles.quickActionText}>Website</Text>
-          </TouchableOpacity>
-        )}
-        
-        <TouchableOpacity style={styles.quickActionButton} onPress={handleShare}>
-          <Ionicons name="share-social" size={20} color={ShopColors.accent} />
-          <Text style={styles.quickActionText}>Share</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Tab Content - Now using Organism Components! */}
-      <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={{ width: screenWidth }}
-        renderTabBar={renderTabBar}
-        style={styles.tabView}
-      />
+        </SafeAreaView>
+      </Animated.View>
 
       {/* Modals */}
       <Modal
@@ -434,7 +472,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -442,6 +480,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: ShopColors.background,
+  },
+  
+  // Main Scroll View
+  scrollView: {
+    flex: 1,
   },
   
   // Hero Section
@@ -475,26 +518,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 8,
     opacity: 0.9,
-  },
-  headerActions: {
-    position: 'absolute',
-    top: Platform.OS === 'ios' ? 10 : 20,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    zIndex: 10,
-  },
-  headerButton: {
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    borderRadius: 20,
-    padding: 8,
-  },
-  headerRightActions: {
-    flexDirection: 'row',
-    gap: 8,
   },
   shopInfoOverlay: {
     position: 'absolute',
@@ -567,7 +590,29 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
 
-  // Quick Actions
+  // Fixed Header Actions (Always Visible on Hero)
+  fixedHeaderActions: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 50 : 30,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    zIndex: 10,
+  },
+  headerButton: {
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderRadius: 20,
+    padding: 8,
+  },
+  headerRightActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+
+  // Quick Actions Bar (Only in ScrollView)
   quickActionsBar: {
     flexDirection: 'row',
     backgroundColor: ShopColors.cardBackground,
@@ -588,29 +633,92 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  // Tab View
-  tabView: {
-    flex: 1,
-  },
-  tabBar: {
+  // Tab Navigation (In ScrollView)
+  tabNavigation: {
+    flexDirection: 'row',
     backgroundColor: ShopColors.cardBackground,
-    elevation: 0,
-    shadowOpacity: 0,
     borderBottomWidth: 1,
     borderBottomColor: ShopColors.border,
   },
-  tabIndicator: {
-    backgroundColor: ShopColors.accent,
-    height: 3,
+  tabButton: {
+    flex: 1,
+    paddingVertical: 16,
+    alignItems: 'center',
+    borderBottomWidth: 3,
+    borderBottomColor: 'transparent',
   },
-  tabLabel: {
+  tabButtonActive: {
+    borderBottomColor: ShopColors.accent,
+  },
+  tabButtonText: {
     fontSize: 14,
     fontFamily: 'Poppins-Medium',
-    textTransform: 'capitalize',
+    color: ShopColors.textSecondary,
   },
-  tabStyle: {
-    width: 'auto',
+  tabButtonTextActive: {
+    color: ShopColors.accent,
+    fontFamily: 'Poppins-SemiBold',
+  },
+
+  // Tab Content
+  tabContent: {
+    minHeight: screenHeight,
+    backgroundColor: ShopColors.background,
+  },
+
+  // Collapsed Header - z-index 15 (HIGHEST)
+  collapsedHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: ShopColors.cardBackground,
+    borderBottomWidth: 1,
+    borderBottomColor: ShopColors.border,
+    zIndex: 15, // Highest z-index
+    elevation: 10, // Higher elevation for Android
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+  },
+  collapsedHeaderSafeArea: {
+    backgroundColor: ShopColors.cardBackground,
+  },
+  collapsedHeaderContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 16,
+    paddingVertical: 8,
+    minHeight: COLLAPSED_HEADER_HEIGHT,
+  },
+  collapsedBackButton: {
+    padding: 8,
+    marginRight: 8,
+  },
+  collapsedShopInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  collapsedShopLogo: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 12,
+  },
+  collapsedShopName: {
+    fontSize: 16,
+    fontFamily: 'Poppins-SemiBold',
+    color: ShopColors.textPrimary,
+    flex: 1,
+  },
+  collapsedActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  collapsedActionButton: {
+    padding: 8,
   },
 
   // Loading & Error States
@@ -659,7 +767,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  // Modals
+  // Modals (unchanged)
   imageModalContainer: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.9)',
