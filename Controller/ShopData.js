@@ -191,7 +191,7 @@ export const shopsData = {
         title: 'Student Discount',
         description: '10% off for students with valid ID',
         discountPercent: 10,
-        validUntil: '2024-12-31',
+        validUntil: '2025-12-31',
         terms: 'Must present valid student ID. Valid for students only.',
         isActive: true,
       },

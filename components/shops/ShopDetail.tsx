@@ -29,6 +29,7 @@ import {
   ShopDetailInfoSection,
   ShopDetailMenuSection,
   ShopDetailPhotosSection,
+  ShopDetailPromotionsSection,
   ShopDetailReviewsSection,
 } from './details/sections';
 
@@ -55,7 +56,8 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
   // Tab Navigation State
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: 'menu', title: 'Offerings' },
+    { key: 'menu', title: 'Offers' },
+    { key: 'promotions', title: 'Promos' },
     { key: 'info', title: 'Info' },
     { key: 'reviews', title: 'Reviews' },
     { key: 'photos', title: 'Photos' },
@@ -180,13 +182,15 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
           />
         );
       case 1:
+        return <ShopDetailPromotionsSection shop={shop} />; // NEW TAB CONTENT
+      case 2:
         return (
           <ShopDetailInfoSection
             shop={shop}
             onDirectionsPress={handleDirections}
           />
         );
-      case 2:
+      case 3:
         return (
           <ShopDetailReviewsSection
             shop={shop}
@@ -194,7 +198,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
             onHelpfulPress={handleReviewHelpful}
           />
         );
-      case 3:
+      case 4:
         return (
           <ShopDetailPhotosSection
             shop={shop}
