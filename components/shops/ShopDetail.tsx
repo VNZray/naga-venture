@@ -17,7 +17,6 @@ import {
   Modal,
   Alert,
   Animated,
-  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -49,7 +48,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
   // Tab Navigation State
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: 'menu', title: 'Menu' },
+    { key: 'menu', title: 'Offerings' },
     { key: 'info', title: 'Info' },
     { key: 'reviews', title: 'Reviews' },
     { key: 'photos', title: 'Photos' },
