@@ -1,51 +1,28 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image, ViewStyle } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ShopColors } from '@/constants/ShopColors';
-import type { MenuItem } from '@/types/shop';
+import type { MenuItem } from '@/types/shop'; // Import the original MenuItem type
 
 interface ShopDetailMenuItemCardProps {
-  item: MenuItem;
-  onPress: (item: MenuItem) => void;
-  variant?: 'default' | 'compact';
-  width?: number;
+  item: MenuItem; // Use the original MenuItem type
+  onPress: (item: MenuItem) => void; // Use the original MenuItem type
 }
 
 const ShopDetailMenuItemCard: React.FC<ShopDetailMenuItemCardProps> = ({
   item,
   onPress,
-  variant = 'default',
-  width,
 }) => {
-  // Add null check for item
+  // Simple null check
   if (!item) {
-    console.warn('ShopDetailMenuItemCard: item is null or undefined');
     return null;
   }
 
-  // REMOVED isAvailable check since your menu data doesn't have this property
-  // Your menu structure: { item: "Classic Burger", price: "₱180" }
+  // Simple property access - only the 4 properties we care about
   const itemName = item.item || 'Unknown Item';
   const itemPrice = item.price || 'Price not available';
   const itemDescription = item.description || '';
-
-  const getCardStyle = (): ViewStyle[] => {
-    const baseStyle: ViewStyle[] = [styles.card];
-    
-    if (width) {
-      baseStyle.push({ width });
-    }
-    
-    switch (variant) {
-      case 'compact':
-        baseStyle.push(styles.compactCard);
-        break;
-      default:
-        break;
-    }
-    
-    return baseStyle;
-  };
+  const itemImage = item.image;
 
   const handlePress = () => {
     if (item && onPress) {
@@ -55,33 +32,38 @@ const ShopDetailMenuItemCard: React.FC<ShopDetailMenuItemCardProps> = ({
 
   return (
     <TouchableOpacity
-      style={getCardStyle()}
+      style={styles.card}
       onPress={handlePress}
       activeOpacity={0.8}
     >
-      {/* Horizontal Layout */}
       <View style={styles.cardContent}>
-        {/* Left Side - Image placeholder (your data doesn't have images) */}
-        <View style={styles.placeholderImage}>
-          <Ionicons 
-            name="restaurant-outline" 
-            size={24} 
-            color={ShopColors.textSecondary} 
-          />
+        {/* Left Side - Image or placeholder */}
+        <View style={styles.imageContainer}>
+          {itemImage ? (
+            <Image 
+              source={{ uri: itemImage }} 
+              style={styles.itemImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.placeholderImage}>
+              <Ionicons 
+                name="restaurant-outline" 
+                size={24} 
+                color={ShopColors.textSecondary} 
+              />
+            </View>
+          )}
         </View>
 
         {/* Right Side - Content */}
         <View style={styles.itemContent}>
-          {/* Header with name and price on same line */}
+          {/* Header with name and price */}
           <View style={styles.itemHeader}>
-            <Text 
-              style={styles.itemName} 
-              numberOfLines={1}
-            >
+            <Text style={styles.itemName} numberOfLines={1}>
               {itemName}
             </Text>
             
-            {/* Price aligned to the right */}
             <Text style={styles.itemPrice}>
               {itemPrice}
             </Text>
@@ -89,10 +71,7 @@ const ShopDetailMenuItemCard: React.FC<ShopDetailMenuItemCardProps> = ({
 
           {/* Description - Only show if exists */}
           {itemDescription ? (
-            <Text 
-              style={styles.itemDescription} 
-              numberOfLines={2}
-            >
+            <Text style={styles.itemDescription} numberOfLines={2}>
               {itemDescription}
             </Text>
           ) : null}
@@ -103,7 +82,7 @@ const ShopDetailMenuItemCard: React.FC<ShopDetailMenuItemCardProps> = ({
 };
 
 const styles = StyleSheet.create({
-  // Base Card Styles
+  // Card
   card: {
     backgroundColor: ShopColors.cardBackground,
     borderRadius: 12,
@@ -117,19 +96,25 @@ const styles = StyleSheet.create({
     elevation: 2,
     overflow: 'hidden',
   },
-  compactCard: {
-    marginBottom: 8,
-    shadowOpacity: 0.03,
-    elevation: 1,
-  },
 
-  // Card Content - Horizontal Layout
+  // Card Content
   cardContent: {
     flexDirection: 'row',
     padding: 12,
   },
 
-  // Left Side - Image placeholder
+  // Left Side - Image
+  imageContainer: {
+    width: 60,
+    height: 60,
+    marginRight: 12,
+  },
+  itemImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    backgroundColor: ShopColors.background,
+  },
   placeholderImage: {
     width: 60,
     height: 60,
@@ -137,7 +122,6 @@ const styles = StyleSheet.create({
     backgroundColor: ShopColors.background,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
     borderWidth: 1,
     borderColor: ShopColors.border,
   },
@@ -148,7 +132,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
 
-  // Header - Name and Price on same line
+  // Header - Name and Price
   itemHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -162,8 +146,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 12,
   },
-
-  // Price - Positioned with name
   itemPrice: {
     fontSize: 15,
     fontFamily: 'Poppins-Bold',
@@ -171,7 +153,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 
-  // Description - Full width below header
+  // Description
   itemDescription: {
     fontSize: 13,
     fontFamily: 'Poppins-Regular',
