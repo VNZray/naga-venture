@@ -1,17 +1,9 @@
 import { ShopColors } from '@/constants/ShopColors';
-import type { ShopData, ShopPromotion } from '@/types/shop';
+import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useMemo, useState } from 'react';
-import {
-  FlatList,
-  Image,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ShopDetailPromotionCard } from '../elements';
 
 interface ShopDetailPromotionsSectionProps {
@@ -21,452 +13,261 @@ interface ShopDetailPromotionsSectionProps {
 const ShopDetailPromotionsSection: React.FC<
   ShopDetailPromotionsSectionProps
 > = ({ shop }) => {
-  const [selectedPromotion, setSelectedPromotion] =
-    useState<ShopPromotion | null>(null);
+  const insets = useSafeAreaInsets();
+  // Current date/time - UTC: 2025-06-03 16:48:11
+  // Current user: malzafre
+  const currentDate = new Date('2025-06-03T16:48:11Z');
 
-  // Helper function to check if promotion is expired
-  const isPromotionExpired = (promotion: ShopPromotion): boolean => {
-    if (!promotion.validUntil) return false;
+  const activePromotions =
+    shop.promotions?.filter((promo) => {
+      if (!promo.isActive) return false;
 
-    const today = new Date();
-    const expiry = new Date(promotion.validUntil);
+      if (promo.validUntil) {
+        try {
+          const expiryDate = new Date(promo.validUntil);
+          return expiryDate > currentDate;
+        } catch (e) {
+          console.error(
+            'Invalid date format for promotion validUntil:',
+            promo.validUntil,
+            e
+          );
+          return false;
+        }
+      }
 
-    // Set time to end of day for expiry date to be more lenient
-    expiry.setHours(23, 59, 59, 999);
+      return true;
+    }) || [];
 
-    return today > expiry;
+  // Helper functions for summary stats
+  const isExpiringToday = (dateString?: string) => {
+    if (!dateString) return false;
+    try {
+      const expiryDate = new Date(dateString);
+      if (isNaN(expiryDate.getTime())) return false;
+      const diffTime = expiryDate.getTime() - currentDate.getTime();
+      const diffHours = diffTime / (1000 * 60 * 60);
+      return diffHours > 0 && diffHours <= 24;
+    } catch {
+      return false;
+    }
   };
 
-  // Process promotions with fixed logic
-  const promotions = useMemo(() => {
-    if (!shop?.promotions || !Array.isArray(shop.promotions)) {
-      return [];
+  const isExpiringSoon = (dateString?: string) => {
+    if (!dateString) return false;
+    try {
+      const expiryDate = new Date(dateString);
+      if (isNaN(expiryDate.getTime())) return false;
+      const diffTime = expiryDate.getTime() - currentDate.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays > 0 && diffDays <= 7;
+    } catch {
+      return false;
     }
-
-    console.log('Processing promotions:', shop.promotions);
-
-    // Sort promotions: active and not expired first, then by expiry date
-    return shop.promotions.sort((a, b) => {
-      const aExpired = isPromotionExpired(a);
-      const bExpired = isPromotionExpired(b);
-      const aActive = a.isActive && !aExpired;
-      const bActive = b.isActive && !bExpired;
-
-      console.log(
-        `Promotion ${a.id}: isActive=${a.isActive}, expired=${aExpired}, final active=${aActive}`
-      );
-      console.log(
-        `Promotion ${b.id}: isActive=${b.isActive}, expired=${bExpired}, final active=${bActive}`
-      );
-
-      // Active promotions first
-      if (aActive && !bActive) return -1;
-      if (!aActive && bActive) return 1;
-
-      // Then sort by expiry date (closest expiry first for active ones)
-      if (a.validUntil && b.validUntil) {
-        return (
-          new Date(a.validUntil).getTime() - new Date(b.validUntil).getTime()
-        );
-      }
-      if (a.validUntil && !b.validUntil) return -1;
-      if (!a.validUntil && b.validUntil) return 1;
-
-      return 0;
-    });
-  }, [shop?.promotions]);
-
-  const activePromotions = useMemo(() => {
-    const active = promotions.filter(
-      (promo) => promo.isActive && !isPromotionExpired(promo)
-    );
-    console.log('Active promotions:', active);
-    return active;
-  }, [promotions]);
-
-  const expiredPromotions = useMemo(() => {
-    const expired = promotions.filter(
-      (promo) => !promo.isActive || isPromotionExpired(promo)
-    );
-    console.log('Expired promotions:', expired);
-    return expired;
-  }, [promotions]);
+  };
 
   // Empty state
-  if (!shop?.promotions || shop.promotions.length === 0) {
+  if (activePromotions.length === 0) {
     return (
-      <View style={styles.emptyState}>
-        <Ionicons
-          name="pricetag-outline"
-          size={48}
-          color={ShopColors.textSecondary}
-        />
-        <Text style={styles.emptyStateTitle}>No Promotions Available</Text>
-        <Text style={styles.emptyStateText}>
-          This business doesn&apos;t have any promotions at the moment. Check
-          back later for great deals!
-        </Text>
-      </View>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={[
+          styles.contentContainer,
+          { paddingBottom: Math.max(insets.bottom + 80, 100) },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="pricetag" size={20} color={ShopColors.accent} />
+            <Text style={styles.sectionTitle}>Promotions</Text>
+          </View>
+
+          <View style={styles.emptyContainer}>
+            <Ionicons
+              name="pricetag-outline"
+              size={48}
+              color={ShopColors.textSecondary}
+            />
+            <Text style={styles.emptyTitle}>No Active Promotions</Text>
+            <Text style={styles.emptyText}>
+              Check back later for exciting deals and offers!
+            </Text>
+            <Text style={styles.lastUpdatedText}>
+              Last checked:{' '}
+              {currentDate.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
     );
   }
 
-  const handlePromotionPress = (promotion: ShopPromotion) => {
-    setSelectedPromotion(promotion);
-  };
-
-  const renderPromotion = ({ item }: { item: ShopPromotion }) => {
-    return (
-      <ShopDetailPromotionCard
-        promotion={item}
-        onPress={handlePromotionPress}
-      />
-    );
-  };
+  const expiringTodayCount = activePromotions.filter((p) =>
+    isExpiringToday(p.validUntil)
+  ).length;
+  const expiringSoonCount = activePromotions.filter(
+    (p) => isExpiringSoon(p.validUntil) && !isExpiringToday(p.validUntil)
+  ).length;
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {/* Active Promotions Section */}
-        {activePromotions.length > 0 && (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Ionicons name="flash" size={20} color={ShopColors.accent} />
-              <Text style={styles.sectionTitle}>
-                Active Promotions ({activePromotions.length})
-              </Text>
-            </View>
-
-            <FlatList
-              data={activePromotions}
-              keyExtractor={(item) => item.id}
-              scrollEnabled={false}
-              renderItem={renderPromotion}
-              contentContainerStyle={styles.listContainer}
-            />
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[
+        styles.contentContainer,
+        { paddingBottom: Math.max(insets.bottom + 80, 100) },
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Section Header - Matches Info section style */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="pricetag" size={20} color={ShopColors.accent} />
+          <Text style={styles.sectionTitle}>Promotions</Text>
+          <View style={styles.headerRightContainer}>
+            <Text style={styles.sectionCounter}>
+              {activePromotions.length.toString()}
+            </Text>
+            <Text style={styles.lastUpdatedHeader}>
+              {currentDate.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+              })}
+            </Text>
           </View>
-        )}
+        </View>
 
-        {/* Expired/Inactive Promotions Section */}
-        {expiredPromotions.length > 0 && (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
-              <Ionicons
-                name="time-outline"
-                size={20}
-                color={ShopColors.textSecondary}
-              />
-              <Text style={[styles.sectionTitle, styles.expiredSectionTitle]}>
-                Past Promotions ({expiredPromotions.length})
-              </Text>
-            </View>
-
-            <FlatList
-              data={expiredPromotions}
-              keyExtractor={(item) => item.id}
-              scrollEnabled={false}
-              renderItem={renderPromotion}
-              contentContainerStyle={styles.listContainer}
-            />
-          </View>
-        )}
-
-        {/* Show message if no active promotions */}
-        {activePromotions.length === 0 && expiredPromotions.length > 0 && (
-          <View style={styles.noActivePromotions}>
-            <Ionicons
-              name="information-circle-outline"
-              size={24}
-              color={ShopColors.textSecondary}
-            />
-            <Text style={styles.noActivePromotionsText}>
-              No active promotions at the moment. Check out past promotions
-              below!
+        {/* Active promotions summary */}
+        {(expiringTodayCount > 0 || expiringSoonCount > 0) && (
+          <View style={styles.summaryContainer}>
+            <Text style={styles.summaryText}>
+              {expiringTodayCount > 0 &&
+                `⚠️ ${expiringTodayCount} ending today`}
+              {expiringTodayCount > 0 && expiringSoonCount > 0 && ' • '}
+              {expiringSoonCount > 0 && `🔔 ${expiringSoonCount} ending soon`}
             </Text>
           </View>
         )}
-      </ScrollView>
 
-      {/* Promotion Detail Modal */}
-      <Modal
-        visible={!!selectedPromotion}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setSelectedPromotion(null)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            {/* Modal Header */}
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Promotion Details</Text>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setSelectedPromotion(null)}
-              >
-                <Ionicons
-                  name="close"
-                  size={24}
-                  color={ShopColors.textPrimary}
-                />
-              </TouchableOpacity>
-            </View>
-
-            {/* Modal Content */}
-            <ScrollView style={styles.modalScrollView}>
-              {selectedPromotion && (
-                <View style={styles.modalContent}>
-                  {/* Promotion Image */}
-                  {selectedPromotion.image && (
-                    <Image
-                      source={{ uri: selectedPromotion.image }}
-                      style={styles.modalImage}
-                      resizeMode="cover"
-                    />
-                  )}
-
-                  {/* Promotion Info */}
-                  <View style={styles.modalInfo}>
-                    <Text style={styles.modalPromotionTitle}>
-                      {selectedPromotion.title}
-                    </Text>
-
-                    {selectedPromotion.discountPercent &&
-                      selectedPromotion.discountPercent > 0 && (
-                        <View style={styles.modalDiscountBadge}>
-                          <Text style={styles.modalDiscountText}>
-                            {selectedPromotion.discountPercent}% OFF
-                          </Text>
-                        </View>
-                      )}
-
-                    <Text style={styles.modalDescription}>
-                      {selectedPromotion.description}
-                    </Text>
-
-                    {selectedPromotion.validUntil && (
-                      <View style={styles.modalExpiryInfo}>
-                        <Ionicons
-                          name="calendar-outline"
-                          size={16}
-                          color={ShopColors.textSecondary}
-                        />
-                        <Text style={styles.modalExpiryText}>
-                          Valid until:{' '}
-                          {new Date(
-                            selectedPromotion.validUntil
-                          ).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          })}
-                        </Text>
-                      </View>
-                    )}
-
-                    {selectedPromotion.terms && (
-                      <View style={styles.modalTermsSection}>
-                        <Text style={styles.modalTermsTitle}>
-                          Terms & Conditions:
-                        </Text>
-                        <Text style={styles.modalTermsText}>
-                          {selectedPromotion.terms}
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                </View>
-              )}
-            </ScrollView>
-          </View>
+        {/* Promotions List using ShopDetailPromotionCard */}
+        <View style={styles.promotionsList}>
+          {activePromotions.map((promotion) => (
+            <ShopDetailPromotionCard
+              key={promotion.id}
+              promotion={promotion}
+              currentDate={currentDate}
+            />
+          ))}
         </View>
-      </Modal>
-    </View>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: ShopColors.background,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    backgroundColor: ShopColors.background || '#F4F5F7',
   },
 
-  // Sections
-  section: {
-    marginBottom: 24,
+  contentContainer: {
+    flexGrow: 1,
   },
+
+  // Section - matches Info section exactly
+  section: {
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
     gap: 8,
   },
+
   sectionTitle: {
+    flex: 1,
     fontSize: 18,
     fontFamily: 'Poppins-SemiBold',
-    color: ShopColors.textPrimary,
-  },
-  expiredSectionTitle: {
-    color: ShopColors.textSecondary,
-  },
-  listContainer: {
-    paddingBottom: 0,
+    color: ShopColors.textPrimary || '#1A1A1A',
   },
 
-  // No Active Promotions Message
-  noActivePromotions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ShopColors.cardBackground,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    gap: 12,
-    borderWidth: 1,
-    borderColor: ShopColors.border,
+  headerRightContainer: {
+    alignItems: 'flex-end',
+    gap: 2,
   },
-  noActivePromotionsText: {
-    flex: 1,
+
+  sectionCounter: {
     fontSize: 14,
+    fontFamily: 'Poppins-SemiBold',
+    color: ShopColors.accent || '#007AFF',
+  },
+
+  lastUpdatedHeader: {
+    fontSize: 11,
     fontFamily: 'Poppins-Regular',
     color: ShopColors.textSecondary,
-    lineHeight: 20,
+  },
+
+  // Summary container
+  summaryContainer: {
+    marginBottom: 16,
+    padding: 12,
+    backgroundColor: ShopColors.accent + '10',
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: ShopColors.accent,
+  },
+
+  summaryText: {
+    fontSize: 13,
+    fontFamily: 'Poppins-Medium',
+    color: ShopColors.textPrimary,
+    lineHeight: 18,
+  },
+
+  // Promotions List
+  promotionsList: {
+    // No additional styling needed, cards handle their own spacing
   },
 
   // Empty State
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
+  emptyContainer: {
     alignItems: 'center',
-    paddingHorizontal: 40,
-    paddingVertical: 60,
+    paddingVertical: 40,
   },
-  emptyStateTitle: {
+
+  emptyTitle: {
     fontSize: 18,
     fontFamily: 'Poppins-SemiBold',
-    color: ShopColors.textPrimary,
+    color: ShopColors.textPrimary || '#1A1A1A',
     marginTop: 16,
     marginBottom: 8,
     textAlign: 'center',
   },
-  emptyStateText: {
+
+  emptyText: {
     fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    color: ShopColors.textSecondary || '#555555',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+
+  lastUpdatedText: {
+    fontSize: 11,
     fontFamily: 'Poppins-Regular',
     color: ShopColors.textSecondary,
     textAlign: 'center',
-    lineHeight: 20,
-  },
-
-  // Modal Styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContainer: {
-    backgroundColor: ShopColors.cardBackground,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '85%',
-    minHeight: '60%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: ShopColors.border,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontFamily: 'Poppins-SemiBold',
-    color: ShopColors.textPrimary,
-  },
-  closeButton: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: ShopColors.background,
-  },
-  modalScrollView: {
-    flex: 1,
-  },
-  modalContent: {
-    paddingBottom: 20,
-  },
-  modalImage: {
-    width: '100%',
-    height: 200,
-    backgroundColor: ShopColors.background,
-  },
-  modalInfo: {
-    padding: 20,
-  },
-  modalPromotionTitle: {
-    fontSize: 20,
-    fontFamily: 'Poppins-Bold',
-    color: ShopColors.textPrimary,
-    marginBottom: 12,
-    lineHeight: 26,
-  },
-  modalDiscountBadge: {
-    backgroundColor: ShopColors.accent,
-    alignSelf: 'flex-start',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  modalDiscountText: {
-    color: '#FFFFFF',
-    fontFamily: 'Poppins-Bold',
-    fontSize: 14,
-  },
-  modalDescription: {
-    fontSize: 16,
-    fontFamily: 'Poppins-Regular',
-    color: ShopColors.textPrimary,
-    lineHeight: 24,
-    marginBottom: 16,
-  },
-  modalExpiryInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 16,
-  },
-  modalExpiryText: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Medium',
-    color: ShopColors.textSecondary,
-  },
-  modalTermsSection: {
-    backgroundColor: ShopColors.background,
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 8,
-  },
-  modalTermsTitle: {
-    fontSize: 14,
-    fontFamily: 'Poppins-SemiBold',
-    color: ShopColors.textPrimary,
-    marginBottom: 8,
-  },
-  modalTermsText: {
-    fontSize: 13,
-    fontFamily: 'Poppins-Regular',
-    color: ShopColors.textSecondary,
-    lineHeight: 18,
   },
 });
 

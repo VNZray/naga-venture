@@ -1,7 +1,7 @@
 // Enhanced shop data structure with comprehensive business information
 export const shopsData = {
-  "1": {
-    id: "1",
+  1: {
+    id: '1',
     name: 'Burger Joint',
     category: 'dining',
     subcategory: 'casual-dining',
@@ -180,7 +180,7 @@ export const shopsData = {
         title: 'Buy 2 Get 1 Free Fries',
         description: 'Order any 2 burgers and get free cheese fries!',
         discountPercent: 0,
-        validUntil: '2024-06-30',
+        validUntil: '2025-06-10',
         terms: 'Valid for dine-in only. Cannot be combined with other offers.',
         isActive: true,
         image:
@@ -219,10 +219,11 @@ export const shopsData = {
     acceptsReservations: false,
     hasDelivery: true,
     hasPickup: true,
-    tags: ['burgers', 'local-favorite', 'spicy', 'casual-dining'],  },
+    tags: ['burgers', 'local-favorite', 'spicy', 'casual-dining'],
+  },
 
-  "2": {
-    id: "2",
+  2: {
+    id: '2',
     name: 'Serenity Spa & Wellness',
     category: 'spa',
     subcategory: 'full-service-spa',
@@ -426,10 +427,11 @@ export const shopsData = {
     acceptsReservations: true,
     hasDelivery: false,
     hasPickup: false,
-    tags: ['spa', 'wellness', 'massage', 'relaxation', 'premium'],  },
+    tags: ['spa', 'wellness', 'massage', 'relaxation', 'premium'],
+  },
 
-  "3": {
-    id: "3",
+  3: {
+    id: '3',
     name: 'Brew & Beans Coffee House',
     category: 'cafe',
     subcategory: 'coffee-shop',
@@ -621,10 +623,11 @@ export const shopsData = {
     acceptsReservations: false,
     hasDelivery: true,
     hasPickup: true,
-    tags: ['coffee', 'local-roasted', 'wifi', 'study-friendly', 'artisan'],  },
+    tags: ['coffee', 'local-roasted', 'wifi', 'study-friendly', 'artisan'],
+  },
 
-  "4": {
-    id: "4",
+  4: {
+    id: '4',
     name: 'TechHub Computer Shop',
     category: 'computer',
     subcategory: 'computer-electronics',
@@ -832,10 +835,11 @@ export const shopsData = {
     acceptsReservations: true,
     hasDelivery: false,
     hasPickup: true,
-    tags: ['computers', 'repair', 'gaming', 'tech-support', 'custom-build'],  },
+    tags: ['computers', 'repair', 'gaming', 'tech-support', 'custom-build'],
+  },
 
-  "5": {
-    id: "5",
+  5: {
+    id: '5',
     name: 'Naga Treasures Souvenir Shop',
     category: 'souvenir',
     subcategory: 'gifts-souvenirs',
