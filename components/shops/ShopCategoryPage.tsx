@@ -155,7 +155,7 @@ const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
   });
 
   const handleShopPress = (shopId: string) => {
-    router.push(`/TouristApp/(tabs)/(home)/(shops)/(details)/${shopId}`);
+    router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
   };
 
   const renderShopCard = ({ item }: { item: ShopData }) => (
@@ -193,6 +193,7 @@ const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
         ) : (
           <View style={styles.emptyContainer}>
             <View style={styles.emptyIcon}>
+
               <Ionicons
                 name="storefront-outline"
                 size={32}
