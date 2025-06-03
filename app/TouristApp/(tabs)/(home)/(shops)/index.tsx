@@ -1,12 +1,12 @@
-import ShopDirectory from '@/components/shops/ShopDirectory';
+import React, { useMemo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { Text, TouchableOpacity, View } from 'react-native';
+import ShopDirectory from '../../../../components/shops/ShopDirectory';
 import {
   destinations,
   featuredShops,
   mainCategories,
-} from '@/Controller/ShopData';
-import React, { useMemo } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
-import { Text, TouchableOpacity, View } from 'react-native';
+} from '../../../Controller/ShopData';
 
 // Error fallback
 const ShopErrorFallback = ({ error, resetErrorBoundary }: any) => (

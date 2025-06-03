@@ -1,9 +1,8 @@
-import { ShopColors } from '@/constants/ShopColors';
-import { mainCategories } from '@/Controller/ShopData';
-import type { ShopCategory } from '@/types/shop';
-import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React from 'react';
+import { ShopColors } from "@/constants/ShopColors";
+import type { ShopCategory } from "@/types/shop";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React from "react";
 import {
   Dimensions,
   FlatList,
@@ -12,10 +11,11 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { mainCategories } from "../../../Controller/ShopData";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 const SUBCATEGORY_GAP = 12;
 const SUBCATEGORIES_PER_ROW = 3;
 const SUBCATEGORY_WIDTH =
@@ -24,14 +24,10 @@ const SUBCATEGORY_WIDTH =
 
 const AllCategoriesPage = () => {
   const handleMainCategoryPress = (mainCategoryId: string) => {
-    router.push(
-      `/TouristApp/(tabs)/(home)/(shops)/(categories)/${mainCategoryId}`
-    );
+    router.push(`/(tabs)/(home)/(shops)/(categories)/${mainCategoryId}`);
   };
   const handleSubcategoryPress = (subcategoryId: string) => {
-    router.push(
-      `/TouristApp/(tabs)/(home)/(shops)/(subcategory)/${subcategoryId}`
-    );
+    router.push(`/(tabs)/(home)/(shops)/(subcategory)/${subcategoryId}`);
   };
 
   const renderSubcategoryItem = ({
@@ -43,9 +39,9 @@ const AllCategoriesPage = () => {
   }) => {
     const isLastInRow = (index + 1) % SUBCATEGORIES_PER_ROW === 0;
     const iconName =
-      item.icon && typeof item.icon === 'string' && item.icon.trim() !== ''
+      item.icon && typeof item.icon === "string" && item.icon.trim() !== ""
         ? item.icon
-        : 'help-circle-outline'; // A default fallback icon
+        : "help-circle-outline"; // A default fallback icon
 
     return (
       <TouchableOpacity
@@ -67,7 +63,7 @@ const AllCategoriesPage = () => {
         <View
           style={[
             styles.iconContainer,
-            { backgroundColor: ShopColors.accent + '20' },
+            { backgroundColor: ShopColors.accent + "20" },
           ]}
         >
           <Ionicons
@@ -115,8 +111,8 @@ const AllCategoriesPage = () => {
                 { color: ShopColors.textSecondary },
               ]}
             >
-              {subcategoryCount}{' '}
-              {subcategoryCount === 1 ? 'category' : 'categories'}
+              {subcategoryCount}{" "}
+              {subcategoryCount === 1 ? "category" : "categories"}
             </Text>
           </TouchableOpacity>
 
@@ -171,9 +167,9 @@ const AllCategoriesPage = () => {
       paddingHorizontal: 16,
     },
     sectionHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-end',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-end",
       marginBottom: 12,
     },
     mainCategoryButton: {
@@ -181,23 +177,23 @@ const AllCategoriesPage = () => {
     },
     mainCategoryTitle: {
       fontSize: 22,
-      fontFamily: 'Poppins-Bold',
+      fontFamily: "Poppins-Bold",
       marginBottom: 2,
     },
     subcategoryCount: {
       fontSize: 13,
-      fontFamily: 'Poppins-Regular',
+      fontFamily: "Poppins-Regular",
     },
     seeAllButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       paddingVertical: 4,
       paddingHorizontal: 8,
       gap: 4,
     },
     seeAllText: {
       fontSize: 14,
-      fontFamily: 'Poppins-SemiBold',
+      fontFamily: "Poppins-SemiBold",
     },
     divider: {
       height: 1,
@@ -207,15 +203,15 @@ const AllCategoriesPage = () => {
       paddingBottom: 8,
     },
     gridRow: {
-      justifyContent: 'flex-start',
+      justifyContent: "flex-start",
       marginBottom: SUBCATEGORY_GAP,
     },
     subcategoryCard: {
       borderRadius: 12,
       borderWidth: 1,
       padding: 12,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
       minHeight: 100,
       shadowColor: ShopColors.shadow,
       shadowOffset: { width: 0, height: 2 },
@@ -227,19 +223,19 @@ const AllCategoriesPage = () => {
       width: 48,
       height: 48,
       borderRadius: 24,
-      alignItems: 'center',
-      justifyContent: 'center',
+      alignItems: "center",
+      justifyContent: "center",
       marginBottom: 8,
     },
     subcategoryTitle: {
       fontSize: 12,
-      fontFamily: 'Poppins-Medium',
-      textAlign: 'center',
+      fontFamily: "Poppins-Medium",
+      textAlign: "center",
       lineHeight: 16,
     },
   });
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}

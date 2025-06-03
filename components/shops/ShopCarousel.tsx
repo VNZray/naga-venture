@@ -91,12 +91,11 @@ const ShopCarousel: React.FC<ShopCarouselProps> = ({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.listContentContainer}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
-        getItemLayout={
-          (data, index) => ({
-            length: 268,
-            offset: 268 * index,
-            index,
-          }) // Adjusted for smaller cards
+        getItemLayout={(data, index) => ({
+          length: 268,
+          offset: 268 * index,
+          index,
+        }) // Adjusted for smaller cards
         }
       />
     </View>

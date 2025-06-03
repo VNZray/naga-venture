@@ -1,14 +1,14 @@
 import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient'; // Assuming expo-linear-gradient is available
 import React from 'react';
 import {
-  ImageBackground,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    ImageBackground,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient'; // Assuming expo-linear-gradient is available
 import type { ShopCardProps } from './types'; // We can reuse or adapt ShopCardProps
 
 // Props might be identical to ShopCardProps, or you might want to simplify/extend

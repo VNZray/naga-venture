@@ -1,4 +1,4 @@
-import { specialOffersData as importedSpecialOffersData } from '@/Controller/ShopData';
+import { specialOffersData as importedSpecialOffersData } from '@/app/Controller/ShopData';
 import { ShopColors } from '@/constants/ShopColors';
 import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
@@ -122,7 +122,7 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
   const discoverMoreShopsData = useMemo(() => shops, [shops]);
 
   const handleShopPress = (shopId: string) => {
-    router.push(`/TouristApp/(tabs)/(home)/(shops)/(details)/${shopId}`);
+    router.push(`/(tabs)/(home)/(shops)/(details)/${shopId}`);
   };
 
   const handleSpecialOfferPress = (offerId: string) => {
@@ -139,17 +139,17 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
   };
 
   const handleCategoryPress = (categoryId: string) => {
-    router.push(`/TouristApp/(tabs)/(home)/(shops)/(categories)/${categoryId}`);
+    router.push(`/(tabs)/(home)/(shops)/(categories)/${categoryId}`);
   };
 
   const handleViewAllFeatured = () =>
-    router.push('/TouristApp/(tabs)/(home)/(shops)/FeaturedShops');
+    router.push('/(tabs)/(home)/(shops)/FeaturedShops');
   const handleViewAllRecommended = () =>
-    router.push('/TouristApp/(tabs)/(home)/(shops)/RecommendedShops');
+    router.push('/(tabs)/(home)/(shops)/RecommendedShops');
   const handleViewAllSpecialOffers = () =>
-    router.push('/TouristApp/(tabs)/(home)/(shops)/SpecialOffers');
+    router.push('/(tabs)/(home)/(shops)/SpecialOffers');
   const handleViewAllCategories = () =>
-    router.push('/TouristApp/(tabs)/(home)/(shops)/AllCategories');
+    router.push('/(tabs)/(home)/(shops)/AllCategories');
 
   const searchResultsTitle = useMemo(() => {
     if (!searchQuery) return 'Search Results';
@@ -210,7 +210,9 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                     style={styles.viewAllButton}
                     onPress={handleViewAllSpecialOffers}
                     activeOpacity={0.7}
-                  ></TouchableOpacity>
+                  >
+                    
+                  </TouchableOpacity>
                 )}
               </View>
               {specialOffersData.length > 0 ? (
