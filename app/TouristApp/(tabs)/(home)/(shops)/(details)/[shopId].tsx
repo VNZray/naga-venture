@@ -23,7 +23,7 @@ const ShopDetails = () => {
     return <ShopDetail shop={null} />;
   }
 
-  return <ShopDetail shop={shop} />;
+  return <ShopDetail shop={shop as any} />;
 };
 
 export default ShopDetails;
