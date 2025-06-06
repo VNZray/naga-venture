@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native';
 import React from 'react';
 
-const Maps = () => {
+const AdminWebLayout = () => {
   return (
     <View>
-      <Text>Maps</Text>
+      <Text>AdminWebLayout</Text>
     </View>
   );
 };
 
-export default Maps;
+export default AdminWebLayout;

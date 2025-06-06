@@ -27,7 +27,7 @@ const LoginWeb = () => {
 
     if (matchedUser) {
       login(matchedUser);
-      router.replace('/BusinessApp/(admin)');
+      router.replace('/BusinessApp');
     } else {
       Alert.alert('Login Failed', 'Incorrect email or password.');
     }
@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#fff',
   },
   formContainer: {
     width: '100%',

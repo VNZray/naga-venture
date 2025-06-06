@@ -1,26 +1,12 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import 'react-native-reanimated';
-
-import { AuthProvider } from '@/context/AuthContext';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { View, Text } from 'react-native';
 import React from 'react';
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
+const AdminWebLayout = () => {
   return (
-    <AuthProvider>
-      <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(admin)" options={{ headerShown: false }} />
-        </Stack>
-      </ThemeProvider>
-    </AuthProvider>
+    <View>
+      <Text>AdminWebLayout</Text>
+    </View>
   );
-}
+};
+
+export default AdminWebLayout;

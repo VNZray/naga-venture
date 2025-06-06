@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native';
 import React from 'react';
 
-const Register = () => {
+const AdmiinLayout = () => {
   return (
     <View>
-      <Text>Register</Text>
+      <Text>AdmiinLayout</Text>
     </View>
   );
 };
 
-export default Register;
+export default AdmiinLayout;
