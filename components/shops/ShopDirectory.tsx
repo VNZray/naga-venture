@@ -210,7 +210,9 @@ const ShopDirectory: React.FC<ShopDirectoryProps> = ({
                     style={styles.viewAllButton}
                     onPress={handleViewAllSpecialOffers}
                     activeOpacity={0.7}
-                  ></TouchableOpacity>
+                  >
+                    
+                  </TouchableOpacity>
                 )}
               </View>
               {specialOffersData.length > 0 ? (

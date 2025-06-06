@@ -193,6 +193,7 @@ const ShopCategoryPage: React.FC<ShopCategoryPageProps> = ({
         ) : (
           <View style={styles.emptyContainer}>
             <View style={styles.emptyIcon}>
+
               <Ionicons
                 name="storefront-outline"
                 size={32}

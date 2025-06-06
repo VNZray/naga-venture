@@ -1,21 +1,21 @@
-import ShopCard from '@/components/shops/ShopCard'; // Ensure this path is correct
 import { ShopColors } from '@/constants/ShopColors';
-import { destinations as allShopsData } from '@/Controller/ShopData'; // Your static data for all shops
 import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  ActivityIndicator,
-  Dimensions,
   FlatList,
-  RefreshControl,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  ActivityIndicator,
+  RefreshControl,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ShopCard from '@/components/shops/ShopCard'; // Ensure this path is correct
+import { destinations as allShopsData } from '@/Controller/ShopData'; // Your static data for all shops
 
 const { width } = Dimensions.get('window');
 const CARD_MARGIN = 8;
@@ -34,32 +34,29 @@ const RecommendedShopsScreen = () => {
     // For now, we filter the static data
     return new Promise<ShopData[]>((resolve) => {
       setTimeout(() => {
-        const recommended = allShopsData.filter((shop) => shop.rating >= 4.5);
+        const recommended = allShopsData.filter(shop => shop.rating >= 4.5);
         resolve(recommended);
       }, 800); // Simulate network delay
     });
   }, []);
 
-  const loadShops = useCallback(
-    async (refreshing = false) => {
-      if (refreshing) {
-        setIsRefreshing(true);
-      } else {
-        setIsLoading(true);
-      }
-      try {
-        const data = await fetchRecommendedShops();
-        setShops(data);
-      } catch (error) {
-        console.error('Failed to fetch recommended shops:', error);
-        // Optionally set an error state here
-      } finally {
-        setIsLoading(false);
-        setIsRefreshing(false);
-      }
-    },
-    [fetchRecommendedShops]
-  );
+  const loadShops = useCallback(async (refreshing = false) => {
+    if (refreshing) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
+    try {
+      const data = await fetchRecommendedShops();
+      setShops(data);
+    } catch (error) {
+      console.error("Failed to fetch recommended shops:", error);
+      // Optionally set an error state here
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  }, [fetchRecommendedShops]);
 
   useEffect(() => {
     loadShops();
@@ -138,10 +135,10 @@ const RecommendedShopsScreen = () => {
       marginBottom: 16,
     },
     loadingText: {
-      marginTop: 10,
-      fontFamily: 'Poppins-Regular',
-      color: ShopColors.textSecondary,
-    },
+        marginTop: 10,
+        fontFamily: 'Poppins-Regular',
+        color: ShopColors.textSecondary
+    }
   });
 
   if (isLoading) {
@@ -210,17 +207,9 @@ const RecommendedShopsScreen = () => {
         />
       ) : (
         <View style={styles.centeredView}>
-          <Ionicons
-            name="thumbs-up-outline"
-            size={48}
-            color={ShopColors.textSecondary}
-            style={styles.emptyIcon}
-          />
+          <Ionicons name="thumbs-up-outline" size={48} color={ShopColors.textSecondary} style={styles.emptyIcon} />
           <Text style={styles.headerTitle}>No Recommendations Yet</Text>
-          <Text style={styles.emptyText}>
-            We&apos;re still finding the perfect spots for you. Explore more to
-            help us learn your preferences!
-          </Text>
+          <Text style={styles.emptyText}>We&apos;re still finding the perfect spots for you. Explore more to help us learn your preferences!</Text>
         </View>
       )}
     </SafeAreaView>
