@@ -211,19 +211,23 @@ const styles = StyleSheet.create({
   promotionCard: {
     backgroundColor: ShopColors.cardBackground || '#FFFFFF',
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: ShopColors.border || '#E0E0E0',
+    // borderWidth: 1, // Removed border
+    // borderColor: ShopColors.border || '#E0E0E0', // Removed border color
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    // shadowColor: '#000', // Removed shadow
+    // shadowOffset: { width: 0, height: 1 }, // Removed shadow
+    // shadowOpacity: 0.05, // Removed shadow
+    // shadowRadius: 2, // Removed shadow
+    // elevation: 2, // Removed elevation for Android
     marginBottom: 16,
+    borderBottomWidth: 1, // Added a subtle bottom border for separation
+    borderBottomColor: ShopColors.border || '#E0E0E0', // Subtle bottom border color
   },
   expiringTodayCard: {
-    borderColor: ShopColors.error || '#D32F2F',
-    borderWidth: 2,
+    borderColor: ShopColors.error || '#D32F2F', // Keep border for emphasis if expiring today
+    borderWidth: 2, // Keep border for emphasis if expiring today
+    borderBottomWidth: 2, // Ensure bottom border is also emphasized
+    borderBottomColor: ShopColors.error || '#D32F2F',
   },
   urgentBadge: {
     flexDirection: 'row',
@@ -296,8 +300,9 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   promotionDetails: {
-    borderTopWidth: 1,
-    borderTopColor: ShopColors.border || '#E0E0E0',
+    // Removed top border as the main card border is now primarily bottom
+    // borderTopWidth: 1, 
+    // borderTopColor: ShopColors.border || '#E0E0E0',
     paddingHorizontal: 16,
     paddingVertical: 12,
     gap: 10,
