@@ -1,57 +1,206 @@
 import { ShopColors } from '@/constants/ShopColors';
 import type { ShopPromotion } from '@/types/shop';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 interface ShopDetailPromotionCardProps {
   promotion: ShopPromotion;
+  currentDate?: Date;
 }
 
-const ShopDetailPromotionCard: React.FC<ShopDetailPromotionCardProps> = ({ promotion }) => {
-  const formatDate = (dateString: string) => {
+const ShopDetailPromotionCard: React.FC<ShopDetailPromotionCardProps> = ({
+  promotion,
+  currentDate = new Date('2025-06-03T16:48:11Z'), // Current UTC time
+}) => {
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'N/A';
     try {
-      return new Date(dateString).toLocaleDateString('en-US', {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date provided to formatDate:', dateString);
+        return dateString;
+      }
+      return date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
-        year: 'numeric'
+        year: 'numeric',
       });
-    } catch {
+    } catch (e) {
+      console.error('Error formatting date:', dateString, e);
       return dateString;
     }
   };
 
-  const getBadgeText = () => {
-    if (promotion.discountPercent && promotion.discountPercent > 0) {
-      return `${promotion.discountPercent}% OFF`;
+  const getDaysRemaining = (dateString?: string) => {
+    if (!dateString) return null;
+
+    try {
+      const expiryDate = new Date(dateString);
+      if (isNaN(expiryDate.getTime())) return null;
+      const diffTime = expiryDate.getTime() - currentDate.getTime();
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    } catch {
+      return null;
     }
-    return 'SPECIAL OFFER';
   };
 
+  const isExpiringToday = (dateString?: string) => {
+    if (!dateString) return false;
+
+    try {
+      const expiryDate = new Date(dateString);
+      if (isNaN(expiryDate.getTime())) return false;
+      const diffTime = expiryDate.getTime() - currentDate.getTime();
+      const diffHours = diffTime / (1000 * 60 * 60);
+      return diffHours > 0 && diffHours <= 24;
+    } catch {
+      return false;
+    }
+  };
+
+  const isExpiringSoon = (dateString?: string) => {
+    if (!dateString) return false;
+
+    try {
+      const expiryDate = new Date(dateString);
+      if (isNaN(expiryDate.getTime())) return false;
+      const diffTime = expiryDate.getTime() - currentDate.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays > 0 && diffDays <= 7;
+    } catch {
+      return false;
+    }
+  };
+
+  const daysRemaining = getDaysRemaining(promotion.validUntil);
+  const expiringToday = isExpiringToday(promotion.validUntil);
+  const expiringSoon = isExpiringSoon(promotion.validUntil);
+
   return (
-    <View style={styles.promotionCard}>
-      {promotion.image && (
-        <Image source={{ uri: promotion.image }} style={styles.promotionImage} />
+    <View
+      style={[styles.promotionCard, expiringToday && styles.expiringTodayCard]}
+    >
+      {/* Header */}
+      <View style={styles.promotionHeader}>
+        <View style={styles.promotionTitleContainer}>
+          <View style={styles.promotionIconContainer}>
+            <Ionicons name="pricetag" size={16} color={ShopColors.accent} />
+          </View>
+          <Text
+            style={styles.promotionTitle}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
+            {promotion.title || 'Special Promotion'}
+          </Text>
+        </View>
+
+        {/* Discount Badge */}
+        {typeof promotion.discountPercent === 'number' &&
+          promotion.discountPercent > 0 && (
+            <View style={styles.discountBadge}>
+              <Text style={styles.discountText}>
+                {`${promotion.discountPercent.toString()}% OFF`}
+              </Text>
+            </View>
+          )}
+      </View>
+
+      {/* Urgent Badge */}
+      {expiringToday && (
+        <View style={styles.urgentBadge}>
+          <Ionicons name="warning" size={14} color="#FFFFFF" />
+          <Text style={styles.urgentText}>ENDS TODAY!</Text>
+        </View>
       )}
-      
-      <View style={styles.promotionContent}>
-        <View style={styles.promotionHeader}>
-          <View style={styles.promotionBadge}>
-            <Text style={styles.promotionBadgeText}>
-              {getBadgeText()}
+
+      {/* Promotion Image */}
+      {promotion.image && (
+        <View style={styles.promotionImageContainer}>
+          <Image
+            source={{ uri: promotion.image }}
+            style={styles.promotionImage}
+            resizeMode="cover"
+          />
+        </View>
+      )}
+
+      {/* Description */}
+      <Text
+        style={styles.promotionDescription}
+        numberOfLines={3}
+        ellipsizeMode="tail"
+      >
+        {promotion.description ||
+          'Special promotion available now! Check details.'}
+      </Text>
+
+      {/* Details Section */}
+      <View style={styles.promotionDetails}>
+        {/* Validity */}
+        {promotion.validUntil && (
+          <View style={styles.detailRow}>
+            <Ionicons
+              name="calendar-outline"
+              size={14}
+              color={
+                expiringToday
+                  ? ShopColors.error
+                  : expiringSoon
+                    ? ShopColors.warning
+                    : ShopColors.textSecondary
+              }
+            />
+            <View style={styles.validityContainer}>
+              <Text
+                style={[
+                  styles.detailText,
+                  expiringToday && styles.expiringTodayText,
+                  expiringSoon && !expiringToday && styles.expiringSoonText,
+                ]}
+              >
+                Valid until {formatDate(promotion.validUntil)}
+              </Text>
+
+              {/* Days remaining */}
+              {daysRemaining !== null &&
+                daysRemaining >= 0 &&
+                daysRemaining <= 7 && (
+                  <Text
+                    style={[
+                      styles.daysRemainingText,
+                      expiringToday && styles.expiringTodayText,
+                      expiringSoon && !expiringToday && styles.expiringSoonText,
+                    ]}
+                  >
+                    {daysRemaining === 0
+                      ? 'Expires today!'
+                      : daysRemaining === 1
+                        ? 'Expires tomorrow!'
+                        : `${daysRemaining.toString()} days left`}
+                  </Text>
+                )}
+            </View>
+          </View>
+        )}
+
+        {/* Terms */}
+        {promotion.terms && (
+          <View style={styles.detailRow}>
+            <Ionicons
+              name="information-circle-outline"
+              size={14}
+              color={ShopColors.textSecondary}
+            />
+            <Text
+              style={styles.detailText}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
+              {promotion.terms}
             </Text>
           </View>
-          {promotion.validUntil && (
-            <Text style={styles.promotionExpiry}>
-              Until {formatDate(promotion.validUntil)}
-            </Text>
-          )}
-        </View>
-        
-        <Text style={styles.promotionTitle}>{promotion.title}</Text>
-        <Text style={styles.promotionDescription}>{promotion.description}</Text>
-        
-        {promotion.terms && (
-          <Text style={styles.promotionTerms}>*{promotion.terms}</Text>
         )}
       </View>
     </View>
@@ -60,69 +209,123 @@ const ShopDetailPromotionCard: React.FC<ShopDetailPromotionCardProps> = ({ promo
 
 const styles = StyleSheet.create({
   promotionCard: {
-    backgroundColor: ShopColors.cardBackground,
-    marginHorizontal: 20,
-    marginBottom: 12,
+    backgroundColor: ShopColors.cardBackground || '#FFFFFF',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: ShopColors.accent + '30',
-    borderLeftWidth: 4,
-    borderLeftColor: ShopColors.accent,
+    borderColor: ShopColors.border || '#E0E0E0',
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
     elevation: 2,
-    shadowColor: ShopColors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    marginBottom: 16,
   },
-  promotionImage: {
-    width: '100%',
-    height: 120,
-    resizeMode: 'cover',
+  expiringTodayCard: {
+    borderColor: ShopColors.error || '#D32F2F',
+    borderWidth: 2,
   },
-  promotionContent: {
-    padding: 16,
+  urgentBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: ShopColors.error || '#D32F2F',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 6,
+  },
+  urgentText: {
+    fontSize: 12,
+    fontFamily: 'Poppins-Bold',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
   },
   promotionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    padding: 16,
+    paddingBottom: 12,
+  },
+  promotionTitleContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    flex: 1,
+    marginRight: 8,
+    gap: 8,
   },
-  promotionBadge: {
-    backgroundColor: ShopColors.accent,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  promotionBadgeText: {
-    fontSize: 10,
-    fontFamily: 'Poppins-Bold',
-    color: '#FFFFFF',
-  },
-  promotionExpiry: {
-    fontSize: 12,
-    fontFamily: 'Poppins-Regular',
-    color: ShopColors.textSecondary,
+  promotionIconContainer: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: (ShopColors.accent || '#007AFF') + '20',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   promotionTitle: {
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
-    color: ShopColors.textPrimary,
-    marginBottom: 4,
+    color: ShopColors.textPrimary || '#1A1A1A',
+    flex: 1,
+  },
+  discountBadge: {
+    backgroundColor: ShopColors.error || '#D32F2F',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+  },
+  discountText: {
+    fontSize: 11,
+    fontFamily: 'Poppins-Bold',
+    color: '#FFFFFF',
+  },
+  promotionImageContainer: {
+    // Full width image container
+  },
+  promotionImage: {
+    width: '100%',
+    height: 150,
   },
   promotionDescription: {
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
-    color: ShopColors.textSecondary,
+    color: ShopColors.textPrimary || '#333333',
     lineHeight: 20,
-    marginBottom: 8,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 12,
   },
-  promotionTerms: {
-    fontSize: 11,
+  promotionDetails: {
+    borderTopWidth: 1,
+    borderTopColor: ShopColors.border || '#E0E0E0',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 10,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  validityContainer: {
+    flex: 1,
+  },
+  detailText: {
+    fontSize: 13,
     fontFamily: 'Poppins-Regular',
-    color: ShopColors.textSecondary,
-    fontStyle: 'italic',
+    color: ShopColors.textSecondary || '#555555',
+    lineHeight: 18,
+  },
+  daysRemainingText: {
+    fontSize: 12,
+    fontFamily: 'Poppins-SemiBold',
+    marginTop: 4,
+  },
+  expiringSoonText: {
+    color: ShopColors.warning || '#FFA000',
+  },
+  expiringTodayText: {
+    color: ShopColors.error || '#D32F2F',
   },
 });
 

@@ -59,52 +59,29 @@ const ShopDetailContactInfo: React.FC<ShopDetailContactInfoProps> = ({
     }
   };
 
-  const getSocialColor = (platform: keyof ShopSocialLinks) => {
-    switch (platform) {
-      case 'facebook': return '#1877F2';
-      case 'instagram': return '#E4405F';
-      case 'twitter': return '#1DA1F2';
-      case 'tiktok': return '#000000';
-      case 'website': return ShopColors.accent;
-      default: return ShopColors.textSecondary;
-    }
-  };
-
-  const getSocialLabel = (platform: keyof ShopSocialLinks) => {
-    return platform.charAt(0).toUpperCase() + platform.slice(1);
-  };
-
   return (
     <View style={styles.container}>
-      {/* Contact Items */}
-      {location && (
-        <TouchableOpacity style={styles.contactItem} onPress={onDirectionsPress}>
-          <Ionicons name="location" size={20} color={ShopColors.accent} />
-          <Text style={styles.contactText}>{location}</Text>
-          <Ionicons name="chevron-forward" size={16} color={ShopColors.textSecondary} />
-        </TouchableOpacity>
-      )}
-
+      {/* Contact rows - Clean design */}
       {contact && (
-        <TouchableOpacity style={styles.contactItem} onPress={handleCall}>
-          <Ionicons name="call" size={20} color={ShopColors.accent} />
+        <TouchableOpacity style={styles.contactRow} onPress={handleCall}>
+          <Ionicons name="call-outline" size={18} color={ShopColors.textSecondary} />
           <Text style={styles.contactText}>{contact}</Text>
           <Ionicons name="chevron-forward" size={16} color={ShopColors.textSecondary} />
         </TouchableOpacity>
       )}
 
       {email && (
-        <TouchableOpacity style={styles.contactItem} onPress={handleEmail}>
-          <Ionicons name="mail" size={20} color={ShopColors.accent} />
+        <TouchableOpacity style={styles.contactRow} onPress={handleEmail}>
+          <Ionicons name="mail-outline" size={18} color={ShopColors.textSecondary} />
           <Text style={styles.contactText}>{email}</Text>
           <Ionicons name="chevron-forward" size={16} color={ShopColors.textSecondary} />
         </TouchableOpacity>
       )}
 
-      {/* Social Links */}
+      {/* Social Links - Moved up before location */}
       {socialLinks && Object.keys(socialLinks).length > 0 && (
         <View style={styles.socialSection}>
-          <Text style={styles.socialSectionTitle}>Follow Us</Text>
+          <Text style={styles.socialTitle}>Follow</Text>
           <View style={styles.socialLinks}>
             {Object.entries(socialLinks).map(([platform, url]) => {
               if (!url) return null;
@@ -116,19 +93,35 @@ const ShopDetailContactInfo: React.FC<ShopDetailContactInfoProps> = ({
                   key={platform}
                   style={styles.socialButton}
                   onPress={() => handleSocialPress(url, platform)}
-                  activeOpacity={0.7}
                 >
                   <Ionicons 
                     name={getSocialIcon(platformKey) as any} 
-                    size={24} 
-                    color={getSocialColor(platformKey)} 
+                    size={20} 
+                    color={ShopColors.accent} 
                   />
                   <Text style={styles.socialButtonText}>
-                    {getSocialLabel(platformKey)}
+                    {platform.charAt(0).toUpperCase() + platform.slice(1)}
                   </Text>
                 </TouchableOpacity>
               );
             })}
+          </View>
+        </View>
+      )}
+
+      {/* Location section - Now at the bottom, will be followed by map */}
+      {location && (
+        <View style={styles.locationSection}>
+          <View style={styles.locationHeader}>
+            <Ionicons name="location" size={18} color={ShopColors.accent} />
+            <Text style={styles.locationLabel}>Location</Text>
+          </View>
+          <View style={styles.addressContainer}>
+            <Text style={styles.addressText}>{location}</Text>
+            <TouchableOpacity style={styles.directionsButton} onPress={onDirectionsPress}>
+              <Ionicons name="navigate" size={16} color={ShopColors.accent} />
+              <Text style={styles.directionsText}>Get Directions</Text>
+            </TouchableOpacity>
           </View>
         </View>
       )}
@@ -138,61 +131,97 @@ const ShopDetailContactInfo: React.FC<ShopDetailContactInfoProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 8,
+    gap: 16,
   },
-  contactItem: {
+  
+  // Clean contact rows
+  contactRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: ShopColors.border,
+    gap: 12,
   },
   contactText: {
     flex: 1,
     fontSize: 15,
     fontFamily: 'Poppins-Regular',
     color: ShopColors.textPrimary,
-    marginLeft: 12,
   },
+  
+  // Social section - now before location
   socialSection: {
-    paddingTop: 16,
+    marginTop: 8,
   },
-  socialSectionTitle: {
+  socialTitle: {
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
     color: ShopColors.textPrimary,
-    paddingHorizontal: 20,
     marginBottom: 12,
   },
   socialLinks: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    gap: 12,
     flexWrap: 'wrap',
+    gap: 12,
   },
   socialButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: ShopColors.cardBackground,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: ShopColors.border,
-    gap: 8,
-    minWidth: 100,
-    elevation: 1,
-    shadowColor: ShopColors.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
+    gap: 6,
   },
   socialButtonText: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: 'Poppins-Medium',
     color: ShopColors.textPrimary,
+  },
+  
+  // Location section with icon header
+  locationSection: {
+    marginTop: 8,
+  },
+  locationHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  locationLabel: {
+    flex: 1,
+    fontSize: 18,
+    fontFamily: 'Poppins-SemiBold',
+    color: ShopColors.textPrimary,
+  },
+  addressContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  addressText: {
+    flex: 1,
+    fontSize: 15,
+    fontFamily: 'Poppins-Regular',
+    color: ShopColors.textPrimary,
+    lineHeight: 22,
+  },
+  directionsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: ShopColors.accent,
+    gap: 6,
+  },
+  directionsText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-SemiBold',
+    color: ShopColors.accent,
   },
 });
 

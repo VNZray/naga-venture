@@ -1,32 +1,36 @@
 import { ShopColors } from '@/constants/ShopColors';
-import type { ShopData, MenuItem } from '@/types/shop';
+import type { MenuItem, ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
+  Animated,
+  Dimensions,
   Image,
+  Linking,
+  Modal,
+  Platform,
+  Share,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Dimensions,
-  ActivityIndicator,
-  Linking,
-  Platform,
-  Share,
-  Modal,
-  Alert,
-  Animated,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 
 // Import our organism components
 import {
-  ShopDetailMenuSection,
   ShopDetailInfoSection,
-  ShopDetailReviewsSection,
+  ShopDetailMenuSection,
   ShopDetailPhotosSection,
+  ShopDetailPromotionsSection,
+  ShopDetailReviewsSection,
 } from './details/sections';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -41,49 +45,33 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
   // State Management
   const [shop] = useState<ShopData | null>(initialShopData);
   const [isLoading] = useState(!initialShopData);
-  const [isFavorited, setIsFavorited] = useState(initialShopData?.isFavorited || false);
+  const [isFavorited, setIsFavorited] = useState(
+    initialShopData?.isFavorited || false
+  );
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(null);
-  
+  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(
+    null
+  );
+
   // Tab Navigation State
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: 'menu', title: 'Offerings' },
+    { key: 'menu', title: 'Offers' },
+    { key: 'promotions', title: 'Promos' },
     { key: 'info', title: 'Info' },
     { key: 'reviews', title: 'Reviews' },
     { key: 'photos', title: 'Photos' },
   ]);
 
+  // Get safe area insets for proper spacing
+  const insets = useSafeAreaInsets();
+
   // Animated Values for Smooth Scrolling
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  // Computed Values
-  const isOpen = useMemo(() => {
-    if (!shop?.businessHours || shop.isOpen === undefined) return shop?.isOpen ?? true;
-    
-    const now = new Date();
-    // Fixed day format as per user's suggestion
-    const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof shop.businessHours;
-    const currentTime = now.getHours() * 100 + now.getMinutes();
-    
-    const todayHours = shop.businessHours[currentDay];
-    if (todayHours?.isClosed) return false;
-    
-    if (todayHours?.open && todayHours?.close) {
-      const openTime = parseInt(todayHours.open.replace(':', ''));
-      const closeTime = parseInt(todayHours.close.replace(':', ''));
-      return currentTime >= openTime && currentTime <= closeTime;
-    }
-    
-    return shop.isOpen ?? true;
-  }, [shop]);
-
-  const shopStatus = useMemo(() => {
-    if (!shop) return { text: 'Unknown', color: ShopColors.textSecondary, isOpen: false };
-    return isOpen
-      ? { text: 'Open', color: ShopColors.success, isOpen: true }
-      : { text: 'Closed', color: ShopColors.error, isOpen: false };
-  }, [shop, isOpen]);
+  // Track collapsed header visibility
+  const [isCollapsedHeaderVisible, setIsCollapsedHeaderVisible] =
+    useState(false);
 
   // Event Handlers
   const handleFavoriteToggle = useCallback(() => {
@@ -95,7 +83,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
 
   const handleShare = useCallback(async () => {
     if (!shop) return;
-    
+
     try {
       await Share.share({
         message: `Check out ${shop.name} on Naga Venture! ${shop.tagline || ''}`,
@@ -108,7 +96,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
 
   const handleCall = useCallback(() => {
     if (!shop?.contact) return;
-    
+
     const phoneNumber = shop.contact.replace(/[^0-9+]/g, '');
     Linking.openURL(`tel:${phoneNumber}`).catch(() => {
       Alert.alert('Error', 'Unable to make call');
@@ -117,13 +105,13 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
 
   const handleDirections = useCallback(() => {
     if (!shop?.mapLocation) return;
-    
+
     const { latitude, longitude } = shop.mapLocation;
     const url = Platform.select({
       ios: `maps:${latitude},${longitude}`,
       android: `geo:${latitude},${longitude}`,
     });
-    
+
     if (url) {
       Linking.openURL(url).catch(() => {
         Alert.alert('Error', 'Unable to open maps');
@@ -169,19 +157,54 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
     extrapolate: 'clamp',
   });
 
+  // Handle scroll to track collapsed header visibility
+  const handleScroll = Animated.event(
+    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+    {
+      useNativeDriver: false,
+      listener: (event: any) => {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        setIsCollapsedHeaderVisible(offsetY > HERO_HEIGHT - 100);
+      },
+    }
+  );
+
   // Tab Content Renderers
   const renderTabContent = () => {
     if (!shop) return null;
 
     switch (index) {
       case 0:
-        return <ShopDetailMenuSection shop={shop} onMenuItemPress={handleMenuItemPress} />;
+        return (
+          <ShopDetailMenuSection
+            shop={shop}
+            onMenuItemPress={handleMenuItemPress}
+          />
+        );
       case 1:
-        return <ShopDetailInfoSection shop={shop} onDirectionsPress={handleDirections} />;
+        return <ShopDetailPromotionsSection shop={shop} />; // NEW TAB CONTENT
       case 2:
-        return <ShopDetailReviewsSection shop={shop} onImagePress={handleImagePress} onHelpfulPress={handleReviewHelpful} />;
+        return (
+          <ShopDetailInfoSection
+            shop={shop}
+            onDirectionsPress={handleDirections}
+          />
+        );
       case 3:
-        return <ShopDetailPhotosSection shop={shop} onImagePress={handleImagePress} />;
+        return (
+          <ShopDetailReviewsSection
+            shop={shop}
+            onImagePress={handleImagePress}
+            onHelpfulPress={handleReviewHelpful}
+          />
+        );
+      case 4:
+        return (
+          <ShopDetailPhotosSection
+            shop={shop}
+            onImagePress={handleImagePress}
+          />
+        );
       default:
         return null;
     }
@@ -204,12 +227,19 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.notFoundContainer}>
-          <Ionicons name="storefront-outline" size={60} color={ShopColors.textSecondary} />
+          <Ionicons
+            name="storefront-outline"
+            size={60}
+            color={ShopColors.textSecondary}
+          />
           <Text style={styles.notFoundTitle}>Shop Not Found</Text>
           <Text style={styles.notFoundText}>
             The shop you are looking for does not exist or could not be loaded.
           </Text>
-          <TouchableOpacity onPress={() => router.back()} style={styles.goBackButton}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.goBackButton}
+          >
             <Text style={styles.goBackButtonText}>Go Back</Text>
           </TouchableOpacity>
         </View>
@@ -224,45 +254,24 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
       <Animated.ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
+        onScroll={handleScroll}
         scrollEventThrottle={16}
         bounces={false}
       >
         {/* Hero Section */}
         <View style={styles.heroContainer}>
-          <Image 
-            source={{ uri: shop.coverImage || shop.image }} 
-            style={styles.heroImage} 
-            resizeMode="cover" 
+          <Image
+            source={{ uri: shop.coverImage || shop.image }}
+            style={styles.heroImage}
+            resizeMode="cover"
           />
-          
-          {/* Status Overlay for Closed Shops */}
-          {!shopStatus.isOpen && (
-            <View style={styles.statusOverlay}>
-              <LinearGradient
-                colors={['rgba(0,0,0,0.3)', 'rgba(0,0,0,0.7)']}
-                style={styles.statusOverlayGradient}
-              >
-                <Text style={styles.statusOverlayText}>CLOSED</Text>
-                <Text style={styles.statusOverlaySubtext}>
-                  {shop.temporaryHours || 'See business hours in info tab'}
-                </Text>
-              </LinearGradient>
-            </View>
-          )}
 
-          {/* Shop Info Overlay */}
+          {/* Shop Info Overlay - LOGO REMOVED */}
           <LinearGradient
             colors={['transparent', 'rgba(0,0,0,0.8)']}
             style={styles.shopInfoOverlay}
           >
             <View style={styles.shopMainInfo}>
-              {shop.logo && (
-                <Image source={{ uri: shop.logo }} style={styles.shopLogo} />
-              )}
               <View style={styles.shopTitleContainer}>
                 <Text style={styles.shopName}>{shop.name}</Text>
                 {shop.tagline && (
@@ -278,18 +287,15 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
                   {shop.rating.toFixed(1)} ({shop.ratingCount})
                 </Text>
               </View>
-              
+
               {shop.distance && (
                 <View style={styles.metric}>
                   <Ionicons name="location" size={16} color="#FFFFFF" />
-                  <Text style={styles.metricText}>{shop.distance.toFixed(1)} km</Text>
+                  <Text style={styles.metricText}>
+                    {shop.distance.toFixed(1)} km
+                  </Text>
                 </View>
               )}
-              
-              <View style={[styles.metric, styles.statusMetric]}>
-                <View style={[styles.statusDot, { backgroundColor: shopStatus.color }]} />
-                <Text style={styles.metricText}>{shopStatus.text}</Text>
-              </View>
             </View>
           </LinearGradient>
         </View>
@@ -297,27 +303,39 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
         {/* Quick Actions Bar - Only in ScrollView */}
         <View style={styles.quickActionsBar}>
           {shop.contact && (
-            <TouchableOpacity style={styles.quickActionButton} onPress={handleCall}>
+            <TouchableOpacity
+              style={styles.quickActionButton}
+              onPress={handleCall}
+            >
               <Ionicons name="call" size={20} color={ShopColors.accent} />
               <Text style={styles.quickActionText}>Call</Text>
             </TouchableOpacity>
           )}
-          
+
           {shop.mapLocation && (
-            <TouchableOpacity style={styles.quickActionButton} onPress={handleDirections}>
+            <TouchableOpacity
+              style={styles.quickActionButton}
+              onPress={handleDirections}
+            >
               <Ionicons name="navigate" size={20} color={ShopColors.accent} />
               <Text style={styles.quickActionText}>Directions</Text>
             </TouchableOpacity>
           )}
-          
+
           {shop.socialLinks?.website && (
-            <TouchableOpacity style={styles.quickActionButton} onPress={handleWebsite}>
+            <TouchableOpacity
+              style={styles.quickActionButton}
+              onPress={handleWebsite}
+            >
               <Ionicons name="globe" size={20} color={ShopColors.accent} />
               <Text style={styles.quickActionText}>Website</Text>
             </TouchableOpacity>
           )}
-          
-          <TouchableOpacity style={styles.quickActionButton} onPress={handleShare}>
+
+          <TouchableOpacity
+            style={styles.quickActionButton}
+            onPress={handleShare}
+          >
             <Ionicons name="share-social" size={20} color={ShopColors.accent} />
             <Text style={styles.quickActionText}>Share</Text>
           </TouchableOpacity>
@@ -328,16 +346,15 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
           {routes.map((route, i) => (
             <TouchableOpacity
               key={route.key}
-              style={[
-                styles.tabButton,
-                index === i && styles.tabButtonActive
-              ]}
+              style={[styles.tabButton, index === i && styles.tabButtonActive]}
               onPress={() => setIndex(i)}
             >
-              <Text style={[
-                styles.tabButtonText,
-                index === i && styles.tabButtonTextActive
-              ]}>
+              <Text
+                style={[
+                  styles.tabButtonText,
+                  index === i && styles.tabButtonTextActive,
+                ]}
+              >
                 {route.title}
               </Text>
             </TouchableOpacity>
@@ -345,64 +362,94 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
         </View>
 
         {/* Tab Content */}
-        <View style={styles.tabContent}>
-          {renderTabContent()}
-        </View>
+        <View style={styles.tabContent}>{renderTabContent()}</View>
       </Animated.ScrollView>
 
       {/* Fixed Header Actions (Always Visible on Hero) */}
-      <Animated.View style={[styles.fixedHeaderActions, { opacity: headerOpacity }]}>
-        <TouchableOpacity style={styles.headerButton} onPress={() => router.back()}>
+      <Animated.View
+        style={[
+          styles.fixedHeaderActions,
+          {
+            opacity: headerOpacity,
+            top: insets.top + 10,
+          },
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.headerButton}
+          onPress={() => router.back()}
+        >
           <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        
+
         <View style={styles.headerRightActions}>
           <TouchableOpacity style={styles.headerButton} onPress={handleShare}>
             <Ionicons name="share-outline" size={24} color="#FFFFFF" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.headerButton} onPress={handleFavoriteToggle}>
-            <Ionicons 
-              name={isFavorited ? 'heart' : 'heart-outline'} 
-              size={24} 
-              color={isFavorited ? ShopColors.error : '#FFFFFF'} 
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={handleFavoriteToggle}
+          >
+            <Ionicons
+              name={isFavorited ? 'heart' : 'heart-outline'}
+              size={24}
+              color={isFavorited ? ShopColors.error : '#FFFFFF'}
             />
           </TouchableOpacity>
         </View>
       </Animated.View>
 
-      {/* Collapsed Header - z-index 15 */}
-      <Animated.View 
+      {/* Collapsed Header - FIXED ERROR AND REMOVED LOGO */}
+      <Animated.View
         style={[
           styles.collapsedHeader,
           {
             opacity: collapsedHeaderOpacity,
-            transform: [{ translateY: collapsedHeaderTranslateY }]
-          }
+            transform: [{ translateY: collapsedHeaderTranslateY }],
+          },
         ]}
-        pointerEvents={collapsedHeaderOpacity._value > 0.5 ? 'auto' : 'none'}
+        pointerEvents={isCollapsedHeaderVisible ? 'auto' : 'none'}
       >
         <SafeAreaView edges={['top']} style={styles.collapsedHeaderSafeArea}>
           <View style={styles.collapsedHeaderContent}>
-            <TouchableOpacity style={styles.collapsedBackButton} onPress={() => router.back()}>
-              <Ionicons name="arrow-back" size={24} color={ShopColors.textPrimary} />
+            <TouchableOpacity
+              style={styles.collapsedBackButton}
+              onPress={() => router.back()}
+            >
+              <Ionicons
+                name="arrow-back"
+                size={24}
+                color={ShopColors.textPrimary}
+              />
             </TouchableOpacity>
-            
+
             <View style={styles.collapsedShopInfo}>
-              {shop.logo && (
-                <Image source={{ uri: shop.logo }} style={styles.collapsedShopLogo} />
-              )}
-              <Text style={styles.collapsedShopName} numberOfLines={1}>{shop.name}</Text>
+              <Text style={styles.collapsedShopName} numberOfLines={1}>
+                {shop.name}
+              </Text>
             </View>
-            
+
             <View style={styles.collapsedActions}>
-              <TouchableOpacity style={styles.collapsedActionButton} onPress={handleShare}>
-                <Ionicons name="share-outline" size={20} color={ShopColors.textSecondary} />
+              <TouchableOpacity
+                style={styles.collapsedActionButton}
+                onPress={handleShare}
+              >
+                <Ionicons
+                  name="share-outline"
+                  size={20}
+                  color={ShopColors.textSecondary}
+                />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.collapsedActionButton} onPress={handleFavoriteToggle}>
-                <Ionicons 
-                  name={isFavorited ? 'heart' : 'heart-outline'} 
-                  size={20} 
-                  color={isFavorited ? ShopColors.error : ShopColors.textSecondary} 
+              <TouchableOpacity
+                style={styles.collapsedActionButton}
+                onPress={handleFavoriteToggle}
+              >
+                <Ionicons
+                  name={isFavorited ? 'heart' : 'heart-outline'}
+                  size={20}
+                  color={
+                    isFavorited ? ShopColors.error : ShopColors.textSecondary
+                  }
                 />
               </TouchableOpacity>
             </View>
@@ -418,15 +465,15 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
         onRequestClose={() => setSelectedImage(null)}
       >
         <View style={styles.imageModalContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.imageModalClose}
             onPress={() => setSelectedImage(null)}
           >
             <Ionicons name="close" size={32} color="#FFFFFF" />
           </TouchableOpacity>
           {selectedImage && (
-            <Image 
-              source={{ uri: selectedImage }} 
+            <Image
+              source={{ uri: selectedImage }}
               style={styles.imageModalImage}
               resizeMode="contain"
             />
@@ -442,24 +489,28 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
       >
         <View style={styles.menuModalContainer}>
           <View style={styles.menuModalContent}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.menuModalClose}
               onPress={() => setSelectedMenuItem(null)}
             >
               <Ionicons name="close" size={24} color={ShopColors.textPrimary} />
             </TouchableOpacity>
-            
+
             {selectedMenuItem && (
               <>
                 {selectedMenuItem.image && (
-                  <Image 
-                    source={{ uri: selectedMenuItem.image }} 
+                  <Image
+                    source={{ uri: selectedMenuItem.image }}
                     style={styles.menuModalImage}
                   />
                 )}
                 <View style={styles.menuModalInfo}>
-                  <Text style={styles.menuModalName}>{selectedMenuItem.item}</Text>
-                  <Text style={styles.menuModalPrice}>{selectedMenuItem.price}</Text>
+                  <Text style={styles.menuModalName}>
+                    {selectedMenuItem.item}
+                  </Text>
+                  <Text style={styles.menuModalPrice}>
+                    {selectedMenuItem.price}
+                  </Text>
                   {selectedMenuItem.description && (
                     <Text style={styles.menuModalDescription}>
                       {selectedMenuItem.description}
@@ -480,12 +531,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: ShopColors.background,
   },
-  
+
   // Main Scroll View
   scrollView: {
     flex: 1,
   },
-  
+
   // Hero Section
   heroContainer: {
     height: HERO_HEIGHT,
@@ -494,29 +545,6 @@ const styles = StyleSheet.create({
   heroImage: {
     width: '100%',
     height: '100%',
-  },
-  statusOverlay: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  statusOverlayGradient: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  statusOverlayText: {
-    color: '#FFFFFF',
-    fontSize: 28,
-    fontFamily: 'Poppins-Bold',
-    letterSpacing: 2,
-    textAlign: 'center',
-  },
-  statusOverlaySubtext: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    textAlign: 'center',
-    marginTop: 8,
-    opacity: 0.9,
   },
   shopInfoOverlay: {
     position: 'absolute',
@@ -527,31 +555,22 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   shopMainInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: 12,
-  },
-  shopLogo: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 12,
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
   },
   shopTitleContainer: {
     flex: 1,
   },
   shopName: {
-    fontSize: 24,
+    fontSize: 28, // Increased font size since no logo
     fontFamily: 'Poppins-Bold',
     color: '#FFFFFF',
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
+    marginBottom: 4,
   },
   shopTagline: {
-    fontSize: 14,
+    fontSize: 16, // Increased font size since no logo
     fontFamily: 'Poppins-Regular',
     color: '#FFFFFF',
     opacity: 0.9,
@@ -577,22 +596,10 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
-  statusMetric: {
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  statusDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
 
-  // Fixed Header Actions (Always Visible on Hero)
+  // Fixed Header Actions
   fixedHeaderActions: {
     position: 'absolute',
-    top: Platform.OS === 'ios' ? 50 : 30,
     left: 0,
     right: 0,
     flexDirection: 'row',
@@ -602,16 +609,21 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   headerButton: {
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    borderRadius: 20,
-    padding: 8,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 22,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   headerRightActions: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 10,
   },
 
-  // Quick Actions Bar (Only in ScrollView)
+  // Quick Actions Bar
   quickActionsBar: {
     flexDirection: 'row',
     backgroundColor: ShopColors.cardBackground,
@@ -632,7 +644,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  // Tab Navigation (In ScrollView)
+  // Tab Navigation
   tabNavigation: {
     flexDirection: 'row',
     backgroundColor: ShopColors.cardBackground,
@@ -665,7 +677,7 @@ const styles = StyleSheet.create({
     backgroundColor: ShopColors.background,
   },
 
-  // Collapsed Header - z-index 15 (HIGHEST)
+  // Collapsed Header - LOGO REMOVED
   collapsedHeader: {
     position: 'absolute',
     top: 0,
@@ -674,8 +686,8 @@ const styles = StyleSheet.create({
     backgroundColor: ShopColors.cardBackground,
     borderBottomWidth: 1,
     borderBottomColor: ShopColors.border,
-    zIndex: 15, // Highest z-index
-    elevation: 10, // Higher elevation for Android
+    zIndex: 15,
+    elevation: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
@@ -697,20 +709,12 @@ const styles = StyleSheet.create({
   },
   collapsedShopInfo: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  collapsedShopLogo: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    marginRight: 12,
+    justifyContent: 'center',
   },
   collapsedShopName: {
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
     color: ShopColors.textPrimary,
-    flex: 1,
   },
   collapsedActions: {
     flexDirection: 'row',
@@ -766,7 +770,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 
-  // Modals (unchanged)
+  // Modals
   imageModalContainer: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.9)',

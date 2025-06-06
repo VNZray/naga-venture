@@ -1,13 +1,15 @@
-import React, { useState, useCallback } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { ShopColors } from '@/constants/ShopColors';
 import type { ShopData } from '@/types/shop';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  ShopDetailContactInfo,
-  ShopDetailBusinessHours,
   ShopDetailAmenityGrid,
-  ShopDetailPromotionCard,
+  ShopDetailBusinessHours,
+  ShopDetailContactInfo,
+  ShopDetailMapPreview,
 } from '../elements';
 
 interface ShopDetailInfoSectionProps {
@@ -17,193 +19,241 @@ interface ShopDetailInfoSectionProps {
 
 const ShopDetailInfoSection: React.FC<ShopDetailInfoSectionProps> = ({
   shop,
-  onDirectionsPress
+  onDirectionsPress,
 }) => {
-  const [expandedSection, setExpandedSection] = useState<string | null>('about');
+  const insets = useSafeAreaInsets();
 
-  const toggleSection = useCallback((section: string) => {
-    setExpandedSection(expandedSection === section ? null : section);
-  }, [expandedSection]);
+  const getCurrentDayStatus = () => {
+    if (!shop.businessHours) return null;
 
-  const renderExpandableSection = (
-    title: string,
-    sectionKey: string,
-    content: React.ReactNode,
-    icon: string,
-    itemCount?: number
-  ) => {
-    const isExpanded = expandedSection === sectionKey;
-    
-    return (
-      <View style={styles.expandableSection}>
-        <TouchableOpacity
-          style={styles.sectionHeader}
-          onPress={() => toggleSection(sectionKey)}
-          activeOpacity={0.7}
-        >
-          <View style={styles.sectionHeaderLeft}>
-            <Ionicons name={icon as any} size={20} color={ShopColors.accent} />
-            <Text style={styles.sectionTitle}>{title}</Text>
-            {itemCount !== undefined && (
-              <View style={styles.itemCountBadge}>
-                <Text style={styles.itemCountText}>{itemCount}</Text>
-              </View>
-            )}
-          </View>
-          <Ionicons
-            name={isExpanded ? "chevron-up" : "chevron-down"}
-            size={20}
-            color={ShopColors.textSecondary}
-          />
-        </TouchableOpacity>
-        
-        {isExpanded && (
-          <View style={styles.sectionContent}>
-            {content}
-          </View>
-        )}
-      </View>
-    );
+    const today = new Date()
+      .toLocaleDateString('en-US', { weekday: 'long' })
+      .toLowerCase();
+    const todayHours =
+      shop.businessHours[today as keyof typeof shop.businessHours];
+
+    if (!todayHours) return null;
+
+    if (todayHours.isClosed) {
+      return { text: 'Closed Today', isOpen: false };
+    }
+
+    const now = new Date();
+    const currentTime = now.getHours() * 100 + now.getMinutes();
+    const openTime = parseInt(todayHours.open.replace(':', ''));
+    const closeTime = parseInt(todayHours.close.replace(':', ''));
+
+    const isCurrentlyOpen = currentTime >= openTime && currentTime <= closeTime;
+
+    const formatTime = (time: string) => {
+      try {
+        const [hours, minutes] = time.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${displayHour}:${minutes} ${ampm}`;
+      } catch {
+        return time;
+      }
+    };
+
+    return {
+      text: `${formatTime(todayHours.open)} - ${formatTime(todayHours.close)}`,
+      isOpen: isCurrentlyOpen,
+      status: isCurrentlyOpen ? 'Open' : 'Closed',
+    };
   };
 
-  const renderVerificationInfo = () => {
-    if (!shop.verification?.isVerified) return null;
-
-    return (
-      <View style={styles.verificationContainer}>
-        <View style={styles.verificationHeader}>
-          <View style={styles.verifiedMainBadge}>
-            <Ionicons name="checkmark-circle" size={20} color={ShopColors.success} />
-            <Text style={styles.verifiedMainText}>Verified Business</Text>
-          </View>
-        </View>
-
-        {shop.verification.verificationBadges && shop.verification.verificationBadges.length > 0 && (
-          <View style={styles.verificationBadges}>
-            {shop.verification.verificationBadges.map((badge, index) => (
-              <View key={index} style={styles.verificationBadge}>
-                <Ionicons name="ribbon" size={12} color={ShopColors.accent} />
-                <Text style={styles.verificationBadgeText}>{badge}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        {shop.stats && (
-          <View style={styles.trustMetrics}>
-            {shop.stats.responseRate && (
-              <View style={styles.trustMetric}>
-                <Text style={styles.trustMetricValue}>{shop.stats.responseRate}%</Text>
-                <Text style={styles.trustMetricLabel}>Response Rate</Text>
-              </View>
-            )}
-            {shop.stats.averageResponseTime && (
-              <View style={styles.trustMetric}>
-                <Text style={styles.trustMetricValue}>{shop.stats.averageResponseTime}</Text>
-                <Text style={styles.trustMetricLabel}>Response Time</Text>
-              </View>
-            )}
-            {shop.stats.viewCount && (
-              <View style={styles.trustMetric}>
-                <Text style={styles.trustMetricValue}>{shop.stats.viewCount.toLocaleString()}</Text>
-                <Text style={styles.trustMetricLabel}>Profile Views</Text>
-              </View>
-            )}
-          </View>
-        )}
-      </View>
-    );
+  const handleMapPress = () => {
+    router.push('/TouristApp/(tabs)/maps');
   };
+
+  const currentStatus = getCurrentDayStatus();
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* About Section */}
-      {renderExpandableSection(
-        'About This Business',
-        'about',
-        <Text style={styles.aboutText}>
-          {shop.story || shop.description || 'No description available.'}
-        </Text>,
-        'information-circle-outline'
-      )}
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[
+        styles.contentContainer,
+        { paddingBottom: Math.max(insets.bottom + 80, 100) }, // 80px for tab bar + safe area
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* 1. Contact & Location - PRIORITY #1 */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="call" size={20} color={ShopColors.accent} />
+          <Text style={styles.sectionTitle}>Contact & Location</Text>
+        </View>
 
-      {/* Contact & Location Section */}
-      {renderExpandableSection(
-        'Contact & Location',
-        'contact',
         <ShopDetailContactInfo
           location={shop.location}
           contact={shop.contact}
           email={shop.email}
           socialLinks={shop.socialLinks}
           onDirectionsPress={onDirectionsPress}
-        />,
-        'location-outline'
-      )}
+        />
 
-      {/* Business Hours Section */}
-      {shop.businessHours && renderExpandableSection(
-        'Business Hours',
-        'hours',
-        <ShopDetailBusinessHours businessHours={shop.businessHours} />,
-        'time-outline'
-      )}
-
-      {/* Amenities Section */}
-      {shop.amenities && shop.amenities.length > 0 && renderExpandableSection(
-        'Amenities & Features',
-        'amenities',
-        <ShopDetailAmenityGrid amenities={shop.amenities} />,
-        'list-outline',
-        shop.amenities.length
-      )}
-
-      {/* Promotions Section */}
-      {shop.promotions && shop.promotions.filter(p => p.isActive).length > 0 && renderExpandableSection(
-        'Current Promotions',
-        'promotions',
-        <View style={styles.promotionsContainer}>
-          {shop.promotions.filter(p => p.isActive).map(promotion => (
-            <ShopDetailPromotionCard key={promotion.id} promotion={promotion} />
-          ))}
-        </View>,
-        'pricetag-outline',
-        shop.promotions.filter(p => p.isActive).length
-      )}
-
-      {/* Verification & Trust Section */}
-      {shop.verification?.isVerified && renderExpandableSection(
-        'Verification & Trust',
-        'verification',
-        renderVerificationInfo(),
-        'shield-checkmark-outline'
-      )}
-
-      {/* Business Information Summary */}
-      <View style={styles.businessSummary}>
-        <View style={styles.summaryItem}>
-          <Ionicons name="calendar" size={16} color={ShopColors.textSecondary} />
-          <Text style={styles.summaryText}>
-            Established {shop.stats?.viewCount ? 'Recently' : 'Business'}
-          </Text>
-        </View>
-        
-        {shop.category && (
-          <View style={styles.summaryItem}>
-            <Ionicons name="storefront" size={16} color={ShopColors.textSecondary} />
-            <Text style={styles.summaryText}>
-              {shop.category.charAt(0).toUpperCase() + shop.category.slice(1)} Business
-            </Text>
-          </View>
-        )}
-        
-        {shop.priceRange && (
-          <View style={styles.summaryItem}>
-            <Ionicons name="card" size={16} color={ShopColors.textSecondary} />
-            <Text style={styles.summaryText}>Price Range: {shop.priceRange}</Text>
+        {/* Map Preview - Right under contact info */}
+        {shop.mapLocation && (
+          <View style={styles.mapContainer}>
+            <ShopDetailMapPreview shop={shop} onPress={handleMapPress} />
           </View>
         )}
       </View>
+
+      {/* 2. Hours & Status - PRIORITY #2 */}
+      {shop.businessHours && (
+        <>
+          <View style={styles.separator} />
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="time" size={20} color={ShopColors.accent} />
+              <Text style={styles.sectionTitle}>Hours</Text>
+              {currentStatus && (
+                <View style={styles.statusBadge}>
+                  <View
+                    style={[
+                      styles.statusDot,
+                      {
+                        backgroundColor: currentStatus.isOpen
+                          ? ShopColors.success
+                          : ShopColors.error,
+                      },
+                    ]}
+                  />
+                  <Text
+                    style={[
+                      styles.statusText,
+                      {
+                        color: currentStatus.isOpen
+                          ? ShopColors.success
+                          : ShopColors.error,
+                      },
+                    ]}
+                  >
+                    {currentStatus.status}
+                  </Text>
+                </View>
+              )}
+            </View>
+            <ShopDetailBusinessHours businessHours={shop.businessHours} />
+          </View>
+        </>
+      )}
+
+      {/* 3. Key Amenities - PRIORITY #3 */}
+      {shop.amenities && shop.amenities.length > 0 && (
+        <>
+          <View style={styles.separator} />
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons
+                name="checkmark-circle"
+                size={20}
+                color={ShopColors.accent}
+              />
+              <Text style={styles.sectionTitle}>Amenities</Text>
+              <Text style={styles.sectionCounter}>
+                {shop.amenities.filter((a) => a.available).length}/
+                {shop.amenities.length}
+              </Text>
+            </View>
+            <ShopDetailAmenityGrid amenities={shop.amenities} />
+          </View>
+        </>
+      )}
+
+      {/* 4. About - PRIORITY #4 */}
+      {(shop.description || shop.story) && (
+        <>
+          <View style={styles.separator} />
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons
+                name="information-circle"
+                size={20}
+                color={ShopColors.accent}
+              />
+              <Text style={styles.sectionTitle}>About</Text>
+            </View>
+            <Text style={styles.aboutText}>
+              {shop.story || shop.description}
+            </Text>
+          </View>
+        </>
+      )}
+
+      {/* 5. Business Details - PRIORITY #5 */}
+      <View style={styles.separator} />
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="storefront" size={20} color={ShopColors.accent} />
+          <Text style={styles.sectionTitle}>Details</Text>
+        </View>
+
+        <View style={styles.detailsList}>
+          {shop.category && (
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Category</Text>
+              <Text style={styles.detailValue}>
+                {shop.category.charAt(0).toUpperCase() + shop.category.slice(1)}
+              </Text>
+            </View>
+          )}
+
+          {shop.priceRange && (
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Price Range</Text>
+              <Text style={styles.detailValue}>{shop.priceRange}</Text>
+            </View>
+          )}
+
+          {shop.distance && (
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Distance</Text>
+              <Text style={styles.detailValue}>
+                {shop.distance.toFixed(1)} km away
+              </Text>
+            </View>
+          )}
+        </View>
+      </View>
+
+      {/* 6. Verification - PRIORITY #6 (Least critical) */}
+      {shop.verification?.isVerified && (
+        <>
+          <View style={styles.separator} />
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons
+                name="shield-checkmark"
+                size={20}
+                color={ShopColors.success}
+              />
+              <Text style={styles.sectionTitle}>Verified</Text>
+            </View>
+
+            <View style={styles.verificationList}>
+              <View style={styles.verifiedItem}>
+                <Ionicons
+                  name="checkmark-circle"
+                  size={16}
+                  color={ShopColors.success}
+                />
+                <Text style={styles.verifiedText}>Verified Business</Text>
+              </View>
+
+              {shop.verification.verificationBadges?.map((badge, index) => (
+                <View key={index} style={styles.verifiedItem}>
+                  <Ionicons name="ribbon" size={16} color={ShopColors.accent} />
+                  <Text style={styles.verifiedText}>{badge}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 };
@@ -213,152 +263,133 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: ShopColors.background,
   },
-  
-  // Expandable Sections
-  expandableSection: {
-    backgroundColor: ShopColors.cardBackground,
-    marginHorizontal: 16,
-    marginVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: ShopColors.border,
-    overflow: 'hidden',
+
+  contentContainer: {
+    flexGrow: 1,
   },
+
+  section: {
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+  },
+
   sectionHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    backgroundColor: ShopColors.cardBackground,
+    marginBottom: 16,
+    gap: 8,
   },
-  sectionHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: 12,
-  },
+
   sectionTitle: {
-    fontSize: 16,
+    flex: 1,
+    fontSize: 18,
     fontFamily: 'Poppins-SemiBold',
     color: ShopColors.textPrimary,
-    flex: 1,
   },
-  itemCountBadge: {
-    backgroundColor: ShopColors.accent + '20',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
-    minWidth: 24,
+
+  sectionCounter: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    color: ShopColors.textSecondary,
+  },
+
+  separator: {
+    height: 1,
+    backgroundColor: ShopColors.border,
+    marginHorizontal: 20,
+  },
+
+  // Status badge
+  statusBadge: {
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: 6,
   },
-  itemCountText: {
-    fontSize: 11,
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  statusText: {
+    fontSize: 14,
     fontFamily: 'Poppins-SemiBold',
-    color: ShopColors.accent,
   },
-  sectionContent: {
-    borderTopWidth: 1,
-    borderTopColor: ShopColors.border,
+
+  // Map container - under contact info
+  mapContainer: {
+    marginTop: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: ShopColors.border,
   },
-  
-  // About Section
+
+  // About text
   aboutText: {
     fontSize: 15,
     fontFamily: 'Poppins-Regular',
     color: ShopColors.textSecondary,
-    lineHeight: 22,
-    padding: 16,
+    lineHeight: 24,
   },
-  
-  // Promotions Container
-  promotionsContainer: {
-    paddingHorizontal: -20, // Counteract molecule's horizontal padding
+
+  // Details list
+  detailsList: {
+    gap: 16,
   },
-  
-  // Verification Section
-  verificationContainer: {
-    padding: 16,
-  },
-  verificationHeader: {
-    marginBottom: 16,
-  },
-  verifiedMainBadge: {
+  detailRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: ShopColors.success + '15',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    gap: 8,
   },
-  verifiedMainText: {
-    fontSize: 16,
+  detailLabel: {
+    fontSize: 15,
+    fontFamily: 'Poppins-Regular',
+    color: ShopColors.textSecondary,
+  },
+  detailValue: {
+    fontSize: 15,
     fontFamily: 'Poppins-SemiBold',
-    color: ShopColors.success,
+    color: ShopColors.textPrimary,
+    textAlign: 'right',
+    flex: 1,
+    marginLeft: 20,
   },
-  verificationBadges: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 16,
+
+  // Verification
+  verificationList: {
+    gap: 12,
   },
-  verificationBadge: {
+  verifiedItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: ShopColors.accent + '10',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    gap: 4,
+    gap: 12,
   },
-  verificationBadgeText: {
-    fontSize: 12,
-    fontFamily: 'Poppins-Medium',
-    color: ShopColors.accent,
+  verifiedText: {
+    fontSize: 15,
+    fontFamily: 'Poppins-Regular',
+    color: ShopColors.textPrimary,
   },
-  trustMetrics: {
+
+  statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: ShopColors.background,
-    borderRadius: 8,
-    padding: 12,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: ShopColors.border,
   },
-  trustMetric: {
+  statItem: {
     alignItems: 'center',
   },
-  trustMetricValue: {
+  statValue: {
     fontSize: 16,
     fontFamily: 'Poppins-Bold',
     color: ShopColors.textPrimary,
   },
-  trustMetricLabel: {
-    fontSize: 11,
+  statLabel: {
+    fontSize: 12,
     fontFamily: 'Poppins-Regular',
     color: ShopColors.textSecondary,
-    textAlign: 'center',
-    marginTop: 2,
-  },
-  
-  // Business Summary
-  businessSummary: {
-    backgroundColor: ShopColors.cardBackground,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: ShopColors.border,
-    gap: 12,
-  },
-  summaryItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  summaryText: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    color: ShopColors.textSecondary,
+    marginTop: 4,
   },
 });
 

@@ -21,7 +21,6 @@ const ShopDetailBusinessHours: React.FC<ShopDetailBusinessHoursProps> = ({
 
   const formatTime = (time: string) => {
     try {
-      // Convert 24-hour format to 12-hour format
       const [hours, minutes] = time.split(':');
       const hour = parseInt(hours);
       const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -33,10 +32,11 @@ const ShopDetailBusinessHours: React.FC<ShopDetailBusinessHoursProps> = ({
   };
 
   const dayOrder = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+  const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   return (
-    <View style={styles.businessHours}>
-      {dayOrder.map((day) => {
+    <View style={styles.container}>
+      {dayOrder.map((day, index) => {
         const dayKey = day as keyof ShopBusinessHours;
         const hours = businessHours[dayKey];
         const isToday = dayKey === todayKey;
@@ -47,21 +47,20 @@ const ShopDetailBusinessHours: React.FC<ShopDetailBusinessHoursProps> = ({
           <View 
             key={day} 
             style={[
-              styles.businessHourRow,
+              styles.hourRow,
               isToday && styles.todayRow
             ]}
           >
             <Text style={[
-              styles.businessHourDay,
-              isToday && styles.todayText
+              styles.dayText,
+              isToday && styles.todayDayText
             ]}>
-              {day.charAt(0).toUpperCase() + day.slice(1)}
-              {isToday && ' (Today)'}
+              {dayNames[index]}
             </Text>
             <Text style={[
-              styles.businessHourTime,
-              isToday && styles.todayTime,
-              hours.isClosed && styles.closedTime
+              styles.timeText,
+              isToday && styles.todayTimeText,
+              hours.isClosed && styles.closedText
             ]}>
               {hours.isClosed 
                 ? 'Closed' 
@@ -76,44 +75,41 @@ const ShopDetailBusinessHours: React.FC<ShopDetailBusinessHoursProps> = ({
 };
 
 const styles = StyleSheet.create({
-  businessHours: {
-    paddingHorizontal: 20,
+  container: {
+    gap: 12,
   },
-  businessHourRow: {
+  hourRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: ShopColors.border,
+    paddingVertical: 4,
   },
   todayRow: {
     backgroundColor: ShopColors.accent + '08',
-    marginHorizontal: -20,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    borderBottomColor: 'transparent',
+    marginHorizontal: -12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
   },
-  businessHourDay: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Medium',
-    color: ShopColors.textPrimary,
-    flex: 1,
-  },
-  businessHourTime: {
-    fontSize: 14,
+  dayText: {
+    fontSize: 15,
     fontFamily: 'Poppins-Regular',
     color: ShopColors.textSecondary,
   },
-  todayText: {
+  timeText: {
+    fontSize: 15,
+    fontFamily: 'Poppins-Regular',
+    color: ShopColors.textPrimary,
+  },
+  todayDayText: {
     fontFamily: 'Poppins-SemiBold',
     color: ShopColors.accent,
   },
-  todayTime: {
+  todayTimeText: {
     fontFamily: 'Poppins-SemiBold',
     color: ShopColors.textPrimary,
   },
-  closedTime: {
+  closedText: {
     color: ShopColors.error,
     fontStyle: 'italic',
   },

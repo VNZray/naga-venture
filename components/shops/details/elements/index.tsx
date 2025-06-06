@@ -6,3 +6,4 @@ export { default as ShopDetailReviewCard } from './ShopDetailReviewCard';
 export { default as ShopDetailBusinessHours } from './ShopDetailBusinessHours';
 export { default as ShopDetailContactInfo } from './ShopDetailContactInfo';
 export { default as ShopDetailPhotoGallery } from './ShopDetailPhotoGallery';
+export { default as ShopDetailMapPreview } from './ShopDetailMapPreview';
