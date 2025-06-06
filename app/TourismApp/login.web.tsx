@@ -27,7 +27,7 @@ const LoginWeb = () => {
 
     if (matchedUser) {
       login(matchedUser);
-      router.replace('/BusinessApp/(admin)');
+      router.replace('/TourismApp/(admin)');
     } else {
       Alert.alert('Login Failed', 'Incorrect email or password.');
     }
