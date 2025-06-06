@@ -5,7 +5,7 @@ import { View } from 'react-native';
 const index = () => {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <ThemedText type="title">Business App</ThemedText>
+      <ThemedText type="title">Tourism App</ThemedText>
     </View>
   );
 };

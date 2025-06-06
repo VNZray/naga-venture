@@ -10,12 +10,12 @@ import { AuthProvider } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import React from 'react';
 
-export default function RootLayout() {
+export default function AdminLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <AuthProvider>
-      <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" options={{ headerShown: false }} />
         </Stack>
