@@ -276,8 +276,6 @@ export const categories: Category[] = [
   { id: 'resorts', name: 'Resorts', icon: 'umbrella-beach' },
 ];
 
-export default touristSpotsData;
-
 // Helper function to get all tourist spots
 export const getAllTouristSpots = (): TouristSpot[] => {
   return Object.values(touristSpotsData);

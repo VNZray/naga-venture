@@ -86,8 +86,6 @@ export const reviewsData: Review[] = [
   }
 ];
 
-export default reviewsData;
-
 // Helper function to get all reviews
 export const getAllReviews = (): Review[] => {
   return reviewsData;
