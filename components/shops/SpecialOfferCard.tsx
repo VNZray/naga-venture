@@ -1,16 +1,15 @@
 import { ShopColors } from '@/constants/ShopColors'; // Using ShopColors for consistency if needed
-import { Image } from 'expo-image';
 import React from 'react';
 import {
-  StyleSheet,
-  TouchableOpacity, // If we add an optional title
+    Image,
+    StyleSheet,
+    TouchableOpacity, // If we add an optional title
 } from 'react-native';
 // import { LinearGradient } from 'expo-linear-gradient'; // If adding a gradient for text overlay
 
 // Define props for the SpecialOfferCard
 interface SpecialOfferCardProps {
-  offer: {
-    // Assuming 'offer' is an object with at least an ID and image URL
+  offer: { // Assuming 'offer' is an object with at least an ID and image URL
     id: string;
     promoImageUrl: string;
     title?: string; // Optional title
@@ -69,17 +68,13 @@ const SpecialOfferCard: React.FC<SpecialOfferCardProps> = ({
       onPress={() => onPress(offer.id)}
       activeOpacity={0.8}
       accessible={true}
-      accessibilityLabel={
-        offer.altText || offer.title || `Special offer ${offer.id}`
-      }
+      accessibilityLabel={offer.altText || offer.title || `Special offer ${offer.id}`}
       accessibilityRole="button"
     >
       <Image
         source={{ uri: offer.promoImageUrl }}
         style={styles.image}
-        contentFit="cover"
-        transition={300}
-        placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**-oJ-pM|' }}
+        resizeMode="cover" // 'cover' or 'contain' depending on image aspect ratios
       />
       {/* Optional: Title Overlay - uncomment if you want a title on the image
       {offer.title && (

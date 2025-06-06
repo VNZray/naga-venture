@@ -25,9 +25,5 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 ## Tourist Spots Module - Emmanuel Collao
 
 ## Shops Module - Hans Gabriel Candor
-npm install @tanstack/react-query
-npm install react-native-skeleton-placeholder
-
-
 
 ## Events Module - Wayne Sanao

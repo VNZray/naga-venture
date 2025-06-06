@@ -1,8 +1,7 @@
 import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { ShopCardProps } from './types';
 
 const ShopCard: React.FC<ShopCardProps> = ({
@@ -93,9 +92,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
         <Image
           source={{ uri: shop.image }}
           style={styles.image}
-          contentFit="cover"
-          transition={300}
-          placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**-oJ-pM|' }}
+          resizeMode="cover"
         />
 
         {showRating && shop.rating !== undefined && shop.rating !== null && (
@@ -105,6 +102,7 @@ const ShopCard: React.FC<ShopCardProps> = ({
           </View>
         )}
       </View>
+
       <View style={styles.shopInfo}>
         <Text style={styles.name} numberOfLines={1}>
           {shop.name || 'Unknown Shop'}
