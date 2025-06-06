@@ -1,8 +1,16 @@
 // Shop-related TypeScript type definitions
 
 export interface ShopMenuItem {
+  id: string;
   item: string;
   price: string;
+  description?: string;
+  category?: string;
+  image?: string;
+  isPopular?: boolean;
+  isBestseller?: boolean;
+  isAvailable?: boolean;
+  tags?: string[];
 }
 
 export interface ShopLocation {
@@ -10,58 +18,172 @@ export interface ShopLocation {
   longitude: number;
 }
 
+export interface ShopSocialLinks {
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
+  website?: string;
+  tiktok?: string;
+}
+
+export interface ShopAmenity {
+  id: string;
+  name: string;
+  icon: string;
+  available: boolean;
+}
+
+export interface ShopPromotion {
+  id: string;
+  title: string;
+  description: string;
+  discountPercent?: number;
+  validUntil?: string;
+  terms?: string;
+  isActive: boolean;
+  image?: string;
+}
+
+export interface ShopBusinessHours {
+  monday: { open: string; close: string; isClosed?: boolean };
+  tuesday: { open: string; close: string; isClosed?: boolean };
+  wednesday: { open: string; close: string; isClosed?: boolean };
+  thursday: { open: string; close: string; isClosed?: boolean };
+  friday: { open: string; close: string; isClosed?: boolean };
+  saturday: { open: string; close: string; isClosed?: boolean };
+  sunday: { open: string; close: string; isClosed?: boolean };
+}
+
+export interface ShopGallery {
+  id: string;
+  url: string;
+  caption?: string;
+  type: 'shop' | 'product' | 'customer' | 'ambiance';
+  isCustomerPhoto?: boolean;
+}
+
+export interface ShopVerification {
+  isVerified: boolean;
+  verificationBadges?: string[];
+  businessLicense?: boolean;
+  healthCertificate?: boolean;
+  dtiBusiness?: boolean;
+}
+
+export interface ShopStats {
+  followerCount?: number;
+  viewCount?: number;
+  averageResponseTime?: string; // e.g., "Within 2 hours"
+  responseRate?: number; // 0-100 percentage
+}
+
 export interface ShopData {
   id: string;
   name: string;
   category: string;
-  description: string;
-  image: string;
+  subcategory?: string;
+  description?: string;
+  tagline?: string; // Short catchy description
+  story?: string; // Longer about section
+  
+  // Images
+  image: string; // Main cover image
+  logo?: string;
+  coverImage?: string; // Large banner image
+  gallery?: ShopGallery[];
+  additionalImages?: string[];
+  
+  // Rating and Reviews
   rating: number;
   ratingCount: number;
-  reviews: any[];
-  additionalImages: string[];
-  location: string;
-  mapLocation: ShopLocation;
-  contact: string;
-  website: string;
-  openingHours: string;
-  priceRange: string;
-  menu: ShopMenuItem[];
-  // Additional optional properties for UI display
-  reviewCount?: number;
-  distance?: string;
-  price?: string;
+  reviews?: ShopReview[];
+  ratingBreakdown?: {
+    5: number;
+    4: number;
+    3: number;
+    2: number;
+    1: number;
+  };
+  
+  // Location and Contact
+  location?: string;
+  mapLocation?: ShopLocation;
+  contact?: string;
+  email?: string;
+  socialLinks?: ShopSocialLinks;
+  
+  // Business Information
+  businessHours?: ShopBusinessHours;
+  openingHours?: string; // Fallback string format
+  priceRange?: string;
   isOpen?: boolean;
+  temporaryHours?: string; // For special announcements
+  
+  // Products/Services/Menu
+  menu?: ShopMenuItem[];
+  featuredItems?: string[]; // Array of menu item IDs
+  menuCategories?: string[];
+  
+  // Business Features
+  amenities?: ShopAmenity[];
+  promotions?: ShopPromotion[];
+  verification?: ShopVerification;
+  stats?: ShopStats;
+  
+  // Utility
+  distance?: number;
+  isFavorited?: boolean;
+  isBookmarkable?: boolean;
+  acceptsReservations?: boolean;
+  hasDelivery?: boolean;
+  hasPickup?: boolean;
+  tags?: string[];
+}
+
+export interface MenuItem {
+  id: string;
+  item: string;
+  price: string;
+  description?: string;
+  image?: string;
+  category?: string;
+  isPopular?: boolean;
+  isBestseller?: boolean;
+  isAvailable?: boolean;
+}
+
+export interface ShopReview {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+  rating: number;
+  comment: string;
+  date: string;
+  images?: string[];
+  helpfulCount?: number;
+  isVerifiedPurchase?: boolean;
+  response?: {
+    message: string;
+    date: string;
+    isOwner: boolean;
+  };
 }
 
 export interface ShopCategory {
   id: string;
   name: string;
   icon: string;
-  shopCount?: number;
+  description?: string;
+  mainCategory?: string;
+  mainCategoryName?: string;
+  subcategories?: ShopCategory[];
 }
 
-// For component props that expect specific shapes
-export interface Shop {
+export interface MainCategory {
   id: string;
   name: string;
-  image: string;
-  category?: string;
-  rating?: number;
-  reviewCount?: number;
-  distance?: string;
-  price?: string;
-  isOpen?: boolean;
-  ratingCount?: number;
-  [key: string]: any;
-}
-
-// Featured shop interface for carousel
-export interface FeaturedShop {
-  id: string;
-  name: string;
-  image: string;
-  category?: string;
-  rating?: number;
-  [key: string]: any;
+  icon: string;
+  description: string;
+  subcategories: ShopCategory[];
 }

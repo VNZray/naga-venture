@@ -7,6 +7,8 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 1. Install dependencies
 
    ```bash
+   npm uninstall -g expo-cli
+   npm install -g expo-cli
    npm install
    ```
 
@@ -16,9 +18,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
-## email: <a@gmail.com>
-
-## password: 1234
+## In the root index, just change the CURRECT_APP to switch between Tourist App, Business Portal, and Tourism Admin
 
 ## Accommodation Module - Rayven Clores
 
@@ -26,37 +26,34 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Shops Module - Hans Gabriel Candor
 
-## Events Module - Wayne Sanao
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+### Dependencies
 ```bash
-npm run reset-project
+npm install @tanstack/react-query
+npm install react-native-skeleton-placeholder
+npm install expo-image
+npm install lodash.debounce @types/lodash.debounce
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Documentation
+- **API Contract:** `docs/ShopAPI_Contract.md` - Complete API specification for backend development
+- **Frontend-Backend Mapping:** `docs/Frontend_Backend_Mapping.md` - Maps React hooks to API endpoints
+- **Data Validation:** `docs/Data_Validation_Spec.md` - Type definitions and validation rules
+- **Migration Guide:** `docs/API_Migration_Guide.md` - Step-by-step guide from mock data to real API
 
-## Learn more
+### Features Implemented
+- ✅ **Performance & UX Polish**
+  - Skeleton loaders with app-themed colors
+  - Optimistic UI for instant favorite toggles
+  - expo-image for enhanced performance and caching
+- ✅ **Code & Logic Refinement**
+  - Centralized navigation through ShopNavigator
+  - Enhanced error handling with ErrorState component
+  - Debounced search with TanStack Query
+- ✅ **Strategic API Planning**
+  - Complete API contract documentation
+  - Type-safe frontend-backend mapping
+  - Migration strategy for real API integration
 
-To learn more about developing your project with Expo, look at the following resources:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Events Module - Wayne Sanao
