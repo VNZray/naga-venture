@@ -1,13 +1,12 @@
+import React, { useState, useMemo, useCallback } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { ShopColors } from '@/constants/ShopColors';
 import type { ShopData, ShopReview } from '@/types/shop';
-import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import React, { useCallback, useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ShopDetailRatingBreakdown, ShopDetailReviewCard } from '../elements';
-import ReviewSubmittedModal from '../elements/ReviewSubmittedModal';
-import WriteReviewModal from '../elements/WriteReviewModal';
+import {
+  ShopDetailRatingBreakdown,
+  ShopDetailReviewCard,
+} from '../elements';
 
 interface ShopDetailReviewsSectionProps {
   shop: ShopData;
@@ -16,36 +15,43 @@ interface ShopDetailReviewsSectionProps {
 }
 
 type SortOption = 'newest' | 'oldest' | 'highest' | 'lowest' | 'helpful';
-type FilterOption = 'all' | '5' | '4' | '3' | '2' | '1' | 'photos'; // Removed 'verified'
+type FilterOption = 'all' | '5' | '4' | '3' | '2' | '1' | 'verified' | 'photos';
 
 const ShopDetailReviewsSection: React.FC<ShopDetailReviewsSectionProps> = ({
   shop,
   onImagePress,
   onHelpfulPress
 }) => {
-  const [reviews, setReviews] = useState<ShopReview[]>(shop.reviews || []);
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [filterBy, setFilterBy] = useState<FilterOption>('all');
   const [showFilters, setShowFilters] = useState(false);
-  const [isWriteReviewModalVisible, setIsWriteReviewModalVisible] = useState(false);
-  const [isReviewSubmittedModalVisible, setIsReviewSubmittedModalVisible] = useState(false);
-  
-  // Get safe area insets for proper bottom padding
-  const insets = useSafeAreaInsets();
 
-  const { sortedReviews, reviewStats, averageRating, totalReviewCount } = useMemo(() => {
-    let currentReviews = [...reviews];
-    let filteredReviews = [...currentReviews];
+  // Process and filter reviews
+  const { sortedReviews, reviewStats } = useMemo(() => {
+    if (!shop.reviews || shop.reviews.length === 0) {
+      return { sortedReviews: [], reviewStats: null };
+    }
 
+    let filteredReviews = [...shop.reviews];
+
+    // Apply filters
     switch (filterBy) {
-      case '5': case '4': case '3': case '2': case '1':
+      case '5':
+      case '4':
+      case '3':
+      case '2':
+      case '1':
         filteredReviews = filteredReviews.filter(review => review.rating === parseInt(filterBy));
+        break;
+      case 'verified':
+        filteredReviews = filteredReviews.filter(review => review.isVerifiedPurchase);
         break;
       case 'photos':
         filteredReviews = filteredReviews.filter(review => review.images && review.images.length > 0);
         break;
     }
 
+    // Apply sorting
     switch (sortBy) {
       case 'newest':
         filteredReviews.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -63,58 +69,26 @@ const ShopDetailReviewsSection: React.FC<ShopDetailReviewsSectionProps> = ({
         filteredReviews.sort((a, b) => (b.helpfulCount || 0) - (a.helpfulCount || 0));
         break;
     }
-    
-    const totalReviews = currentReviews.length;
-    const currentAverageRating = totalReviews > 0
-      ? currentReviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews
-      : 0;
 
-    const currentRatingBreakdown = totalReviews > 0 ? currentReviews.reduce((acc, review) => {
-        acc[review.rating as keyof typeof acc] = (acc[review.rating as keyof typeof acc] || 0) + 1;
-        return acc;
-      }, { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 })
-      : { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-
+    // Calculate stats
     const stats = {
-      total: totalReviews,
+      total: shop.reviews.length,
       filtered: filteredReviews.length,
-      ratingBreakdown: currentRatingBreakdown,
+      verified: shop.reviews.filter(r => r.isVerifiedPurchase).length,
+      withPhotos: shop.reviews.filter(r => r.images && r.images.length > 0).length,
+      withOwnerResponse: shop.reviews.filter(r => r.response).length,
     };
 
-    return { 
-      sortedReviews: filteredReviews, 
-      reviewStats: stats, 
-      averageRating: currentAverageRating,
-      totalReviewCount: totalReviews
-    };
-  }, [reviews, sortBy, filterBy]);
+    return { sortedReviews: filteredReviews, reviewStats: stats };
+  }, [shop.reviews, sortBy, filterBy]);
 
-  const handleSortChange = useCallback((option: SortOption) => setSortBy(option), []);
-  const handleFilterChange = useCallback((option: FilterOption) => setFilterBy(option), []);
-  
-  const openWriteReviewModal = () => setIsWriteReviewModalVisible(true);
-  const closeWriteReviewModal = () => setIsWriteReviewModalVisible(false);
+  const handleSortChange = useCallback((option: SortOption) => {
+    setSortBy(option);
+  }, []);
 
-  const handleReviewSubmissionSuccess = () => {
-    setIsReviewSubmittedModalVisible(true);
-  };
-
-  const handleReviewSubmitData = (rating: number, comment: string, images: ImagePicker.ImagePickerAsset[]) => {
-    const newReview: ShopReview = {
-      id: `review_${Date.now()}_${Math.random().toString(36).substring(7)}`,
-      userId: 'currentUser_malzafre',
-      userName: 'malzafre (You)',
-      userAvatar: undefined, 
-      rating,
-      comment,
-      date: new Date('2025-06-06T08:11:58Z').toISOString(), // Current date and time
-      images: images.map(img => img.uri),
-      helpfulCount: 0,
-      isVerifiedPurchase: false,
-      response: undefined,
-    };
-    setReviews(prevReviews => [newReview, ...prevReviews]);
-  };
+  const handleFilterChange = useCallback((option: FilterOption) => {
+    setFilterBy(option);
+  }, []);
 
   const getSortLabel = (option: SortOption) => {
     switch (option) {
@@ -125,192 +99,190 @@ const ShopDetailReviewsSection: React.FC<ShopDetailReviewsSectionProps> = ({
       case 'helpful': return 'Most Helpful';
     }
   };
-  
+
   const getFilterLabel = (option: FilterOption) => {
     switch (option) {
       case 'all': return 'All Reviews';
+      case 'verified': return 'Verified Only';
       case 'photos': return 'With Photos';
       default: return `${option} Stars`;
     }
   };
 
-  // Render filter options as horizontal scrollable sections
-  const renderSortOptions = () => (
-    <View style={styles.filterOptionsContainer}>
-      {(['newest', 'helpful', 'highest', 'lowest', 'oldest'] as SortOption[]).map(option => (
-        <TouchableOpacity 
-          key={option} 
-          style={[styles.filterOption, sortBy === option && styles.filterOptionActive]} 
-          onPress={() => handleSortChange(option)}
-        >
-          <Text style={[styles.filterOptionText, sortBy === option && styles.filterOptionTextActive]}>
-            {getSortLabel(option)}
-          </Text>
+  // Empty state
+  if (!shop.reviews || shop.reviews.length === 0) {
+    return (
+      <View style={styles.emptyState}>
+        <Ionicons name="chatbubbles-outline" size={48} color={ShopColors.textSecondary} />
+        <Text style={styles.emptyStateTitle}>No Reviews Yet</Text>
+        <Text style={styles.emptyStateText}>Be the first to leave a review!</Text>
+        <TouchableOpacity style={styles.writeReviewButton}>
+          <Ionicons name="create" size={16} color="#FFFFFF" />
+          <Text style={styles.writeReviewButtonText}>Write a Review</Text>
         </TouchableOpacity>
-      ))}
-    </View>
-  );
+      </View>
+    );
+  }
 
-  const renderFilterOptions = () => (
-    <View style={styles.filterOptionsContainer}>
-      {(['all', '5', '4', '3', '2', '1', 'photos'] as FilterOption[]).map(option => (
-        <TouchableOpacity 
-          key={option} 
-          style={[styles.filterOption, filterBy === option && styles.filterOptionActive]} 
-          onPress={() => handleFilterChange(option)}
-        >
-          <Text style={[styles.filterOptionText, filterBy === option && styles.filterOptionTextActive]}>
-            {getFilterLabel(option)}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-
-  // Header component for FlatList
-  const renderHeader = () => (
-    <>
-      {/* Summary Section */}
+  return (
+    <View style={styles.container}>
+      {/* Reviews Summary */}
       <View style={styles.summarySection}>
         <View style={styles.summaryHeader}>
           <Text style={styles.sectionTitle}>Customer Reviews</Text>
-          <TouchableOpacity style={styles.writeReviewButton} onPress={openWriteReviewModal}>
+          <TouchableOpacity style={styles.writeReviewButton}>
             <Ionicons name="create" size={14} color="#FFFFFF" />
             <Text style={styles.writeReviewButtonText}>Write Review</Text>
           </TouchableOpacity>
         </View>
+
         <View style={styles.reviewsSummary}>
           <View style={styles.reviewsSummaryLeft}>
-            <Text style={styles.reviewsAverageRating}>{averageRating.toFixed(1)}</Text>
+            <Text style={styles.reviewsAverageRating}>{shop.rating.toFixed(1)}</Text>
             <View style={styles.reviewsStars}>
               {[1, 2, 3, 4, 5].map((star) => (
                 <Ionicons
                   key={star}
                   name="star"
                   size={16}
-                  color={star <= averageRating ? ShopColors.warning : ShopColors.border}
+                  color={star <= shop.rating ? ShopColors.warning : ShopColors.border}
                 />
               ))}
             </View>
-            <Text style={styles.reviewsCount}>Based on {totalReviewCount} reviews</Text>
+            <Text style={styles.reviewsCount}>Based on {shop.ratingCount} reviews</Text>
           </View>
+          
           <View style={styles.reviewsSummaryRight}>
             <ShopDetailRatingBreakdown 
-              ratingBreakdown={reviewStats.ratingBreakdown} 
-              totalRatings={totalReviewCount} 
+              ratingBreakdown={shop.ratingBreakdown} 
+              totalRatings={shop.ratingCount} 
             />
           </View>
         </View>
-      </View>
 
-      {/* Filters Section */}
-      <View style={styles.filtersSection}>
-        <View style={styles.filtersHeader}>
-          <TouchableOpacity style={styles.filtersToggle} onPress={() => setShowFilters(!showFilters)}>
-            <Ionicons name="options" size={16} color={ShopColors.accent} />
-            <Text style={styles.filtersToggleText}>Filters & Sort</Text>
-            <Ionicons name={showFilters ? "chevron-up" : "chevron-down"} size={16} color={ShopColors.textSecondary} />
-          </TouchableOpacity>
-          <Text style={styles.resultCount}>{reviewStats?.filtered ?? 0} of {reviewStats?.total ?? 0} reviews</Text>
-        </View>
-        {showFilters && (
-          <View style={styles.filtersContent}>
-            <View style={styles.filterGroup}>
-              <Text style={styles.filterGroupTitle}>Sort by</Text>
-              {renderSortOptions()}
+        {/* Review Statistics */}
+        {reviewStats && (
+          <View style={styles.reviewStats}>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{reviewStats.verified}</Text>
+              <Text style={styles.statLabel}>Verified</Text>
             </View>
-            <View style={styles.filterGroup}>
-              <Text style={styles.filterGroupTitle}>Filter by</Text>
-              {renderFilterOptions()}
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{reviewStats.withPhotos}</Text>
+              <Text style={styles.statLabel}>With Photos</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{reviewStats.withOwnerResponse}</Text>
+              <Text style={styles.statLabel}>Owner Replied</Text>
             </View>
           </View>
         )}
       </View>
-    </>
-  );
 
-  // Empty state component
-  const renderEmptyState = () => (
-    <View style={styles.emptyState}>
-      <Ionicons name="chatbubbles-outline" size={48} color={ShopColors.textSecondary} />
-      <Text style={styles.emptyStateTitle}>No Reviews Yet</Text>
-      <Text style={styles.emptyStateText}>Be the first to share your experience!</Text>
-      <TouchableOpacity style={styles.writeReviewButton} onPress={openWriteReviewModal}>
-        <Ionicons name="create" size={16} color="#FFFFFF" />
-        <Text style={styles.writeReviewButtonText}>Write a Review</Text>
-      </TouchableOpacity>
-    </View>
-  );
+      {/* Filters and Sorting */}
+      <View style={styles.filtersSection}>
+        <View style={styles.filtersHeader}>
+          <TouchableOpacity
+            style={styles.filtersToggle}
+            onPress={() => setShowFilters(!showFilters)}
+          >
+            <Ionicons name="options" size={16} color={ShopColors.accent} />
+            <Text style={styles.filtersToggleText}>Filters & Sort</Text>
+            <Ionicons
+              name={showFilters ? "chevron-up" : "chevron-down"}
+              size={16}
+              color={ShopColors.textSecondary}
+            />
+          </TouchableOpacity>
+          
+          <Text style={styles.resultCount}>
+            {reviewStats?.filtered} of {reviewStats?.total} reviews
+          </Text>
+        </View>
 
-  // No results component
-  const renderNoResults = () => (
-    <View style={styles.noResultsState}>
-      <Ionicons name="search-outline" size={32} color={ShopColors.textSecondary} />
-      <Text style={styles.noResultsTitle}>No Reviews Found</Text>
-      <Text style={styles.noResultsText}>No reviews match your current filters. Try adjusting.</Text>
-      <TouchableOpacity style={styles.clearFiltersButton} onPress={() => { setFilterBy('all'); setSortBy('newest'); }}>
-        <Text style={styles.clearFiltersButtonText}>Clear Filters</Text>
-      </TouchableOpacity>
-    </View>
-  );
+        {showFilters && (
+          <View style={styles.filtersContent}>
+            {/* Sort Options */}
+            <View style={styles.filterGroup}>
+              <Text style={styles.filterGroupTitle}>Sort by</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterOptions}>
+                {(['newest', 'helpful', 'highest', 'lowest', 'oldest'] as SortOption[]).map((option) => (
+                  <TouchableOpacity
+                    key={option}
+                    style={[
+                      styles.filterOption,
+                      sortBy === option && styles.filterOptionActive
+                    ]}
+                    onPress={() => handleSortChange(option)}
+                  >
+                    <Text style={[
+                      styles.filterOptionText,
+                      sortBy === option && styles.filterOptionTextActive
+                    ]}>
+                      {getSortLabel(option)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
 
-  // Footer component with proper spacing for tab navigator
-  const renderFooter = () => (
-    <View style={[styles.listFooter, { paddingBottom: Math.max(insets.bottom + 20, 80) }]} />
-  );
+            {/* Filter Options */}
+            <View style={styles.filterGroup}>
+              <Text style={styles.filterGroupTitle}>Filter by</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterOptions}>
+                {(['all', '5', '4', '3', '2', '1', 'verified', 'photos'] as FilterOption[]).map((option) => (
+                  <TouchableOpacity
+                    key={option}
+                    style={[
+                      styles.filterOption,
+                      filterBy === option && styles.filterOptionActive
+                    ]}
+                    onPress={() => handleFilterChange(option)}
+                  >
+                    <Text style={[
+                      styles.filterOptionText,
+                      filterBy === option && styles.filterOptionTextActive
+                    ]}>
+                      {getFilterLabel(option)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          </View>
+        )}
+      </View>
 
-  if (totalReviewCount === 0) {
-    return (
-      <>
-        {renderEmptyState()}
-        <WriteReviewModal
-          visible={isWriteReviewModalVisible}
-          onClose={closeWriteReviewModal}
-          onSubmit={handleReviewSubmitData}
-          shopName={shop.name}
-          onSubmissionSuccess={handleReviewSubmissionSuccess}
-        />
-        <ReviewSubmittedModal
-          visible={isReviewSubmittedModalVisible}
-          onClose={() => setIsReviewSubmittedModalVisible(false)}
-          shopName={shop.name}
-        />
-      </>
-    );
-  }
-
-  return (
-    <View style={styles.container}>
+      {/* Reviews List */}
       <FlatList
         data={sortedReviews}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <ShopDetailReviewCard 
             review={item} 
-            onImagePress={onImagePress} 
-            onHelpfulPress={onHelpfulPress} 
+            onImagePress={onImagePress}
+            onHelpfulPress={onHelpfulPress}
           />
         )}
-        ListHeaderComponent={renderHeader}
-        ListEmptyComponent={sortedReviews.length === 0 && totalReviewCount > 0 ? renderNoResults : null}
-        ListFooterComponent={renderFooter}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.flatListContent}
-        // Additional padding to ensure content doesn't get cut off
-        contentInsetAdjustmentBehavior="automatic"
-      />
-      
-      <WriteReviewModal
-        visible={isWriteReviewModalVisible}
-        onClose={closeWriteReviewModal}
-        onSubmit={handleReviewSubmitData}
-        shopName={shop.name}
-        onSubmissionSuccess={handleReviewSubmissionSuccess}
-      />
-      <ReviewSubmittedModal
-        visible={isReviewSubmittedModalVisible}
-        onClose={() => setIsReviewSubmittedModalVisible(false)}
-        shopName={shop.name}
+        ListEmptyComponent={() => (
+          <View style={styles.noResultsState}>
+            <Ionicons name="search-outline" size={32} color={ShopColors.textSecondary} />
+            <Text style={styles.noResultsTitle}>No Reviews Found</Text>
+            <Text style={styles.noResultsText}>
+              No reviews match your current filters. Try adjusting your search criteria.
+            </Text>
+            <TouchableOpacity
+              style={styles.clearFiltersButton}
+              onPress={() => {
+                setFilterBy('all');
+                setSortBy('newest');
+              }}
+            >
+              <Text style={styles.clearFiltersButtonText}>Clear Filters</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       />
     </View>
   );
@@ -321,13 +293,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: ShopColors.background,
   },
-  flatListContent: {
-    flexGrow: 1,
-  },
-  listFooter: {
-    // Dynamic bottom padding based on safe area + tab navigator height
-    // Will be calculated in renderFooter function
-  },
+
+  // Summary Section
   summarySection: {
     backgroundColor: ShopColors.cardBackground,
     marginBottom: 8,
@@ -364,6 +331,7 @@ const styles = StyleSheet.create({
   reviewsSummary: {
     flexDirection: 'row',
     paddingHorizontal: 20,
+    marginBottom: 16,
   },
   reviewsSummaryLeft: {
     alignItems: 'center',
@@ -388,6 +356,30 @@ const styles = StyleSheet.create({
   reviewsSummaryRight: {
     flex: 1,
   },
+  reviewStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: ShopColors.border,
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
+    color: ShopColors.accent,
+  },
+  statLabel: {
+    fontSize: 11,
+    fontFamily: 'Poppins-Regular',
+    color: ShopColors.textSecondary,
+    marginTop: 2,
+  },
+
+  // Filters Section
   filtersSection: {
     backgroundColor: ShopColors.cardBackground,
     marginBottom: 8,
@@ -432,10 +424,8 @@ const styles = StyleSheet.create({
     color: ShopColors.textPrimary,
     marginBottom: 8,
   },
-  filterOptionsContainer: {
+  filterOptions: {
     flexDirection: 'row',
-    flexWrap: 'wrap', // Allow wrapping instead of horizontal scroll
-    gap: 8,
   },
   filterOption: {
     paddingHorizontal: 12,
@@ -444,6 +434,7 @@ const styles = StyleSheet.create({
     backgroundColor: ShopColors.background,
     borderWidth: 1,
     borderColor: ShopColors.border,
+    marginRight: 8,
   },
   filterOptionActive: {
     backgroundColor: ShopColors.accent,
@@ -457,13 +448,14 @@ const styles = StyleSheet.create({
   filterOptionTextActive: {
     color: '#FFFFFF',
   },
+
+  // Empty States
   emptyState: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 40,
     paddingVertical: 60,
-    backgroundColor: ShopColors.background,
   },
   emptyStateTitle: {
     fontSize: 18,

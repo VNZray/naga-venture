@@ -1,26 +1,30 @@
 import { ShopColors } from '@/constants/ShopColors';
-import { useToggleFavorite } from '@/hooks/useShops';
 import type { ShopData } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
-import { Image } from 'expo-image';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface DiscoverMoreShopCardProps {
   shop: ShopData;
   onPress: (shopId: string) => void;
+  onToggleFavorite?: (shopId: string, isFavorited: boolean) => void;
 }
 
 const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
   shop,
   onPress,
+  onToggleFavorite,
 }) => {
   const cardHeight = 220; // Reduced from 250
 
-  const toggleFavoriteMutation = useToggleFavorite();
+  const [isFavorited, setIsFavorited] = useState(false);
 
   const handleFavoritePress = () => {
-    toggleFavoriteMutation.mutate(shop.id);
+    const newFavoriteState = !isFavorited;
+    setIsFavorited(newFavoriteState);
+    if (onToggleFavorite) {
+      onToggleFavorite(shop.id, newFavoriteState);
+    }
   };
 
   const formatReviewCount = (count: number | undefined) => {
@@ -123,9 +127,7 @@ const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
           <Image
             source={{ uri: shop.image }}
             style={styles.image}
-            contentFit="cover"
-            transition={300}
-            placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**-oJ-pM|' }}
+            resizeMode="cover"
           />
         </View>
         <View style={styles.contentWrapper}>
@@ -159,12 +161,11 @@ const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
       <TouchableOpacity
         style={styles.floatingFavoriteButton}
         onPress={handleFavoritePress}
-        disabled={toggleFavoriteMutation.isPending}
       >
         <Ionicons
-          name={shop.isFavorited ? 'heart' : 'heart-outline'}
+          name={isFavorited ? 'heart' : 'heart-outline'}
           size={20} // Reduced from 22
-          color={shop.isFavorited ? ShopColors.error : '#FFFFFF'}
+          color={isFavorited ? ShopColors.error : '#FFFFFF'}
         />
       </TouchableOpacity>
     </View>

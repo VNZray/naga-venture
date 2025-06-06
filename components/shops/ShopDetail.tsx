@@ -18,7 +18,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  FlatList,
 } from 'react-native';
 import {
   SafeAreaView,
@@ -170,9 +169,9 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
     }
   );
 
-  // Tab Content Renderers - Return as simple components
+  // Tab Content Renderers
   const renderTabContent = () => {
-    if (!shop) return <View />;
+    if (!shop) return null;
 
     switch (index) {
       case 0:
@@ -183,7 +182,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
           />
         );
       case 1:
-        return <ShopDetailPromotionsSection shop={shop} />;
+        return <ShopDetailPromotionsSection shop={shop} />; // NEW TAB CONTENT
       case 2:
         return (
           <ShopDetailInfoSection
@@ -207,16 +206,58 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
           />
         );
       default:
-        return <View />;
+        return null;
     }
   };
 
-  // FlatList Header Component - Contains hero, actions, and tabs
-  const renderListHeader = () => {
-    if (!shop) return null;
-
+  // Loading State
+  if (isLoading) {
     return (
-      <>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={ShopColors.accent} />
+          <Text style={styles.loadingText}>Loading Shop Details...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Not Found State
+  if (!shop) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <View style={styles.notFoundContainer}>
+          <Ionicons
+            name="storefront-outline"
+            size={60}
+            color={ShopColors.textSecondary}
+          />
+          <Text style={styles.notFoundTitle}>Shop Not Found</Text>
+          <Text style={styles.notFoundText}>
+            The shop you are looking for does not exist or could not be loaded.
+          </Text>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.goBackButton}
+          >
+            <Text style={styles.goBackButtonText}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Main Render
+  return (
+    <View style={styles.container}>
+      {/* Main Scroll View */}
+      <Animated.ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        bounces={false}
+      >
         {/* Hero Section */}
         <View style={styles.heroContainer}>
           <Image
@@ -225,7 +266,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
             resizeMode="cover"
           />
 
-          {/* Shop Info Overlay */}
+          {/* Shop Info Overlay - LOGO REMOVED */}
           <LinearGradient
             colors={['transparent', 'rgba(0,0,0,0.8)']}
             style={styles.shopInfoOverlay}
@@ -259,7 +300,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
           </LinearGradient>
         </View>
 
-        {/* Quick Actions Bar */}
+        {/* Quick Actions Bar - Only in ScrollView */}
         <View style={styles.quickActionsBar}>
           {shop.contact && (
             <TouchableOpacity
@@ -300,7 +341,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Tab Navigation */}
+        {/* Tab Navigation - In ScrollView */}
         <View style={styles.tabNavigation}>
           {routes.map((route, i) => (
             <TouchableOpacity
@@ -319,69 +360,10 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
             </TouchableOpacity>
           ))}
         </View>
-      </>
-    );
-  };
 
-  // FlatList Data - Single item containing tab content
-  const flatListData = [{ key: 'tabContent', content: renderTabContent() }];
-
-  const renderFlatListItem = ({ item }: { item: any }) => {
-    return <View style={styles.tabContentContainer}>{item.content}</View>;
-  };
-
-  // Loading State
-  if (isLoading) {
-    return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={ShopColors.accent} />
-          <Text style={styles.loadingText}>Loading Shop Details...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  // Not Found State
-  if (!shop) {
-    return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.notFoundContainer}>
-          <Ionicons
-            name="storefront-outline"
-            size={60}
-            color={ShopColors.textSecondary}
-          />
-          <Text style={styles.notFoundTitle}>Shop Not Found</Text>
-          <Text style={styles.notFoundText}>
-            The shop you are looking for does not exist or could not be loaded.
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.goBackButton}
-          >
-            <Text style={styles.goBackButtonText}>Go Back</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  // Main Render - Using FlatList instead of ScrollView
-  return (
-    <View style={styles.container}>
-      {/* Main FlatList - No more nested ScrollView! */}
-      <FlatList
-        data={flatListData}
-        keyExtractor={(item) => item.key}
-        renderItem={renderFlatListItem}
-        ListHeaderComponent={renderListHeader}
-        showsVerticalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        bounces={false}
-        contentContainerStyle={styles.flatListContent}
-      />
+        {/* Tab Content */}
+        <View style={styles.tabContent}>{renderTabContent()}</View>
+      </Animated.ScrollView>
 
       {/* Fixed Header Actions (Always Visible on Hero) */}
       <Animated.View
@@ -417,7 +399,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
         </View>
       </Animated.View>
 
-      {/* Collapsed Header */}
+      {/* Collapsed Header - FIXED ERROR AND REMOVED LOGO */}
       <Animated.View
         style={[
           styles.collapsedHeader,
@@ -550,13 +532,9 @@ const styles = StyleSheet.create({
     backgroundColor: ShopColors.background,
   },
 
-  // FlatList styles
-  flatListContent: {
-    flexGrow: 1,
-  },
-  tabContentContainer: {
+  // Main Scroll View
+  scrollView: {
     flex: 1,
-    minHeight: screenHeight, // Ensure content takes full height
   },
 
   // Hero Section
@@ -583,7 +561,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   shopName: {
-    fontSize: 28,
+    fontSize: 28, // Increased font size since no logo
     fontFamily: 'Poppins-Bold',
     color: '#FFFFFF',
     textShadowColor: 'rgba(0,0,0,0.5)',
@@ -592,7 +570,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   shopTagline: {
-    fontSize: 16,
+    fontSize: 16, // Increased font size since no logo
     fontFamily: 'Poppins-Regular',
     color: '#FFFFFF',
     opacity: 0.9,
@@ -693,7 +671,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-SemiBold',
   },
 
-  // Collapsed Header
+  // Tab Content
+  tabContent: {
+    minHeight: screenHeight,
+    backgroundColor: ShopColors.background,
+  },
+
+  // Collapsed Header - LOGO REMOVED
   collapsedHeader: {
     position: 'absolute',
     top: 0,
