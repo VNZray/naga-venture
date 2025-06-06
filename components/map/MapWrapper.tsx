@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 let MapView: ComponentType<any>;
 let Marker: ComponentType<any>;
 let Callout: ComponentType<any>;
-let PROVIDER_GOOGLE: any; // Not a component, it's a constant string
+let PROVIDER_GOOGLE: any;
 
 if (Platform.OS === 'web') {
   const WebMap: ComponentType<any> = () => null;
