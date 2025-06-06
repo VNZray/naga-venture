@@ -25,23 +25,23 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
       width: cardWidth,
       height: cardHeight,
       borderRadius: 16, // Slightly larger radius
-      overflow: 'hidden', // Important for Image and borderRadius
+      overflow: 'hidden', // Important for ImageBackground and borderRadius
       backgroundColor: ShopColors.border, // Fallback color
       elevation: 5, // More pronounced shadow
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.2,
       shadowRadius: 5,
-      position: 'relative', // For absolute positioning of overlay elements
+    },
+    imageBackground: {
+      flex: 1,
+      position: 'relative',
+      justifyContent: 'flex-end', // Align content to the bottom
     },
     image: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
       width: '100%',
       height: '100%',
+      position: 'absolute',
     },
     gradient: {
       position: 'absolute',
@@ -49,10 +49,12 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
       right: 0,
       bottom: 0,
       height: '70%', // Gradient covers bottom part for text readability
+      zIndex: 1, // Above image but below content
     },
     contentContainer: {
       padding: 16,
       position: 'relative', // For absolute positioning of featured tag
+      zIndex: 2, // Ensure content appears above gradient
     },
     name: {
       fontSize: 18,
@@ -72,6 +74,7 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
       paddingHorizontal: 8,
       paddingVertical: 4,
       borderRadius: 10,
+      zIndex: 3, // Above gradient and content
     },
     ratingText: {
       color: '#FFFFFF',
@@ -87,6 +90,7 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
       paddingHorizontal: 10,
       paddingVertical: 4,
       borderRadius: 8,
+      zIndex: 3, // Above gradient and content
     },
     featuredTagText: {
       color: '#FFFFFF',
@@ -101,32 +105,32 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
       onPress={() => onPress(shop.id)}
       activeOpacity={0.9}
     >
-      <Image
-        source={{ uri: shop.image }}
-        style={styles.image}
-        contentFit="cover"
-        transition={300}
-        placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**-oJ-pM|' }}
-      />
-      <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']}
-        style={styles.gradient}
-      />
-      <View style={styles.contentContainer}>
-        <Text style={styles.name} numberOfLines={2}>
-          {shop.name}
-        </Text>
-      </View>
-
-      {shop.rating !== undefined && shop.rating !== null && (
-        <View style={styles.ratingBadge}>
-          <Ionicons name="star" size={14} color="#FFD700" />
-          <Text style={styles.ratingText}>{shop.rating.toFixed(1)}</Text>
+      <View style={styles.imageBackground}>
+        <Image
+          source={{ uri: shop.image }}
+          style={styles.image}
+          contentFit="cover"
+          transition={200}
+          placeholder="LKN]Rv%2Tw=w]~RBVZRi};RPxuwH"
+        />
+        <LinearGradient
+          colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']}
+          style={styles.gradient}
+        />
+        <View style={styles.contentContainer}>
+          <Text style={styles.name} numberOfLines={2}>
+            {shop.name}
+          </Text>
         </View>
-      )}
-
-      <View style={styles.featuredTag}>
-        <Text style={styles.featuredTagText}>FEATURED</Text>
+        {shop.rating !== undefined && shop.rating !== null && (
+          <View style={styles.ratingBadge}>
+            <Ionicons name="star" size={14} color="#FFD700" />
+            <Text style={styles.ratingText}>{shop.rating.toFixed(1)}</Text>
+          </View>
+        )}
+        <View style={styles.featuredTag}>
+          <Text style={styles.featuredTagText}>FEATURED</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
