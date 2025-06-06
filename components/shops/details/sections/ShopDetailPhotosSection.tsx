@@ -1,8 +1,15 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Dimensions } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { ShopColors } from '@/constants/ShopColors';
-import type { ShopData, ShopGallery } from '@/types/shop';
+import type { ShopData } from '@/types/shop';
+import { Ionicons } from '@expo/vector-icons';
+import React, { useCallback, useMemo, useState } from 'react';
+import {
+  Dimensions,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { ShopDetailPhotoGallery } from '../elements';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -16,7 +23,7 @@ type PhotoFilter = 'all' | 'shop' | 'product' | 'customer' | 'ambiance';
 
 const ShopDetailPhotosSection: React.FC<ShopDetailPhotosSectionProps> = ({
   shop,
-  onImagePress
+  onImagePress,
 }) => {
   const [selectedFilter, setSelectedFilter] = useState<PhotoFilter>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -36,16 +43,20 @@ const ShopDetailPhotosSection: React.FC<ShopDetailPhotosSectionProps> = ({
     // Filter images
     let filtered = allImages;
     if (selectedFilter !== 'all') {
-      filtered = allImages.filter(img => img.type === selectedFilter);
+      filtered = allImages.filter((img) => img.type === selectedFilter);
     }
 
     // Calculate stats
     const stats = {
       total: allImages.length,
-      shop: allImages.filter(img => img.type === 'shop').length,
-      product: allImages.filter(img => img.type === 'product').length,
-      customer: allImages.filter(img => img.type === 'customer' || ('isCustomerPhoto' in img && img.isCustomerPhoto)).length,
-      ambiance: allImages.filter(img => img.type === 'ambiance').length,
+      shop: allImages.filter((img) => img.type === 'shop').length,
+      product: allImages.filter((img) => img.type === 'product').length,
+      customer: allImages.filter(
+        (img) =>
+          img.type === 'customer' ||
+          ('isCustomerPhoto' in img && img.isCustomerPhoto)
+      ).length,
+      ambiance: allImages.filter((img) => img.type === 'ambiance').length,
     };
 
     return { allImages, filteredImages: filtered, photoStats: stats };
@@ -61,21 +72,31 @@ const ShopDetailPhotosSection: React.FC<ShopDetailPhotosSectionProps> = ({
 
   const getFilterLabel = (filter: PhotoFilter) => {
     switch (filter) {
-      case 'all': return 'All Photos';
-      case 'shop': return 'Shop';
-      case 'product': return 'Products';
-      case 'customer': return 'Customer';
-      case 'ambiance': return 'Ambiance';
+      case 'all':
+        return 'All Photos';
+      case 'shop':
+        return 'Shop';
+      case 'product':
+        return 'Products';
+      case 'customer':
+        return 'Customer';
+      case 'ambiance':
+        return 'Ambiance';
     }
   };
 
   const getFilterIcon = (filter: PhotoFilter) => {
     switch (filter) {
-      case 'all': return 'images';
-      case 'shop': return 'storefront';
-      case 'product': return 'cube';
-      case 'customer': return 'people';
-      case 'ambiance': return 'color-palette';
+      case 'all':
+        return 'images';
+      case 'shop':
+        return 'storefront';
+      case 'product':
+        return 'cube';
+      case 'customer':
+        return 'people';
+      case 'ambiance':
+        return 'color-palette';
     }
   };
 
@@ -83,9 +104,15 @@ const ShopDetailPhotosSection: React.FC<ShopDetailPhotosSectionProps> = ({
   if (allImages.length === 0) {
     return (
       <View style={styles.emptyState}>
-        <Ionicons name="images-outline" size={48} color={ShopColors.textSecondary} />
+        <Ionicons
+          name="images-outline"
+          size={48}
+          color={ShopColors.textSecondary}
+        />
         <Text style={styles.emptyStateTitle}>No Photos Available</Text>
-        <Text style={styles.emptyStateText}>This business hasn&apos;t uploaded photos yet.</Text>
+        <Text style={styles.emptyStateText}>
+          This business hasn&apos;t uploaded photos yet.
+        </Text>
         <TouchableOpacity style={styles.uploadButton}>
           <Ionicons name="camera" size={16} color="#FFFFFF" />
           <Text style={styles.uploadButtonText}>Upload Photos</Text>
@@ -117,7 +144,7 @@ const ShopDetailPhotosSection: React.FC<ShopDetailPhotosSectionProps> = ({
             <Text style={styles.mainStatNumber}>{allImages.length}</Text>
             <Text style={styles.mainStatLabel}>Total Photos</Text>
           </View>
-          
+
           <View style={styles.statsGrid}>
             {photoStats.shop > 0 && (
               <View style={styles.statItem}>
@@ -152,7 +179,9 @@ const ShopDetailPhotosSection: React.FC<ShopDetailPhotosSectionProps> = ({
         <FlatList
           horizontal
           showsHorizontalScrollIndicator={false}
-          data={['all', 'shop', 'product', 'customer', 'ambiance'] as PhotoFilter[]}
+          data={
+            ['all', 'shop', 'product', 'customer', 'ambiance'] as PhotoFilter[]
+          }
           keyExtractor={(item) => item}
           contentContainerStyle={styles.filterTabs}
           renderItem={({ item }) => {
@@ -163,29 +192,40 @@ const ShopDetailPhotosSection: React.FC<ShopDetailPhotosSectionProps> = ({
               <TouchableOpacity
                 style={[
                   styles.filterTab,
-                  selectedFilter === item && styles.filterTabActive
+                  selectedFilter === item && styles.filterTabActive,
                 ]}
                 onPress={() => handleFilterChange(item)}
               >
                 <Ionicons
                   name={getFilterIcon(item) as any}
                   size={16}
-                  color={selectedFilter === item ? '#FFFFFF' : ShopColors.textSecondary}
+                  color={
+                    selectedFilter === item
+                      ? '#FFFFFF'
+                      : ShopColors.textSecondary
+                  }
                 />
-                <Text style={[
-                  styles.filterTabText,
-                  selectedFilter === item && styles.filterTabTextActive
-                ]}>
+                <Text
+                  style={[
+                    styles.filterTabText,
+                    selectedFilter === item && styles.filterTabTextActive,
+                  ]}
+                >
                   {getFilterLabel(item)}
                 </Text>
-                <View style={[
-                  styles.filterTabBadge,
-                  selectedFilter === item && styles.filterTabBadgeActive
-                ]}>
-                  <Text style={[
-                    styles.filterTabBadgeText,
-                    selectedFilter === item && styles.filterTabBadgeTextActive
-                  ]}>
+                <View
+                  style={[
+                    styles.filterTabBadge,
+                    selectedFilter === item && styles.filterTabBadgeActive,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.filterTabBadgeText,
+                      selectedFilter === item &&
+                        styles.filterTabBadgeTextActive,
+                    ]}
+                  >
                     {count}
                   </Text>
                 </View>
@@ -203,8 +243,14 @@ const ShopDetailPhotosSection: React.FC<ShopDetailPhotosSectionProps> = ({
         />
       ) : (
         <View style={styles.noPhotosState}>
-          <Ionicons name="images-outline" size={32} color={ShopColors.textSecondary} />
-          <Text style={styles.noPhotosTitle}>No {getFilterLabel(selectedFilter)}</Text>
+          <Ionicons
+            name="images-outline"
+            size={32}
+            color={ShopColors.textSecondary}
+          />
+          <Text style={styles.noPhotosTitle}>
+            No {getFilterLabel(selectedFilter)}
+          </Text>
           <Text style={styles.noPhotosText}>
             No photos found in this category. Try selecting a different filter.
           </Text>
@@ -221,7 +267,9 @@ const ShopDetailPhotosSection: React.FC<ShopDetailPhotosSectionProps> = ({
       <View style={styles.uploadSection}>
         <View style={styles.uploadPrompt}>
           <Ionicons name="camera" size={20} color={ShopColors.accent} />
-          <Text style={styles.uploadPromptText}>Have photos of this business?</Text>
+          <Text style={styles.uploadPromptText}>
+            Have photos of this business?
+          </Text>
         </View>
         <TouchableOpacity style={styles.uploadButton}>
           <Ionicons name="add" size={16} color="#FFFFFF" />
