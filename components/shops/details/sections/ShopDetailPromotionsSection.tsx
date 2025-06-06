@@ -39,33 +39,6 @@ const ShopDetailPromotionsSection: React.FC<
       return true;
     }) || [];
 
-  // Helper functions for summary stats
-  const isExpiringToday = (dateString?: string) => {
-    if (!dateString) return false;
-    try {
-      const expiryDate = new Date(dateString);
-      if (isNaN(expiryDate.getTime())) return false;
-      const diffTime = expiryDate.getTime() - currentDate.getTime();
-      const diffHours = diffTime / (1000 * 60 * 60);
-      return diffHours > 0 && diffHours <= 24;
-    } catch {
-      return false;
-    }
-  };
-
-  const isExpiringSoon = (dateString?: string) => {
-    if (!dateString) return false;
-    try {
-      const expiryDate = new Date(dateString);
-      if (isNaN(expiryDate.getTime())) return false;
-      const diffTime = expiryDate.getTime() - currentDate.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays > 0 && diffDays <= 7;
-    } catch {
-      return false;
-    }
-  };
-
   // Empty state
   if (activePromotions.length === 0) {
     return (
@@ -109,12 +82,13 @@ const ShopDetailPromotionsSection: React.FC<
     );
   }
 
-  const expiringTodayCount = activePromotions.filter((p) =>
-    isExpiringToday(p.validUntil)
-  ).length;
-  const expiringSoonCount = activePromotions.filter(
-    (p) => isExpiringSoon(p.validUntil) && !isExpiringToday(p.validUntil)
-  ).length;
+  // REMOVED: expiringTodayCount and expiringSoonCount logic
+  // const expiringTodayCount = activePromotions.filter((p) =>
+  //   isExpiringToday(p.validUntil)
+  // ).length;
+  // const expiringSoonCount = activePromotions.filter(
+  //   (p) => isExpiringSoon(p.validUntil) && !isExpiringToday(p.validUntil)
+  // ).length;
 
   return (
     <ScrollView
@@ -143,7 +117,8 @@ const ShopDetailPromotionsSection: React.FC<
           </View>
         </View>
 
-        {/* Active promotions summary */}
+        {/* REMOVED: Active promotions summary */}
+        {/* 
         {(expiringTodayCount > 0 || expiringSoonCount > 0) && (
           <View style={styles.summaryContainer}>
             <Text style={styles.summaryText}>
@@ -154,6 +129,7 @@ const ShopDetailPromotionsSection: React.FC<
             </Text>
           </View>
         )}
+        */}
 
         {/* Promotions List using ShopDetailPromotionCard */}
         <View style={styles.promotionsList}>
@@ -217,22 +193,23 @@ const styles = StyleSheet.create({
     color: ShopColors.textSecondary,
   },
 
-  // Summary container
-  summaryContainer: {
-    marginBottom: 16,
-    padding: 12,
-    backgroundColor: ShopColors.accent + '10',
-    borderRadius: 8,
-    borderLeftWidth: 3,
-    borderLeftColor: ShopColors.accent,
-  },
+  // REMOVED: summaryContainer style
+  // summaryContainer: {
+  //   marginBottom: 16,
+  //   padding: 12,
+  //   backgroundColor: ShopColors.accent + '10',
+  //   borderRadius: 8,
+  //   borderLeftWidth: 3,
+  //   borderLeftColor: ShopColors.accent,
+  // },
 
-  summaryText: {
-    fontSize: 13,
-    fontFamily: 'Poppins-Medium',
-    color: ShopColors.textPrimary,
-    lineHeight: 18,
-  },
+  // REMOVED: summaryText style
+  // summaryText: {
+  //   fontSize: 13,
+  //   fontFamily: 'Poppins-Medium',
+  //   color: ShopColors.textPrimary,
+  //   lineHeight: 18,
+  // },
 
   // Promotions List
   promotionsList: {
