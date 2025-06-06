@@ -6,7 +6,7 @@ import 'react-native-reanimated';
 import { AuthProvider } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-export default function RootLayout() {
+export default function BusinessLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     PoppinsRegular: require('@/assets/fonts/Poppins/Poppins-Medium.ttf'),
@@ -21,7 +21,7 @@ export default function RootLayout() {
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" options={{ headerShown: false }} />
-        </Stack>
+\        </Stack>
       </ThemeProvider>
     </AuthProvider>
   );

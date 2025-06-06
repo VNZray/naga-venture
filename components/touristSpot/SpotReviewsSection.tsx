@@ -1,3 +1,4 @@
+import { reviewsData } from "@/app/TouristApp/(tabs)/(home)/(touristSpots)/reviewsData";
 import ReviewCard from "@/components/ReviewCard";
 import { ThemedText } from "@/components/ThemedText";
 import { useTouristSpots } from "@/context/TouristSpotContext";
