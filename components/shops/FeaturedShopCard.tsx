@@ -1,33 +1,24 @@
 import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
+// STEP 1: Comment out the LinearGradient import for this test
+// import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import type { ShopCardProps } from './types';
 
-// Props might be identical to ShopCardProps, or you might want to simplify/extend
-// For now, let's assume it's similar enough to reuse ShopCardProps.
-// interface FeaturedShopCardProps extends ShopCardProps {
-//   // any additional props specific to featured card
-// }
-
-const FeaturedShopCard: React.FC<ShopCardProps> = ({
-  shop,
-  onPress,
-  // width prop might be handled differently or be a fixed larger size by default
-}) => {
-  const cardWidth = 280; // A wider card for featured items
-  const cardHeight = 180; // A taller card
+const FeaturedShopCard: React.FC<ShopCardProps> = ({ shop, onPress }) => {
+  const cardWidth = 280;
+  const cardHeight = 180;
 
   const styles = StyleSheet.create({
     card: {
       width: cardWidth,
       height: cardHeight,
-      borderRadius: 16, // Slightly larger radius
-      overflow: 'hidden', // Important for ImageBackground and borderRadius
-      backgroundColor: ShopColors.border, // Fallback color
-      elevation: 5, // More pronounced shadow
+      borderRadius: 16,
+      overflow: 'hidden',
+      backgroundColor: ShopColors.border, // Fallback color if image fails
+      elevation: 5,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.2,
@@ -36,29 +27,40 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
     imageBackground: {
       flex: 1,
       position: 'relative',
-      justifyContent: 'flex-end', // Align content to the bottom
+      justifyContent: 'flex-end',
     },
     image: {
       width: '100%',
       height: '100%',
       position: 'absolute',
     },
+    // This was the original style for the LinearGradient
     gradient: {
       position: 'absolute',
       left: 0,
       right: 0,
       bottom: 0,
-      height: '70%', // Gradient covers bottom part for text readability
-      zIndex: 1, // Above image but below content
+      height: '70%',
+      zIndex: 1,
+    },
+    // STEP 2: Define a fallback style for the View that replaces LinearGradient
+    gradientFallback: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      height: '70%', // Mimics the original gradient's coverage
+      zIndex: 1,
+      backgroundColor: 'rgba(0,0,0,0.4)', // Solid color to simulate the dark part of the gradient
     },
     contentContainer: {
       padding: 16,
-      position: 'relative', // For absolute positioning of featured tag
-      zIndex: 2, // Ensure content appears above gradient
+      position: 'relative',
+      zIndex: 2, // Ensure content is above the fallback gradient view
     },
     name: {
       fontSize: 18,
-      fontFamily: 'Poppins-SemiBold', // Bolder for featured
+      fontFamily: 'Poppins-SemiBold',
       color: '#FFFFFF',
       textShadowColor: 'rgba(0, 0, 0, 0.5)',
       textShadowOffset: { width: 0, height: 1 },
@@ -113,10 +115,15 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
           transition={200}
           placeholder="LKN]Rv%2Tw=w]~RBVZRi};RPxuwH"
         />
+        {/* STEP 3: Replace the LinearGradient component with a simple View using the fallback style */}
+        <View style={styles.gradientFallback} />
+        {/*
+        // The original LinearGradient - keep this commented out for this test:
         <LinearGradient
           colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']}
           style={styles.gradient}
         />
+        */}
         <View style={styles.contentContainer}>
           <Text style={styles.name} numberOfLines={2}>
             {shop.name}
