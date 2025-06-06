@@ -9,7 +9,6 @@ interface DiscoverMoreShopListProps {
   onShopPress: (shopId: string) => void;
   title?: string;
   emptyMessage?: string;
-  onToggleFavoriteItem?: (shopId: string, isFavorited: boolean) => void;
 }
 
 const DiscoverMoreShopList: React.FC<DiscoverMoreShopListProps> = ({
@@ -17,7 +16,6 @@ const DiscoverMoreShopList: React.FC<DiscoverMoreShopListProps> = ({
   onShopPress,
   title = 'Discover More',
   emptyMessage = 'No more shops to discover.',
-  onToggleFavoriteItem,
 }) => {
   const styles = StyleSheet.create({
     componentContainer: {
@@ -48,14 +46,9 @@ const DiscoverMoreShopList: React.FC<DiscoverMoreShopListProps> = ({
       textAlign: 'center',
     },
   });
-
   const renderShopItem = ({ item }: { item: ShopData }) => (
     <View style={styles.cardItemWrapper}>
-      <DiscoverMoreShopCard
-        shop={item}
-        onPress={onShopPress}
-        onToggleFavorite={onToggleFavoriteItem}
-      />
+      <DiscoverMoreShopCard shop={item} onPress={onShopPress} />
     </View>
   );
 

@@ -2,24 +2,34 @@ import { ShopColors } from '@/constants/ShopColors';
 import type { ShopReview } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import PhotoGalleryModal from './PhotoGalleryModal';
 
 interface ShopDetailReviewCardProps {
   review: ShopReview;
-  onImagePress?: (imageUrl: string) => void;
+  onImagePress?: (imageUrl: string) => void; // Keep for backward compatibility but don't use
   onHelpfulPress?: (reviewId: string) => void;
 }
 
 const ShopDetailReviewCard: React.FC<ShopDetailReviewCardProps> = ({ 
   review, 
-  onImagePress,
+  onImagePress, // Keep but don't use to prevent double modal
   onHelpfulPress 
 }) => {
   const [isHelpfulPressed, setIsHelpfulPressed] = useState(false);
+  const [photoGalleryVisible, setPhotoGalleryVisible] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   const handleHelpfulPress = () => {
     setIsHelpfulPressed(!isHelpfulPressed);
     onHelpfulPress?.(review.id);
+  };
+
+  const handleImagePress = (imageUrl: string, index: number) => {
+    setSelectedImageIndex(index);
+    setPhotoGalleryVisible(true);
+    // REMOVED: Don't call onImagePress to prevent double modal
+    // onImagePress?.(imageUrl);
   };
 
   const formatDate = (dateString: string) => {
@@ -46,97 +56,113 @@ const ShopDetailReviewCard: React.FC<ShopDetailReviewCardProps> = ({
   };
 
   return (
-    <View style={styles.reviewCard}>
-      {/* Review Header */}
-      <View style={styles.reviewHeader}>
-        <View style={styles.reviewUserInfo}>
-          {review.userAvatar ? (
-            <Image source={{ uri: review.userAvatar }} style={styles.reviewUserAvatar} />
-          ) : (
-            <View style={styles.reviewUserAvatarPlaceholder}>
-              <Ionicons name="person" size={16} color={ShopColors.textSecondary} />
-            </View>
-          )}
-          <View style={styles.reviewUserDetails}>
-            <Text style={styles.reviewUserName}>{review.userName}</Text>
-            <View style={styles.reviewRatingContainer}>
-              {renderStars(review.rating)}
-              <Text style={styles.reviewDate}>
-                • {formatDate(review.date)}
-              </Text>
+    <>
+      <View style={styles.reviewCard}>
+        {/* Review Header */}
+        <View style={styles.reviewHeader}>
+          <View style={styles.reviewUserInfo}>
+            {review.userAvatar ? (
+              <Image source={{ uri: review.userAvatar }} style={styles.reviewUserAvatar} />
+            ) : (
+              <View style={styles.reviewUserAvatarPlaceholder}>
+                <Ionicons name="person" size={16} color={ShopColors.textSecondary} />
+              </View>
+            )}
+            <View style={styles.reviewUserDetails}>
+              <Text style={styles.reviewUserName}>{review.userName}</Text>
+              <View style={styles.reviewRatingContainer}>
+                {renderStars(review.rating)}
+                <Text style={styles.reviewDate}>
+                  • {formatDate(review.date)}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
         
-        {review.isVerifiedPurchase && (
-          <View style={styles.verifiedBadge}>
-            <Ionicons name="checkmark-circle" size={14} color={ShopColors.success} />
-            <Text style={styles.verifiedText}>Verified</Text>
+        {/* Review Content */}
+        <Text style={styles.reviewComment}>{review.comment}</Text>
+        
+        {/* Review Images */}
+        {review.images && review.images.length > 0 && (
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            style={styles.reviewImages}
+            contentContainerStyle={styles.reviewImagesContent}
+          >
+            {review.images.map((imageUrl, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleImagePress(imageUrl, index)}
+                activeOpacity={0.8}
+                style={styles.imageContainer}
+              >
+                <Image source={{ uri: imageUrl }} style={styles.reviewImage} />
+                {/* Show indicator if multiple images */}
+                {review.images!.length > 1 && (
+                  <View style={styles.imageCountBadge}>
+                    <Text style={styles.imageCountText}>
+                      {index + 1}/{review.images!.length}
+                    </Text>
+                  </View>
+                )}
+                {/* Add gallery icon overlay for better UX */}
+                <View style={styles.galleryIconOverlay}>
+                  <Ionicons name="expand-outline" size={16} color="#FFFFFF" />
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        )}
+        
+        {/* Review Actions */}
+        <View style={styles.reviewActions}>
+          <TouchableOpacity 
+            style={[
+              styles.reviewHelpfulButton,
+              isHelpfulPressed && styles.reviewHelpfulButtonPressed
+            ]}
+            onPress={handleHelpfulPress}
+            activeOpacity={0.7}
+          >
+            <Ionicons 
+              name={isHelpfulPressed ? "thumbs-up" : "thumbs-up-outline"} 
+              size={14} 
+              color={isHelpfulPressed ? ShopColors.accent : ShopColors.textSecondary} 
+            />
+            <Text style={[
+              styles.reviewHelpfulText,
+              isHelpfulPressed && styles.reviewHelpfulTextPressed
+            ]}>
+              Helpful ({(review.helpfulCount || 0) + (isHelpfulPressed ? 1 : 0)})
+            </Text>
+          </TouchableOpacity>
+        </View>
+        
+        {/* Owner Response */}
+        {review.response && (
+          <View style={styles.ownerResponse}>
+            <View style={styles.ownerResponseHeader}>
+              <Ionicons name="storefront" size={14} color={ShopColors.accent} />
+              <Text style={styles.ownerResponseLabel}>Owner Response</Text>
+              <Text style={styles.ownerResponseDate}>
+                {formatDate(review.response.date)}
+              </Text>
+            </View>
+            <Text style={styles.ownerResponseText}>{review.response.message}</Text>
           </View>
         )}
       </View>
-      
-      {/* Review Content */}
-      <Text style={styles.reviewComment}>{review.comment}</Text>
-      
-      {/* Review Images */}
-      {review.images && review.images.length > 0 && (
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          style={styles.reviewImages}
-          contentContainerStyle={styles.reviewImagesContent}
-        >
-          {review.images.map((imageUrl, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => onImagePress?.(imageUrl)}
-              activeOpacity={0.8}
-            >
-              <Image source={{ uri: imageUrl }} style={styles.reviewImage} />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      )}
-      
-      {/* Review Actions */}
-      <View style={styles.reviewActions}>
-        <TouchableOpacity 
-          style={[
-            styles.reviewHelpfulButton,
-            isHelpfulPressed && styles.reviewHelpfulButtonPressed
-          ]}
-          onPress={handleHelpfulPress}
-          activeOpacity={0.7}
-        >
-          <Ionicons 
-            name={isHelpfulPressed ? "thumbs-up" : "thumbs-up-outline"} 
-            size={14} 
-            color={isHelpfulPressed ? ShopColors.accent : ShopColors.textSecondary} 
-          />
-          <Text style={[
-            styles.reviewHelpfulText,
-            isHelpfulPressed && styles.reviewHelpfulTextPressed
-          ]}>
-            Helpful ({(review.helpfulCount || 0) + (isHelpfulPressed ? 1 : 0)})
-          </Text>
-        </TouchableOpacity>
-      </View>
-      
-      {/* Owner Response */}
-      {review.response && (
-        <View style={styles.ownerResponse}>
-          <View style={styles.ownerResponseHeader}>
-            <Ionicons name="storefront" size={14} color={ShopColors.accent} />
-            <Text style={styles.ownerResponseLabel}>Owner Response</Text>
-            <Text style={styles.ownerResponseDate}>
-              {formatDate(review.response.date)}
-            </Text>
-          </View>
-          <Text style={styles.ownerResponseText}>{review.response.message}</Text>
-        </View>
-      )}
-    </View>
+
+      {/* Photo Gallery Modal - Only this one will show */}
+      <PhotoGalleryModal
+        visible={photoGalleryVisible}
+        onClose={() => setPhotoGalleryVisible(false)}
+        images={review.images || []}
+        initialIndex={selectedImageIndex}
+      />
+    </>
   );
 };
 
@@ -201,20 +227,6 @@ const styles = StyleSheet.create({
     color: ShopColors.textSecondary,
     marginLeft: 4,
   },
-  verifiedBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ShopColors.success + '15',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-    gap: 4,
-  },
-  verifiedText: {
-    fontSize: 10,
-    fontFamily: 'Poppins-SemiBold',
-    color: ShopColors.success,
-  },
   reviewComment: {
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
@@ -228,11 +240,36 @@ const styles = StyleSheet.create({
   reviewImagesContent: {
     paddingRight: 16,
   },
+  imageContainer: {
+    position: 'relative',
+    marginRight: 8,
+  },
   reviewImage: {
     width: 80,
     height: 80,
     borderRadius: 8,
-    marginRight: 8,
+  },
+  imageCountBadge: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  imageCountText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontFamily: 'Poppins-Bold',
+  },
+  galleryIconOverlay: {
+    position: 'absolute',
+    bottom: 4,
+    right: 4,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 12,
+    padding: 4,
   },
   reviewActions: {
     flexDirection: 'row',

@@ -26,4 +26,34 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Shops Module - Hans Gabriel Candor
 
+### Dependencies
+```bash
+npm install @tanstack/react-query
+npm install react-native-skeleton-placeholder
+npm install expo-image
+npm install lodash.debounce @types/lodash.debounce
+```
+
+### Documentation
+- **API Contract:** `docs/ShopAPI_Contract.md` - Complete API specification for backend development
+- **Frontend-Backend Mapping:** `docs/Frontend_Backend_Mapping.md` - Maps React hooks to API endpoints
+- **Data Validation:** `docs/Data_Validation_Spec.md` - Type definitions and validation rules
+- **Migration Guide:** `docs/API_Migration_Guide.md` - Step-by-step guide from mock data to real API
+
+### Features Implemented
+- ✅ **Performance & UX Polish**
+  - Skeleton loaders with app-themed colors
+  - Optimistic UI for instant favorite toggles
+  - expo-image for enhanced performance and caching
+- ✅ **Code & Logic Refinement**
+  - Centralized navigation through ShopNavigator
+  - Enhanced error handling with ErrorState component
+  - Debounced search with TanStack Query
+- ✅ **Strategic API Planning**
+  - Complete API contract documentation
+  - Type-safe frontend-backend mapping
+  - Migration strategy for real API integration
+
+
+
 ## Events Module - Wayne Sanao
