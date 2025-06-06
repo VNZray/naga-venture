@@ -1,15 +1,10 @@
 import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import {
-    ImageBackground,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient'; // Assuming expo-linear-gradient is available
-import type { ShopCardProps } from './types'; // We can reuse or adapt ShopCardProps
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import type { ShopCardProps } from './types';
 
 // Props might be identical to ShopCardProps, or you might want to simplify/extend
 // For now, let's assume it's similar enough to reuse ShopCardProps.
@@ -30,17 +25,23 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
       width: cardWidth,
       height: cardHeight,
       borderRadius: 16, // Slightly larger radius
-      overflow: 'hidden', // Important for ImageBackground and borderRadius
+      overflow: 'hidden', // Important for Image and borderRadius
       backgroundColor: ShopColors.border, // Fallback color
       elevation: 5, // More pronounced shadow
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.2,
       shadowRadius: 5,
+      position: 'relative', // For absolute positioning of overlay elements
     },
-    imageBackground: {
-      flex: 1,
-      justifyContent: 'flex-end', // Align content to the bottom
+    image: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: '100%',
+      height: '100%',
     },
     gradient: {
       position: 'absolute',
@@ -100,32 +101,33 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
       onPress={() => onPress(shop.id)}
       activeOpacity={0.9}
     >
-      <ImageBackground
+      <Image
         source={{ uri: shop.image }}
-        style={styles.imageBackground}
-        resizeMode="cover"
-      >
-        <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']}
-          style={styles.gradient}
-        />
-        <View style={styles.contentContainer}>
-          <Text style={styles.name} numberOfLines={2}>
-            {shop.name}
-          </Text>
-        </View>
+        style={styles.image}
+        contentFit="cover"
+        transition={300}
+        placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**-oJ-pM|' }}
+      />
+      <LinearGradient
+        colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']}
+        style={styles.gradient}
+      />
+      <View style={styles.contentContainer}>
+        <Text style={styles.name} numberOfLines={2}>
+          {shop.name}
+        </Text>
+      </View>
 
-        {shop.rating !== undefined && shop.rating !== null && (
-          <View style={styles.ratingBadge}>
-            <Ionicons name="star" size={14} color="#FFD700" />
-            <Text style={styles.ratingText}>{shop.rating.toFixed(1)}</Text>
-          </View>
-        )}
-
-        <View style={styles.featuredTag}>
-          <Text style={styles.featuredTagText}>FEATURED</Text>
+      {shop.rating !== undefined && shop.rating !== null && (
+        <View style={styles.ratingBadge}>
+          <Ionicons name="star" size={14} color="#FFD700" />
+          <Text style={styles.ratingText}>{shop.rating.toFixed(1)}</Text>
         </View>
-      </ImageBackground>
+      )}
+
+      <View style={styles.featuredTag}>
+        <Text style={styles.featuredTagText}>FEATURED</Text>
+      </View>
     </TouchableOpacity>
   );
 };
