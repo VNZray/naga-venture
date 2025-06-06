@@ -1,5 +1,5 @@
-import { reviewsData } from '@/app/(tabs)/(home)/(touristSpots)/reviewsData';
-import { categories, touristSpotsData } from '@/app/(tabs)/(home)/(touristSpots)/TouristSpotData';
+import { reviewsData } from '@/app/TouristApp/(tabs)/(home)/(touristSpots)/reviewsData';
+import { categories, touristSpotsData } from '@/app/TouristApp/(tabs)/(home)/(touristSpots)/TouristSpotData';
 import React, { createContext, ReactNode, useCallback, useContext, useState } from 'react';
 
 // Types
