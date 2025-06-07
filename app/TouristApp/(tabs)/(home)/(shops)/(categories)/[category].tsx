@@ -1,40 +1,38 @@
-// app/(tabs)/(home)/(shops)/(categories)/[category].tsx - Simplified
-import ShopCategoryPage from "@/components/shops/ShopCategoryPage";
-import { useLocalSearchParams } from "expo-router";
-import React from "react";
-import { getMainCategoryById, shopsData } from "@/Controller/ShopData";
+// app/(tabs)/(home)/(shops)/(categories)/[category].tsx - REFACTORED
 
-/**
- * MainCategoryPage - Simple implementation using ShopCategoryPage component
- */
+import ShopGridScreen from '@/components/shops/ShopGridScreen';
+import { getMainCategoryById } from '@/Controller/ShopData'; // OK to use this for static data like category name
+import { useShopsByCategory } from '@/hooks/useShops';
+import { useLocalSearchParams } from 'expo-router';
+import React from 'react';
+
 const MainCategoryPage = () => {
-  const { category: mainCategoryId } = useLocalSearchParams();
-  
-  // Ensure mainCategoryId is a string
-  const mainCategoryIdString = Array.isArray(mainCategoryId) ? mainCategoryId[0] : mainCategoryId || "";
-  
-  // Get the main category data
-  const mainCategoryData = getMainCategoryById(mainCategoryIdString);
-  
-  // Get all shops that belong to subcategories of this main category
-  const allCategoryShops = mainCategoryData 
-    ? Object.values(shopsData).filter(shop => 
-        mainCategoryData.subcategories.some(sub => sub.id === shop.category)
-      )
-    : [];
+  const { category: categoryId } = useLocalSearchParams();
+  const id = Array.isArray(categoryId) ? categoryId[0] : categoryId || '';
 
-  if (!mainCategoryData) {
-    return <ShopCategoryPage category={null} shops={[]} />;
-  }
+  // It's acceptable to get the static category name this way for the title
+  const categoryData = getMainCategoryById(id);
+  const categoryName = categoryData ? categoryData.name : 'Category';
 
+  // Fetch the list of shops for this category using the hook
+  const {
+    data: shops,
+    isLoading,
+    isError,
+    refetch,
+    isRefetching,
+  } = useShopsByCategory(id);
+
+  // The ShopGridScreen already handles loading, error, and empty states!
   return (
-    <ShopCategoryPage 
-      category={{
-        id: mainCategoryData.id,
-        name: mainCategoryData.name,
-        icon: mainCategoryData.icon
-      }}
-      shops={allCategoryShops}
+    <ShopGridScreen
+      title={categoryName}
+      shops={shops || []}
+      isLoading={isLoading}
+      isError={isError}
+      onRefresh={refetch}
+      isRefreshing={isRefetching}
+      emptyMessage="No shops have been added to this category yet."
     />
   );
 };

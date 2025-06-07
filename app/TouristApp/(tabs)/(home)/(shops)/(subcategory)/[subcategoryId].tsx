@@ -1,38 +1,39 @@
-// app/(tabs)/(home)/(shops)/(subcategory)/[subcategoryId].tsx - Simplified
-import ShopCategoryPage from "@/components/shops/ShopCategoryPage";
-import { useLocalSearchParams } from "expo-router";
-import React from "react";
-import { getCategoryById, shopsData } from "@/Controller/ShopData";
+// app/(tabs)/(home)/(shops)/(subcategory)/[subcategoryId].tsx - REFACTORED
 
-/**
- * SubcategoryPage - Simple implementation using ShopCategoryPage component
- */
+import ShopGridScreen from '@/components/shops/ShopGridScreen';
+import { getCategoryById } from '@/Controller/ShopData'; // OK for static data
+import { useShopsBySubcategory } from '@/hooks/useShops';
+import { useLocalSearchParams } from 'expo-router';
+import React from 'react';
+
 const SubcategoryPage = () => {
   const { subcategoryId } = useLocalSearchParams();
-  
-  // Ensure subcategoryId is a string
-  const subcategoryIdString = Array.isArray(subcategoryId) ? subcategoryId[0] : subcategoryId || "";
-  
-  // Get the subcategory data
-  const subcategoryData = getCategoryById(subcategoryIdString);
-  
-  // Get all shops that belong to this subcategory
-  const categoryShops = Object.values(shopsData).filter(shop => 
-    shop.category === subcategoryIdString
-  );
+  const id = Array.isArray(subcategoryId)
+    ? subcategoryId[0]
+    : subcategoryId || '';
 
-  if (!subcategoryData) {
-    return <ShopCategoryPage category={null} shops={[]} />;
-  }
+  const subcategoryData = getCategoryById(id);
+  const subcategoryName = subcategoryData
+    ? subcategoryData.name
+    : 'Subcategory';
+
+  const {
+    data: shops,
+    isLoading,
+    isError,
+    refetch,
+    isRefetching,
+  } = useShopsBySubcategory(id);
 
   return (
-    <ShopCategoryPage 
-      category={{
-        id: subcategoryData.id,
-        name: subcategoryData.name,
-        icon: subcategoryData.icon
-      }}
-      shops={categoryShops}
+    <ShopGridScreen
+      title={subcategoryName}
+      shops={shops || []}
+      isLoading={isLoading}
+      isError={isError}
+      onRefresh={refetch}
+      isRefreshing={isRefetching}
+      emptyMessage="No shops have been added to this subcategory yet."
     />
   );
 };

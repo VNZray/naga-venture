@@ -1,10 +1,11 @@
 // src/hooks/useShops.ts
 import {
   destinations as allShopsData,
+  getMainCategoryById,
   shopsData,
   featuredShops as staticFeatured,
 } from '@/Controller/ShopData';
-import type { ShopData } from '@/types/shop';
+import type { ShopData } from '@/types/shop'; // Added ShopGallery import
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import debounce from 'lodash.debounce';
 import { useEffect, useState } from 'react';
@@ -56,6 +57,30 @@ const searchShops = async (query: string): Promise<ShopData[]> => {
   }) as ShopData[];
 };
 
+// --- SIMULATED API CALLS ---
+const fetchShopsByCategory = async (
+  categoryId: string
+): Promise<ShopData[]> => {
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  const mainCategory = getMainCategoryById(categoryId);
+  if (!mainCategory) return [];
+  const subcategoryIds = mainCategory.subcategories.map(
+    (sub: { id: string }) => sub.id
+  ); // Added type for sub
+  return allShopsData.filter((shop) =>
+    subcategoryIds.includes(shop.category)
+  ) as ShopData[]; // Added type assertion
+};
+
+const fetchShopsBySubcategory = async (
+  subcategoryId: string
+): Promise<ShopData[]> => {
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  return allShopsData.filter(
+    (shop) => shop.category === subcategoryId
+  ) as ShopData[]; // Added type assertion
+};
+
 // --- CUSTOM HOOKS ---
 // Your components will use these hooks, not the functions above.
 
@@ -85,6 +110,22 @@ export const useRecommendedShops = () => {
   return useQuery<ShopData[], Error>({
     queryKey: ['shops', 'recommended'],
     queryFn: fetchRecommendedShops,
+  });
+};
+
+export const useShopsByCategory = (categoryId: string) => {
+  return useQuery<ShopData[], Error>({
+    queryKey: ['shops', { category: categoryId }],
+    queryFn: () => fetchShopsByCategory(categoryId),
+    enabled: !!categoryId,
+  });
+};
+
+export const useShopsBySubcategory = (subcategoryId: string) => {
+  return useQuery<ShopData[], Error>({
+    queryKey: ['shops', { subcategory: subcategoryId }],
+    queryFn: () => fetchShopsBySubcategory(subcategoryId),
+    enabled: !!subcategoryId,
   });
 };
 
@@ -221,8 +262,10 @@ export const useToggleFavorite = () => {
     },
 
     // Always refetch after error or success to ensure server state
-    onSettled: () => {
+    onSettled: (data, error, shopId) => {
+      // Added shopId parameter
       queryClient.invalidateQueries({ queryKey: ['shops'] });
+      queryClient.invalidateQueries({ queryKey: ['shop', shopId] }); // Invalidate single shop query
     },
   });
 };

@@ -1,29 +1,44 @@
-// app/(tabs)/(home)/(shops)/(details)/[shopId].tsx - Clean and simple
-import ShopDetail from "@/components/shops/ShopDetail";
-import { useLocalSearchParams } from "expo-router";
-import React from "react";
-import { shopsData } from "@/Controller/ShopData";
+// app/(tabs)/(home)/(shops)/(details)/[shopId].tsx - REFACTORED
 
-/**
- * ShopDetails - Clean and simple using our new ShopDetail component
- * 
- * This demonstrates the new simple approach:
- * 1. Get shop data from parameters
- * 2. Pass data to ShopDetail component
- * 3. ShopDetail handles all the UI and navigation
- */
-const ShopDetails = () => {
+import { ErrorState } from '@/components/shops/ErrorState';
+import ShopDetail from '@/components/shops/ShopDetail';
+import { useShop } from '@/hooks/useShops';
+import { useLocalSearchParams } from 'expo-router';
+import React from 'react';
+import { ActivityIndicator } from 'react-native'; // Removed View import
+
+const ShopDetailsPage = () => {
   const { shopId } = useLocalSearchParams();
-    // Handle shopId which can be string or string[]
-  const shopKey = Array.isArray(shopId) ? shopId[0] : shopId;
-  const shop = shopKey ? shopsData[shopKey as unknown as keyof typeof shopsData] : null;
+  const id = Array.isArray(shopId) ? shopId[0] : shopId || '';
 
-  // Handle case where shop is not found
+  // Fetch data using the hook. No more direct imports!
+  const { data: shop, isLoading, isError, refetch } = useShop(id);
+
+  // Handle Loading and Error states
+  if (isLoading) {
+    // You can replace this with a beautiful skeleton loader for the detail page
+    return (
+      <ActivityIndicator
+        size="large"
+        style={{ flex: 1, alignSelf: 'center' }}
+      />
+    );
+  }
+
+  if (isError) {
+    return (
+      <ErrorState message="Could not load shop details." onRetry={refetch} />
+    );
+  }
+
+  // Handle case where shop is not found by the API
   if (!shop) {
+    // Render your "Not Found" view from ShopDetail or a dedicated component
     return <ShopDetail shop={null} />;
   }
 
-  return <ShopDetail shop={shop as any} />;
+  // Render the "dumb" presentational component with the fetched data
+  return <ShopDetail shop={shop} />;
 };
 
-export default ShopDetails;
+export default ShopDetailsPage;
