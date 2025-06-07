@@ -4,8 +4,9 @@ import {
   getMainCategoryById,
   shopsData,
   featuredShops as staticFeatured,
+  mainCategories as staticMainCategories,
 } from '@/Controller/ShopData';
-import type { ShopData } from '@/types/shop'; // Added ShopGallery import
+import type { MainCategory as MainShopCategory, ShopData } from '@/types/shop'; // Renamed MainCategory to MainShopCategory
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import debounce from 'lodash.debounce';
 import { useEffect, useState } from 'react';
@@ -81,6 +82,13 @@ const fetchShopsBySubcategory = async (
   ) as ShopData[]; // Added type assertion
 };
 
+// --- SIMULATED API CALL ---
+const fetchMainCategories = async (): Promise<MainShopCategory[]> => {
+  console.log('Fetching main categories...');
+  await new Promise((resolve) => setTimeout(resolve, 400)); // Simulate network delay
+  return staticMainCategories;
+};
+
 // --- CUSTOM HOOKS ---
 // Your components will use these hooks, not the functions above.
 
@@ -150,6 +158,14 @@ export const useSearchShops = (query: string) => {
     queryKey: ['shops', 'search', debouncedQuery],
     queryFn: () => searchShops(debouncedQuery),
     enabled: !!debouncedQuery.trim(), // Only search if there's a query
+  });
+};
+
+// --- CUSTOM HOOK ---
+export const useMainCategories = () => {
+  return useQuery<MainShopCategory[], Error>({
+    queryKey: ['categories', 'main'], // A unique key for this data
+    queryFn: fetchMainCategories,
   });
 };
 
