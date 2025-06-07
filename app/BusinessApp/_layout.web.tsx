@@ -16,9 +16,15 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(admin)" options={{ headerShown: false }} />
+        <Stack screenOptions={{ headerShown: false, headerBackVisible: false }}>
+          <Stack.Screen
+            name="index"
+            options={{ headerShown: false, headerBackVisible: false }}
+          />
+          <Stack.Screen
+            name="(admin)"
+            options={{ headerShown: false, headerBackVisible: false }}
+          />
         </Stack>
       </ThemeProvider>
     </AuthProvider>
