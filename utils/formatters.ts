@@ -17,6 +17,7 @@ export const formatDate = (dateString: string | undefined): string => {
       month: 'long',
       day: 'numeric',
     });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     // console.error('Error formatting date:', dateString, e);
     return 'Invalid Date';

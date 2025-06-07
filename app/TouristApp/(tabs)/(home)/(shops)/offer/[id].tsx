@@ -1,24 +1,73 @@
 import { ErrorState } from '@/components/shops/ErrorState';
+import SpecialOfferDetailSkeleton from '@/components/skeletons/SpecialOfferDetailSkeleton';
 import { ShopColors } from '@/constants/ShopColors';
 import { useSpecialOffer } from '@/hooks/useShops';
-import { ShopNavigator } from '@/navigation/ShopNavigator'; // Added for shop navigation
-import { formatDate } from '@/utils/formatters'; // Added for date formatting
+import { ShopNavigator } from '@/navigation/ShopNavigator';
+import { SpecialOffer } from '@/types/shop';
+import { formatDate } from '@/utils/formatters';
 import { Ionicons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import {
-  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity, // Added for clickable shop link
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// Consider creating and importing a Skeleton component
-// import SpecialOfferDetailSkeleton from '@/components/skeletons/SpecialOfferDetailSkeleton';
+// Sub-component to cleanly handle the shop link logic
+const ShopLinkSection = ({ offer }: { offer: SpecialOffer }) => {
+  if (offer.applicableToAllShops) {
+    return (
+      <View style={styles.infoSection}>
+        <Ionicons
+          name="storefront-outline"
+          size={20}
+          color={ShopColors.textSecondary}
+        />
+        <Text style={styles.shopLink}>
+          Applicable to all participating shops.
+        </Text>
+      </View>
+    );
+  }
+
+  if (
+    offer.shopId &&
+    (!offer.applicableShopIds || offer.applicableShopIds.length === 0)
+  ) {
+    return (
+      <TouchableOpacity
+        onPress={() => ShopNavigator.goToShopDetails(offer.shopId!)}
+        style={styles.shopLinkContainer}
+      >
+        <Ionicons name="storefront" size={20} color={ShopColors.accent} />
+        <Text style={styles.shopLinkText}>View Participating Shop</Text>
+        <Ionicons name="arrow-forward" size={16} color={ShopColors.accent} />
+      </TouchableOpacity>
+    );
+  }
+
+  if (offer.applicableShopIds && offer.applicableShopIds.length > 0) {
+    return (
+      <View style={styles.infoSectionMultiShops}>
+        <Ionicons
+          name="storefront-outline"
+          size={20}
+          color={ShopColors.textSecondary}
+        />
+        <Text style={styles.shopLink}>
+          Applicable at shops: {offer.applicableShopIds.join(', ')}
+        </Text>
+      </View>
+    );
+  }
+
+  return null; // No shop information provided
+};
 
 const SpecialOfferDetailsPage = () => {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -30,23 +79,13 @@ const SpecialOfferDetailsPage = () => {
   } = useSpecialOffer(id || '');
 
   if (isLoading) {
-    // Replace with Skeleton Loader if implemented
-    // return <SpecialOfferDetailSkeleton />;
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color={ShopColors.accent} />
-      </View>
-    );
+    return <SpecialOfferDetailSkeleton />;
   }
 
   if (isError || !offer) {
     return (
       <ErrorState
-        message={
-          isError
-            ? 'Could not load special offer. Please try again.'
-            : 'Special offer not found.'
-        }
+        message={isError ? 'Could not load offer.' : 'Special offer not found.'}
         onRetry={refetch}
       />
     );
@@ -68,12 +107,11 @@ const SpecialOfferDetailsPage = () => {
               color={ShopColors.textSecondary}
             />
             <Text style={styles.validityText}>
-              Valid from {formatDate(offer.validFrom)} to{' '}
+              Valid from {formatDate(offer.validFrom)} to
               {formatDate(offer.validUntil)}
             </Text>
           </View>
-
-          {offer.discountPercent && (
+          {offer.discountPercent != null && (
             <View style={styles.infoSection}>
               <Ionicons
                 name="pricetag-outline"
@@ -85,7 +123,7 @@ const SpecialOfferDetailsPage = () => {
               </Text>
             </View>
           )}
-          {offer.discountFixedAmount && (
+          {offer.discountFixedAmount != null && (
             <View style={styles.infoSection}>
               <Ionicons
                 name="cash-outline"
@@ -97,44 +135,12 @@ const SpecialOfferDetailsPage = () => {
               </Text>
             </View>
           )}
-
           <Text style={styles.sectionTitle}>Description</Text>
           <Text style={styles.description}>{offer.description}</Text>
-
           <Text style={styles.sectionTitle}>Terms and Conditions</Text>
           <Text style={styles.terms}>{offer.termsAndConditions}</Text>
-
-          {offer.shopId &&
-            !offer.applicableToAllShops &&
-            (!offer.applicableShopIds ||
-              offer.applicableShopIds.length === 0) && (
-              <TouchableOpacity
-                onPress={() => ShopNavigator.goToShopDetails(offer.shopId!)}
-                style={styles.shopLinkContainer}
-              >
-                <Text style={styles.shopLinkText}>
-                  View Participating Shop{' '}
-                  <Ionicons
-                    name="arrow-forward"
-                    size={14}
-                    color={ShopColors.accent}
-                  />
-                </Text>
-              </TouchableOpacity>
-            )}
-          {offer.applicableShopIds && offer.applicableShopIds.length > 0 && (
-            <View style={styles.infoSectionMultiShops}>
-              <Text style={styles.shopLink}>
-                Applicable at shops: {offer.applicableShopIds.join(', ')}
-              </Text>
-              {/* Optionally, make each shop ID clickable if navigation to multiple shops is desired */}
-            </View>
-          )}
-          {offer.applicableToAllShops && (
-            <Text style={styles.shopLink}>
-              This offer is applicable to all participating shops.
-            </Text>
-          )}
+          <View style={styles.separator} />
+          <ShopLinkSection offer={offer} />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -142,38 +148,21 @@ const SpecialOfferDetailsPage = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: ShopColors.background,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: ShopColors.background,
-  },
-  scrollContent: {
-    paddingBottom: 24,
-  },
-  offerImage: {
-    width: '100%',
-    height: 250,
-    resizeMode: 'cover',
-  },
-  contentContainer: {
-    padding: 20,
-  },
+  container: { flex: 1, backgroundColor: ShopColors.background },
+  scrollContent: { paddingBottom: 24 },
+  offerImage: { width: '100%', height: 250 },
+  contentContainer: { padding: 20 },
   title: {
     fontSize: 26,
     fontFamily: 'Poppins-Bold',
     color: ShopColors.textPrimary,
-    marginBottom: 12,
+    marginBottom: 16,
   },
   infoSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
-    gap: 8,
+    marginBottom: 10,
+    gap: 10,
   },
   validityText: {
     fontSize: 14,
@@ -189,8 +178,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Poppins-SemiBold',
     color: ShopColors.textPrimary,
-    marginTop: 20,
+    marginTop: 24,
     marginBottom: 8,
+    borderTopWidth: 1,
+    borderTopColor: ShopColors.border,
+    paddingTop: 16,
   },
   description: {
     fontSize: 16,
@@ -205,26 +197,33 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontStyle: 'italic',
   },
+  separator: {
+    height: 1,
+    backgroundColor: ShopColors.border,
+    marginVertical: 24,
+  },
   shopLinkContainer: {
-    // Added for the touchable shop link
-    marginTop: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     paddingVertical: 8,
     alignSelf: 'flex-start',
   },
   shopLinkText: {
-    // Added for the shop link text
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: 'Poppins-Medium',
     color: ShopColors.accent,
-    textDecorationLine: 'underline',
   },
   shopLink: {
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
-    color: ShopColors.textPrimary, // Changed from textAccent for non-clickable general info
-    marginTop: 16,
+    color: ShopColors.textPrimary,
+    flexShrink: 1,
   },
   infoSectionMultiShops: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     marginTop: 16,
   },
 });
