@@ -1,5 +1,5 @@
 import { ErrorState } from '@/components/shops/ErrorState';
-import SpecialOfferDetailSkeleton from '@/components/skeletons/SpecialOfferDetailSkeleton';
+import SpecialOfferDetailSkeleton from '@/components/shops/skeletons/SpecialOfferDetailSkeleton';
 import { ShopColors } from '@/constants/ShopColors';
 import { useSpecialOffer } from '@/hooks/useShops';
 import { ShopNavigator } from '@/navigation/ShopNavigator';

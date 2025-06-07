@@ -1,11 +1,11 @@
-// src/hooks/useShops.ts
+// hooks/useShops.ts - Professional Shop Data Management
+import queryKeys from '@/api/queryKeys';
 import {
-  destinations as allShopsData, // This seems to be an alias for shopsData or a different dataset. Clarify usage.
-  getMainCategoryById, // Import getSpecialOfferById
-  getShopsByIds, // Import specialOffersData
+  getMainCategoryById,
+  getShopsByIds,
   getSpecialOfferById,
   shopsData,
-  specialOffersData, // This should be the primary source for all shops
+  specialOffersData,
   featuredShops as staticFeatured,
   mainCategories as staticMainCategories,
 } from '@/Controller/ShopData';
@@ -13,101 +13,150 @@ import type {
   MainCategory as MainShopCategory,
   ShopData,
   SpecialOffer,
-} from '@/types/shop'; // Renamed MainCategory to MainShopCategory, Added SpecialOffer
+} from '@/types/shop';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import debounce from 'lodash.debounce';
 import { useEffect, useState } from 'react';
 
+// --- SINGLE SOURCE OF TRUTH ---
+// All shop operations use Object.values(shopsData) as the authoritative data source
+const getAllShopsData = (): ShopData[] =>
+  Object.values(shopsData) as ShopData[];
+
 // --- SIMULATED API CALLS ---
-// These functions mimic fetching from a real API.
+// These functions mimic fetching from a real API with proper error handling.
 
 const fetchAllShops = async (): Promise<ShopData[]> => {
   console.log('Fetching all shops...');
-  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate network delay
-  // Ensure this uses the correct primary data source for shops
-  return Object.values(shopsData) as ShopData[];
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  try {
+    return getAllShopsData();
+  } catch (error) {
+    console.error('Error fetching all shops:', error);
+    throw new Error('Failed to fetch shops');
+  }
 };
 
 const fetchShopById = async (id: string): Promise<ShopData | null> => {
   console.log(`Fetching shop by ID: ${id}`);
   await new Promise((resolve) => setTimeout(resolve, 200));
-  // Ensure this uses the correct primary data source for shops
-  return (shopsData[id as unknown as keyof typeof shopsData] ||
-    null) as ShopData | null;
+  try {
+    return (shopsData[id as unknown as keyof typeof shopsData] ||
+      null) as ShopData | null;
+  } catch (error) {
+    console.error(`Error fetching shop ${id}:`, error);
+    throw new Error(`Failed to fetch shop with ID: ${id}`);
+  }
 };
 
 const fetchFeaturedShops = async (): Promise<ShopData[]> => {
   console.log('Fetching featured shops...');
   await new Promise((resolve) => setTimeout(resolve, 300));
-  // staticFeatured is an alias for featuredShops from ShopData.js
-  return staticFeatured as ShopData[];
+  try {
+    return staticFeatured as ShopData[];
+  } catch (error) {
+    console.error('Error fetching featured shops:', error);
+    throw new Error('Failed to fetch featured shops');
+  }
 };
 
 const fetchRecommendedShops = async (): Promise<ShopData[]> => {
   console.log('Fetching recommended shops...');
   await new Promise((resolve) => setTimeout(resolve, 300));
-  // Filter shops with rating >= 4.5 for recommendations
-  return allShopsData.filter((shop) => shop.rating >= 4.5) as ShopData[];
+  try {
+    // Filter shops with rating >= 4.5 for recommendations using single source of truth
+    return getAllShopsData().filter((shop) => shop.rating >= 4.5);
+  } catch (error) {
+    console.error('Error fetching recommended shops:', error);
+    throw new Error('Failed to fetch recommended shops');
+  }
 };
 
 const searchShops = async (query: string): Promise<ShopData[]> => {
   console.log(`Searching shops with query: "${query}"`);
-  await new Promise((resolve) => setTimeout(resolve, 400)); // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 400));
 
   if (!query.trim()) {
     return [];
   }
 
-  const lowercaseQuery = query.toLowerCase();
-  // Ensure this searches the correct primary data source for shops
-  return (Object.values(shopsData) as ShopData[]).filter((shop) => {
-    return (
-      shop.name.toLowerCase().includes(lowercaseQuery) ||
-      shop.category?.toLowerCase().includes(lowercaseQuery) ||
-      shop.description?.toLowerCase().includes(lowercaseQuery)
-    );
-  }) as ShopData[];
+  try {
+    const lowercaseQuery = query.toLowerCase();
+    // Use single source of truth for search
+    return getAllShopsData().filter((shop) => {
+      return (
+        shop.name.toLowerCase().includes(lowercaseQuery) ||
+        shop.category?.toLowerCase().includes(lowercaseQuery) ||
+        shop.description?.toLowerCase().includes(lowercaseQuery)
+      );
+    });
+  } catch (error) {
+    console.error('Error searching shops:', error);
+    throw new Error('Failed to search shops');
+  }
 };
 
-// --- SIMULATED API CALLS ---
+// FIXED: Use shop.category instead of shop.subcategory for filtering
 const fetchShopsByCategory = async (
   categoryId: string
 ): Promise<ShopData[]> => {
   await new Promise((resolve) => setTimeout(resolve, 300));
-  const mainCategory = getMainCategoryById(categoryId);
-  if (!mainCategory) return [];
-  const subcategoryIds = mainCategory.subcategories.map(
-    (sub: { id: string }) => sub.id
-  );
-  // Ensure this filters the correct primary data source for shops
-  return (Object.values(shopsData) as ShopData[]).filter(
-    (shop) => subcategoryIds.includes(shop.subcategory || '') // Use shop.subcategory
-  ) as ShopData[]; // Added type assertion
+  try {
+    const mainCategory = getMainCategoryById(categoryId);
+    if (!mainCategory) return [];
+
+    const subcategoryIds = mainCategory.subcategories.map(
+      (sub: { id: string }) => sub.id
+    );
+    // FIXED: Filter by shop.category, not shop.subcategory
+    return getAllShopsData().filter((shop) =>
+      subcategoryIds.includes(shop.category || '')
+    );
+  } catch (error) {
+    console.error(`Error fetching shops by category ${categoryId}:`, error);
+    throw new Error(`Failed to fetch shops by category: ${categoryId}`);
+  }
 };
 
 const fetchShopsBySubcategory = async (
   subcategoryId: string
 ): Promise<ShopData[]> => {
   await new Promise((resolve) => setTimeout(resolve, 300));
-  // Ensure this filters the correct primary data source for shops
-  return (Object.values(shopsData) as ShopData[]).filter(
-    (shop) => shop.subcategory === subcategoryId
-  ) as ShopData[]; // Added type assertion
+  try {
+    // Use single source of truth for subcategory filtering
+    return getAllShopsData().filter(
+      (shop) => shop.subcategory === subcategoryId
+    );
+  } catch (error) {
+    console.error(
+      `Error fetching shops by subcategory ${subcategoryId}:`,
+      error
+    );
+    throw new Error(`Failed to fetch shops by subcategory: ${subcategoryId}`);
+  }
 };
 
-// --- SIMULATED API CALL ---
 const fetchMainCategories = async (): Promise<MainShopCategory[]> => {
   console.log('Fetching main categories...');
-  await new Promise((resolve) => setTimeout(resolve, 400)); // Simulate network delay
-  // staticMainCategories is an alias for mainCategories from ShopData.js
-  return staticMainCategories;
+  await new Promise((resolve) => setTimeout(resolve, 400));
+  try {
+    return staticMainCategories;
+  } catch (error) {
+    console.error('Error fetching main categories:', error);
+    throw new Error('Failed to fetch main categories');
+  }
 };
 
 // --- SPECIAL OFFER API CALLS ---
 const fetchAllSpecialOffers = async (): Promise<SpecialOffer[]> => {
   console.log('Fetching all special offers...');
   await new Promise((resolve) => setTimeout(resolve, 300));
-  return Object.values(specialOffersData) as unknown as SpecialOffer[];
+  try {
+    return Object.values(specialOffersData) as unknown as SpecialOffer[];
+  } catch (error) {
+    console.error('Error fetching special offers:', error);
+    throw new Error('Failed to fetch special offers');
+  }
 };
 
 const fetchSpecialOfferById = async (
@@ -115,70 +164,92 @@ const fetchSpecialOfferById = async (
 ): Promise<SpecialOffer | null> => {
   console.log(`Fetching special offer by ID: ${id}`);
   await new Promise((resolve) => setTimeout(resolve, 200));
-  const offer = getSpecialOfferById(id);
-  return offer ? (offer as unknown as SpecialOffer) : null;
+  try {
+    const offer = getSpecialOfferById(id);
+    return offer ? (offer as unknown as SpecialOffer) : null;
+  } catch (error) {
+    console.error(`Error fetching special offer ${id}:`, error);
+    throw new Error(`Failed to fetch special offer with ID: ${id}`);
+  }
 };
 
-// --- SHOPS BY IDS API CALL ---
+// FIXED: Sort IDs for consistent cache key
 const fetchShopsByIds = async (ids: string[]): Promise<ShopData[]> => {
   console.log(`Fetching shops by IDs: ${ids.join(', ')}`);
   await new Promise((resolve) => setTimeout(resolve, 200));
-  return getShopsByIds(ids) as ShopData[];
+  try {
+    return getShopsByIds(ids) as ShopData[];
+  } catch (error) {
+    console.error('Error fetching shops by IDs:', error);
+    throw new Error('Failed to fetch shops by IDs');
+  }
 };
 
 // --- CUSTOM HOOKS ---
-// Your components will use these hooks, not the functions above.
+// Professional hooks with centralized query keys and consistent patterns
 
 export const useShops = () => {
   return useQuery<ShopData[], Error>({
-    queryKey: ['shops'],
+    queryKey: queryKeys.shops.all,
     queryFn: fetchAllShops,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
   });
 };
 
 export const useShop = (shopId: string) => {
   return useQuery<ShopData | null, Error>({
-    queryKey: ['shop', shopId],
+    queryKey: queryKeys.shops.detail(shopId),
     queryFn: () => fetchShopById(shopId),
-    enabled: !!shopId, // Important: only run query if shopId is provided
+    enabled: !!shopId,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
 export const useFeaturedShops = () => {
   return useQuery<ShopData[], Error>({
-    queryKey: ['shops', 'featured'],
+    queryKey: queryKeys.shops.featured(),
     queryFn: fetchFeaturedShops,
+    staleTime: 10 * 60 * 1000, // Featured shops change less frequently
+    gcTime: 15 * 60 * 1000,
   });
 };
 
 export const useRecommendedShops = () => {
   return useQuery<ShopData[], Error>({
-    queryKey: ['shops', 'recommended'],
+    queryKey: queryKeys.shops.recommended(),
     queryFn: fetchRecommendedShops,
+    staleTime: 10 * 60 * 1000,
+    gcTime: 15 * 60 * 1000,
   });
 };
 
 export const useShopsByCategory = (categoryId: string) => {
   return useQuery<ShopData[], Error>({
-    queryKey: ['shops', { category: categoryId }],
+    queryKey: queryKeys.shops.byCategory(categoryId),
     queryFn: () => fetchShopsByCategory(categoryId),
     enabled: !!categoryId,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
 export const useShopsBySubcategory = (subcategoryId: string) => {
   return useQuery<ShopData[], Error>({
-    queryKey: ['shops', { subcategory: subcategoryId }],
+    queryKey: queryKeys.shops.bySubcategory(subcategoryId),
     queryFn: () => fetchShopsBySubcategory(subcategoryId),
     enabled: !!subcategoryId,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
-// Search hook with debouncing
+// Search hook with enhanced debouncing and error handling
 export const useSearchShops = (query: string) => {
   const [debouncedQuery, setDebouncedQuery] = useState(query);
 
-  // Debounce the search query to avoid too many API calls
+  // Enhanced debounce with proper cleanup
   useEffect(() => {
     const handler = debounce((searchQuery: string) => {
       setDebouncedQuery(searchQuery);
@@ -192,53 +263,63 @@ export const useSearchShops = (query: string) => {
   }, [query]);
 
   return useQuery<ShopData[], Error>({
-    queryKey: ['shops', 'search', debouncedQuery],
+    queryKey: queryKeys.shops.search(debouncedQuery),
     queryFn: () => searchShops(debouncedQuery),
-    enabled: !!debouncedQuery.trim(), // Only search if there's a query
+    enabled: !!debouncedQuery.trim(),
+    staleTime: 2 * 60 * 1000, // Search results stale faster
+    gcTime: 5 * 60 * 1000,
   });
 };
 
-// --- CUSTOM HOOK ---
 export const useMainCategories = () => {
   return useQuery<MainShopCategory[], Error>({
-    queryKey: ['categories', 'main'], // A unique key for this data
+    queryKey: queryKeys.categories.main(),
     queryFn: fetchMainCategories,
+    staleTime: 30 * 60 * 1000, // Categories change very infrequently
+    gcTime: 60 * 60 * 1000, // 1 hour
   });
 };
 
 // --- SPECIAL OFFER HOOKS ---
 export const useAllSpecialOffers = () => {
   return useQuery<SpecialOffer[], Error>({
-    queryKey: ['specialOffers', 'all'],
+    queryKey: queryKeys.specialOffers.all,
     queryFn: fetchAllSpecialOffers,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
 export const useSpecialOffer = (offerId: string) => {
   return useQuery<SpecialOffer | null, Error>({
-    queryKey: ['specialOffer', offerId],
+    queryKey: queryKeys.specialOffers.detail(offerId),
     queryFn: () => fetchSpecialOfferById(offerId),
     enabled: !!offerId,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
-// --- SHOPS BY IDS HOOK ---
+// FIXED: Sort IDs for consistent cache key
 export const useShopsByIds = (shopIds: string[]) => {
   return useQuery<ShopData[], Error>({
-    queryKey: ['shops', 'byIds', shopIds.join(',')], // Unique key based on sorted IDs
+    queryKey: queryKeys.shops.byIds(shopIds), // Now uses sorted IDs internally
     queryFn: () => fetchShopsByIds(shopIds),
     enabled: !!shopIds && shopIds.length > 0,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 };
 
-// --- MUTATION HOOK for updating data ---
+// --- ENHANCED MUTATION HOOK ---
+// Professional mutation with comprehensive optimistic updates and error handling
 export const useToggleFavorite = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (shopId: string) => {
-      // In a real app, this would be a POST/PATCH request to your API.
-      // For now, we directly mutate the mock data.
-      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
+      // In a real app, this would be a POST/PATCH request to your API
+      await new Promise((resolve) => setTimeout(resolve, 500));
       const shop = shopsData[shopId as unknown as keyof typeof shopsData];
       if (shop) {
         shop.isFavorited = !shop.isFavorited;
@@ -246,69 +327,54 @@ export const useToggleFavorite = () => {
       return shop;
     },
 
-    // This runs BEFORE the mutation function
+    // Optimistic updates with comprehensive query invalidation
     onMutate: async (shopId) => {
-      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({ queryKey: ['shops'] });
-      await queryClient.cancelQueries({ queryKey: ['shop', shopId] });
-
-      // Snapshot the previous values
-      const previousShops = queryClient.getQueryData(['shops']);
-      const previousFeaturedShops = queryClient.getQueryData([
-        'shops',
-        'featured',
+      // Cancel any outgoing refetches to prevent race conditions
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: queryKeys.shops.all }),
+        queryClient.cancelQueries({ queryKey: queryKeys.shops.detail(shopId) }),
+        queryClient.cancelQueries({ queryKey: queryKeys.shops.featured() }),
+        queryClient.cancelQueries({ queryKey: queryKeys.shops.recommended() }),
       ]);
-      const previousRecommendedShops = queryClient.getQueryData([
-        'shops',
-        'recommended',
-      ]);
-      const previousShop = queryClient.getQueryData(['shop', shopId]);
 
-      // Optimistically update all relevant queries
-      queryClient.setQueryData(['shops'], (old: ShopData[] | undefined) => {
-        return old
-          ? old.map((shop) =>
-              shop.id === shopId
-                ? { ...shop, isFavorited: !shop.isFavorited }
-                : shop
-            )
-          : [];
-      });
+      // Snapshot the previous values for rollback
+      const previousShops = queryClient.getQueryData(queryKeys.shops.all);
+      const previousFeaturedShops = queryClient.getQueryData(
+        queryKeys.shops.featured()
+      );
+      const previousRecommendedShops = queryClient.getQueryData(
+        queryKeys.shops.recommended()
+      );
+      const previousShop = queryClient.getQueryData(
+        queryKeys.shops.detail(shopId)
+      );
 
+      // Optimistic update function
+      const toggleFavorite = (shop: ShopData) =>
+        shop.id === shopId ? { ...shop, isFavorited: !shop.isFavorited } : shop;
+
+      // Apply optimistic updates to all relevant queries
       queryClient.setQueryData(
-        ['shops', 'featured'],
-        (old: ShopData[] | undefined) => {
-          return old
-            ? old.map((shop) =>
-                shop.id === shopId
-                  ? { ...shop, isFavorited: !shop.isFavorited }
-                  : shop
-              )
-            : [];
-        }
+        queryKeys.shops.all,
+        (old: ShopData[] | undefined) => (old ? old.map(toggleFavorite) : [])
       );
 
       queryClient.setQueryData(
-        ['shops', 'recommended'],
-        (old: ShopData[] | undefined) => {
-          return old
-            ? old.map((shop) =>
-                shop.id === shopId
-                  ? { ...shop, isFavorited: !shop.isFavorited }
-                  : shop
-              )
-            : [];
-        }
+        queryKeys.shops.featured(),
+        (old: ShopData[] | undefined) => (old ? old.map(toggleFavorite) : [])
       );
 
       queryClient.setQueryData(
-        ['shop', shopId],
-        (old: ShopData | null | undefined) => {
-          return old ? { ...old, isFavorited: !old.isFavorited } : old;
-        }
+        queryKeys.shops.recommended(),
+        (old: ShopData[] | undefined) => (old ? old.map(toggleFavorite) : [])
       );
 
-      // Return a context object with the snapshotted values
+      queryClient.setQueryData(
+        queryKeys.shops.detail(shopId),
+        (old: ShopData | null | undefined) =>
+          old ? { ...old, isFavorited: !old.isFavorited } : old
+      );
+
       return {
         previousShops,
         previousFeaturedShops,
@@ -317,33 +383,40 @@ export const useToggleFavorite = () => {
       };
     },
 
-    // If the mutation fails, use the context we returned to roll back
+    // Rollback on error
     onError: (err, shopId, context) => {
+      console.error('Failed to toggle favorite:', err);
+
       if (context?.previousShops) {
-        queryClient.setQueryData(['shops'], context.previousShops);
+        queryClient.setQueryData(queryKeys.shops.all, context.previousShops);
       }
       if (context?.previousFeaturedShops) {
         queryClient.setQueryData(
-          ['shops', 'featured'],
+          queryKeys.shops.featured(),
           context.previousFeaturedShops
         );
       }
       if (context?.previousRecommendedShops) {
         queryClient.setQueryData(
-          ['shops', 'recommended'],
+          queryKeys.shops.recommended(),
           context.previousRecommendedShops
         );
       }
       if (context?.previousShop) {
-        queryClient.setQueryData(['shop', shopId], context.previousShop);
+        queryClient.setQueryData(
+          queryKeys.shops.detail(shopId),
+          context.previousShop
+        );
       }
     },
 
-    // Always refetch after error or success to ensure server state
+    // Ensure server state consistency
     onSettled: (data, error, shopId) => {
-      // Added shopId parameter
-      queryClient.invalidateQueries({ queryKey: ['shops'] });
-      queryClient.invalidateQueries({ queryKey: ['shop', shopId] }); // Invalidate single shop query
+      // Invalidate related queries to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: queryKeys.shops.all });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.shops.detail(shopId),
+      });
     },
   });
 };
