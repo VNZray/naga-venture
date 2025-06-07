@@ -1,10 +1,11 @@
 // src/hooks/useShops.ts
 import {
-  destinations as allShopsData,
-  getMainCategoryById, // Added import for specialOffersData
+  destinations as allShopsData, // This seems to be an alias for shopsData or a different dataset. Clarify usage.
+  getMainCategoryById, // Import getSpecialOfferById
+  getShopsByIds, // Import specialOffersData
   getSpecialOfferById,
   shopsData,
-  specialOffersData,
+  specialOffersData, // This should be the primary source for all shops
   featuredShops as staticFeatured,
   mainCategories as staticMainCategories,
 } from '@/Controller/ShopData';
@@ -12,7 +13,7 @@ import type {
   MainCategory as MainShopCategory,
   ShopData,
   SpecialOffer,
-} from '@/types/shop'; // Renamed MainCategory to MainShopCategory and added SpecialOffer
+} from '@/types/shop'; // Renamed MainCategory to MainShopCategory, Added SpecialOffer
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import debounce from 'lodash.debounce';
 import { useEffect, useState } from 'react';
@@ -23,12 +24,14 @@ import { useEffect, useState } from 'react';
 const fetchAllShops = async (): Promise<ShopData[]> => {
   console.log('Fetching all shops...');
   await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate network delay
+  // Ensure this uses the correct primary data source for shops
   return Object.values(shopsData) as ShopData[];
 };
 
 const fetchShopById = async (id: string): Promise<ShopData | null> => {
   console.log(`Fetching shop by ID: ${id}`);
   await new Promise((resolve) => setTimeout(resolve, 200));
+  // Ensure this uses the correct primary data source for shops
   return (shopsData[id as unknown as keyof typeof shopsData] ||
     null) as ShopData | null;
 };
@@ -36,6 +39,7 @@ const fetchShopById = async (id: string): Promise<ShopData | null> => {
 const fetchFeaturedShops = async (): Promise<ShopData[]> => {
   console.log('Fetching featured shops...');
   await new Promise((resolve) => setTimeout(resolve, 300));
+  // staticFeatured is an alias for featuredShops from ShopData.js
   return staticFeatured as ShopData[];
 };
 
@@ -55,7 +59,8 @@ const searchShops = async (query: string): Promise<ShopData[]> => {
   }
 
   const lowercaseQuery = query.toLowerCase();
-  return allShopsData.filter((shop) => {
+  // Ensure this searches the correct primary data source for shops
+  return (Object.values(shopsData) as ShopData[]).filter((shop) => {
     return (
       shop.name.toLowerCase().includes(lowercaseQuery) ||
       shop.category?.toLowerCase().includes(lowercaseQuery) ||
@@ -73,9 +78,10 @@ const fetchShopsByCategory = async (
   if (!mainCategory) return [];
   const subcategoryIds = mainCategory.subcategories.map(
     (sub: { id: string }) => sub.id
-  ); // Added type for sub
-  return allShopsData.filter((shop) =>
-    subcategoryIds.includes(shop.category)
+  );
+  // Ensure this filters the correct primary data source for shops
+  return (Object.values(shopsData) as ShopData[]).filter(
+    (shop) => subcategoryIds.includes(shop.subcategory || '') // Use shop.subcategory
   ) as ShopData[]; // Added type assertion
 };
 
@@ -83,8 +89,9 @@ const fetchShopsBySubcategory = async (
   subcategoryId: string
 ): Promise<ShopData[]> => {
   await new Promise((resolve) => setTimeout(resolve, 300));
-  return allShopsData.filter(
-    (shop) => shop.category === subcategoryId
+  // Ensure this filters the correct primary data source for shops
+  return (Object.values(shopsData) as ShopData[]).filter(
+    (shop) => shop.subcategory === subcategoryId
   ) as ShopData[]; // Added type assertion
 };
 
@@ -92,7 +99,31 @@ const fetchShopsBySubcategory = async (
 const fetchMainCategories = async (): Promise<MainShopCategory[]> => {
   console.log('Fetching main categories...');
   await new Promise((resolve) => setTimeout(resolve, 400)); // Simulate network delay
+  // staticMainCategories is an alias for mainCategories from ShopData.js
   return staticMainCategories;
+};
+
+// --- SPECIAL OFFER API CALLS ---
+const fetchAllSpecialOffers = async (): Promise<SpecialOffer[]> => {
+  console.log('Fetching all special offers...');
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  return Object.values(specialOffersData) as unknown as SpecialOffer[];
+};
+
+const fetchSpecialOfferById = async (
+  id: string
+): Promise<SpecialOffer | null> => {
+  console.log(`Fetching special offer by ID: ${id}`);
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  const offer = getSpecialOfferById(id);
+  return offer ? (offer as unknown as SpecialOffer) : null;
+};
+
+// --- SHOPS BY IDS API CALL ---
+const fetchShopsByIds = async (ids: string[]): Promise<ShopData[]> => {
+  console.log(`Fetching shops by IDs: ${ids.join(', ')}`);
+  await new Promise((resolve) => setTimeout(resolve, 200));
+  return getShopsByIds(ids) as ShopData[];
 };
 
 // --- CUSTOM HOOKS ---
@@ -175,38 +206,30 @@ export const useMainCategories = () => {
   });
 };
 
-// --- START: Special Offer Hooks ---
-// Simulated API call to fetch a single special offer by ID
-const fetchSpecialOfferById = async (
-  offerId: string
-): Promise<SpecialOffer | null> => {
-  console.log(`Fetching special offer by ID: ${offerId}`);
-  await new Promise((resolve) => setTimeout(resolve, 250)); // Simulate network delay
-  return getSpecialOfferById(offerId); // Use imported function
-};
-
-export const useSpecialOffer = (offerId: string) => {
-  return useQuery<SpecialOffer | null, Error>({
-    queryKey: ['specialOffer', offerId],
-    queryFn: () => fetchSpecialOfferById(offerId),
-    enabled: !!offerId, // Only run query if offerId is provided
-  });
-};
-
-// Simulated API call to fetch all special offers
-const fetchAllSpecialOffers = async (): Promise<SpecialOffer[]> => {
-  console.log('Fetching all special offers...');
-  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate network delay
-  return specialOffersData; // Use imported data
-};
-
+// --- SPECIAL OFFER HOOKS ---
 export const useAllSpecialOffers = () => {
   return useQuery<SpecialOffer[], Error>({
     queryKey: ['specialOffers', 'all'],
     queryFn: fetchAllSpecialOffers,
   });
 };
-// --- END: Special Offer Hooks ---
+
+export const useSpecialOffer = (offerId: string) => {
+  return useQuery<SpecialOffer | null, Error>({
+    queryKey: ['specialOffer', offerId],
+    queryFn: () => fetchSpecialOfferById(offerId),
+    enabled: !!offerId,
+  });
+};
+
+// --- SHOPS BY IDS HOOK ---
+export const useShopsByIds = (shopIds: string[]) => {
+  return useQuery<ShopData[], Error>({
+    queryKey: ['shops', 'byIds', shopIds.join(',')], // Unique key based on sorted IDs
+    queryFn: () => fetchShopsByIds(shopIds),
+    enabled: !!shopIds && shopIds.length > 0,
+  });
+};
 
 // --- MUTATION HOOK for updating data ---
 export const useToggleFavorite = () => {

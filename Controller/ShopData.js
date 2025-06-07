@@ -1199,79 +1199,108 @@ export const featuredShops = [shopsData['1'], shopsData['2'], shopsData['3']];
 export const destinations = Object.values(shopsData);
 
 // --- START: New Special Offers Data ---
-export const specialOffersData = [
-  {
+// Updated to be an object and match SpecialOffer type
+export const specialOffersData = {
+  so_001: {
     id: 'so_001',
     title: 'Weekend Getaway Deals',
     description:
-      'Enjoy amazing discounts on weekend getaway packages. Explore scenic destinations and relax in comfort.',
+      'Amazing deals for your next weekend adventure. Explore scenic spots and enjoy local culture with our curated packages.',
     termsAndConditions:
-      'Offer valid for bookings made until July 31, 2025. Subject to availability. Cannot be combined with other promos. Blackout dates may apply.',
-    shopId: undefined, // Changed from null to undefined
+      'Offer valid for bookings made through our app. Subject to availability. Cannot be combined with other promos. Travel insurance not included. Valid for travel dates within the next 3 months.',
     image:
       'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=600&h=320&fit=crop',
-    discountPercent: 20,
-    validFrom: '2025-06-01T00:00:00Z',
-    validUntil: '2025-07-31T23:59:59Z',
+    promoImageUrl:
+      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=600&h=320&fit=crop', // Retained for compatibility if used elsewhere
+    altText:
+      'Advertisement for weekend getaway travel packages with a scenic view.', // Retained for compatibility
+    targetPath: '/(tabs)/(home)/(offers)/weekend-deals', // Retained for compatibility
+    validFrom: '2024-06-01T00:00:00Z',
+    validUntil: '2024-08-31T23:59:59Z',
     isActive: true,
-    applicableToAllShops: true,
-  },
-  {
-    id: 'so_002',
-    title: 'Burger Bonanza: 20% Off All Burgers!',
-    description:
-      "Craving a delicious burger? Get 20% off on all our signature burgers at Burger Joint. Don\\'t miss out on this juicy deal!",
-    termsAndConditions:
-      'Offer valid from June 10 to June 20, 2025. Applicable for dine-in and takeaway orders at Burger Joint (Magsaysay Avenue). Not valid with other discounts or promotions.',
-    shopId: '1', // Linked to Burger Joint
-    image:
-      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=600&h=320&fit=crop',
-    discountPercent: 20,
-    validFrom: '2025-06-10T00:00:00Z',
-    validUntil: '2025-06-20T23:59:59Z',
-    isActive: true,
-    applicableToAllShops: false,
-    applicableShopIds: ['1'],
-  },
-  {
-    id: 'so_003',
-    title: 'Relax & Rejuvenate: 15% Off Spa Services',
-    description:
-      'Pamper yourself with our premium spa services. Enjoy a 15% discount on all massages and facial treatments at Serenity Spa & Wellness.',
-    termsAndConditions:
-      'Offer valid for appointments made between June 15 and July 15, 2025. Prior booking is required. Mention this offer upon booking. Cannot be combined with other promotions.',
-    shopId: '2', // Linked to Serenity Spa & Wellness
-    image:
-      'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=600&h=320&fit=crop',
     discountPercent: 15,
-    validFrom: '2025-06-15T00:00:00Z',
-    validUntil: '2025-07-15T23:59:59Z',
-    isActive: true,
+    applicableShopIds: ['1', '3'], // Example: Burger Joint & Brew & Beans
     applicableToAllShops: false,
-    applicableShopIds: ['2'],
+    type: 'discount',
+    category: 'travel',
   },
-  {
-    id: 'so_004',
-    title: "Coffee Lover's Treat: Buy 1 Get 1 Free on Bicol Blend",
+  so_002: {
+    id: 'so_002',
+    title: 'Restaurant Discounts: Up to 50% Off!',
     description:
-      'Share a cup of our signature Bicol Blend Americano with a friend! Buy one and get the second one free at Brew & Beans Coffee House. Perfect for your coffee breaks.',
+      'Dine at your favorite Naga restaurants and enjoy up to 50% off on selected dishes. Perfect for foodies!',
     termsAndConditions:
-      'Offer valid every Monday to Wednesday for the month of June 2025. Applicable for Bicol Blend Americano (hot or iced) only. The free item must be of equal or lesser value. Not valid with other discounts.',
-    shopId: '3', // Linked to Brew & Beans Coffee House
+      'Discount varies per restaurant and item. Valid for dine-in only. Present this offer in the app to avail. Not valid on holidays. Minimum spend may be required at some locations.',
     image:
-      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=600&h=320&fit=crop',
-    discountFixedAmount: 0, // Or handle BOGO logic in the component
-    validFrom: '2025-06-01T00:00:00Z',
-    validUntil: '2025-06-30T23:59:59Z',
+      'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=600&h=320&fit=crop',
+    promoImageUrl:
+      'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=600&h=320&fit=crop',
+    altText: 'Advertisement for restaurant discounts showing delicious food.',
+    targetPath: '/(tabs)/(home)/(shops)/categories/dining',
+    validFrom: '2024-05-15T00:00:00Z',
+    validUntil: '2024-07-15T23:59:59Z',
     isActive: true,
+    discountPercent: 50, // "Up to"
+    shopId: '1', // Example: Burger Joint specific offer
     applicableToAllShops: false,
-    applicableShopIds: ['3'],
+    type: 'percentage_off',
+    category: 'dining',
   },
-];
+  so_003: {
+    id: 'so_003',
+    title: 'New Tech Gadgets - Launch Offer',
+    description:
+      'Be the first to own the latest tech! Special launch prices on new smartphones, laptops, and accessories.',
+    termsAndConditions:
+      'Offer valid while stocks last. Limited to one unit per customer for select items. Warranty terms apply. Check in-store for participating brands.',
+    image:
+      'https://images.unsplash.com/photo-1526178094224-95108a9590cf?q=80&w=600&h=320&fit=crop',
+    promoImageUrl:
+      'https://images.unsplash.com/photo-1526178094224-95108a9590cf?q=80&w=600&h=320&fit=crop',
+    altText: 'Advertisement for new tech gadgets with a sleek product shot.',
+    targetPath: '/(tabs)/(home)/(shops)/categories/mobile', // Example path, adjust as needed
+    validFrom: '2024-06-10T00:00:00Z',
+    validUntil: '2024-06-30T23:59:59Z',
+    isActive: true,
+    discountFixedAmount: 500, // e.g. P500 off
+    applicableShopIds: ['4'], // Example: TechHub
+    applicableToAllShops: false,
+    type: 'fixed_amount_off',
+    category: 'electronics',
+  },
+  so_004: {
+    id: 'so_004',
+    title: 'Fashion Frenzy: Seasonal Sale',
+    description:
+      'Refresh your wardrobe with our seasonal fashion sale. Discounts on clothing, shoes, and accessories.',
+    termsAndConditions:
+      'Valid on selected items only. Sizes and availability may vary. Exchange policy applies. Not valid for gift cards.',
+    image:
+      'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=600&h=320&fit=crop',
+    promoImageUrl:
+      'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=600&h=320&fit=crop',
+    altText: 'Advertisement for a fashion sale with stylish apparel.',
+    targetPath: '/(tabs)/(home)/(shops)/categories/clothing', // Example path
+    validFrom: '2024-07-01T00:00:00Z',
+    validUntil: '2024-07-31T23:59:59Z',
+    isActive: true,
+    discountPercent: 30,
+    applicableToAllShops: true, // Example: Applies to all clothing stores
+    type: 'sale_event',
+    category: 'fashion',
+  },
+};
+// --- END: New Special Offers Data ---
 
 // Helper function to get a special offer by its ID
-export const getSpecialOfferById = (offerId) => {
-  return specialOffersData.find((offer) => offer.id === offerId) || null;
+export const getSpecialOfferById = (id) => {
+  return specialOffersData[id] || null;
 };
 
-// --- END: New Special Offers Data ---
+// Helper function to get shops by an array of IDs
+export const getShopsByIds = (ids) => {
+  if (!ids || ids.length === 0) {
+    return [];
+  }
+  return ids.map((id) => shopsData[id]).filter((shop) => shop !== undefined);
+};
