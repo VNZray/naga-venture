@@ -194,7 +194,7 @@ const AllCategoriesPage = () => {
 
   // 6. Render the final UI with the fetched data
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={[]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     backgroundColor: ShopColors.background,
   },
   scrollContent: {
-    paddingVertical: 16,
+    paddingVertical: 16, // Changed from paddingVertical to only apply bottom padding
   },
   sectionContainer: {
     marginBottom: 32,

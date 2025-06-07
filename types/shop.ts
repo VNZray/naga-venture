@@ -188,3 +188,19 @@ export interface MainCategory {
   description: string;
   subcategories: ShopCategory[];
 }
+
+export interface SpecialOffer {
+  id: string;
+  title: string;
+  description: string;
+  termsAndConditions: string;
+  shopId?: string; // Optional: if the offer is tied to a specific shop
+  image?: string;
+  discountPercent?: number;
+  discountFixedAmount?: number;
+  validFrom: string; // ISO date string
+  validUntil: string; // ISO date string
+  isActive: boolean;
+  applicableToAllShops?: boolean; // If true, not tied to a specific shopId
+  applicableShopIds?: string[]; // List of shop IDs if applicable to multiple specific shops
+}

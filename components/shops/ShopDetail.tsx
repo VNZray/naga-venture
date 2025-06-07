@@ -33,6 +33,12 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const HERO_HEIGHT = 280;
 const COLLAPSED_HEADER_HEIGHT = 60;
 
+// Define a specific type for the FlatList data item
+interface TabContentItem {
+  key: string;
+  content: React.ReactNode;
+}
+
 // New props interface
 interface ShopDetailProps {
   shop: ShopData; // No longer nullable here, the parent will handle the 'not found' case
@@ -277,9 +283,11 @@ const ShopDetail: React.FC<ShopDetailProps> = ({
   };
 
   // FlatList Data - Single item containing tab content
-  const flatListData = [{ key: 'tabContent', content: renderTabContent() }];
+  const flatListData: TabContentItem[] = [
+    { key: 'tabContent', content: renderTabContent() },
+  ];
 
-  const renderFlatListItem = ({ item }: { item: any }) => {
+  const renderFlatListItem = ({ item }: { item: TabContentItem }) => {
     return <View style={styles.tabContentContainer}>{item.content}</View>;
   };
 

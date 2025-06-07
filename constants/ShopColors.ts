@@ -6,6 +6,7 @@ export const ShopColors = {
   primary: '#0A1B47',
   accent: '#2E5AA7',
   active: '#1F4C85',
+  complementaryColor: 'D67F35',
   
   // Background Colors
   background: '#F8F9FA',

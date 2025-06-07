@@ -1202,36 +1202,76 @@ export const destinations = Object.values(shopsData);
 export const specialOffersData = [
   {
     id: 'so_001',
-    promoImageUrl:
-      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=600&h=320&fit=crop', // Example Unsplash image (replace with actual promo images)
     title: 'Weekend Getaway Deals',
-    altText:
-      'Advertisement for weekend getaway travel packages with a scenic view.',
-    targetPath: '/(tabs)/(home)/(offers)/weekend-deals', // Example navigation path
+    description:
+      'Enjoy amazing discounts on weekend getaway packages. Explore scenic destinations and relax in comfort.',
+    termsAndConditions:
+      'Offer valid for bookings made until July 31, 2025. Subject to availability. Cannot be combined with other promos. Blackout dates may apply.',
+    shopId: undefined, // Changed from null to undefined
+    image:
+      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=600&h=320&fit=crop',
+    discountPercent: 20,
+    validFrom: '2025-06-01T00:00:00Z',
+    validUntil: '2025-07-31T23:59:59Z',
+    isActive: true,
+    applicableToAllShops: true,
   },
   {
     id: 'so_002',
-    promoImageUrl:
-      'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=600&h=320&fit=crop',
-    title: 'Restaurant Discounts: Up to 50% Off!',
-    altText: 'Advertisement for restaurant discounts showing delicious food.',
-    targetPath: '/(tabs)/(home)/(shops)/categories/dining',
+    title: 'Burger Bonanza: 20% Off All Burgers!',
+    description:
+      "Craving a delicious burger? Get 20% off on all our signature burgers at Burger Joint. Don\\'t miss out on this juicy deal!",
+    termsAndConditions:
+      'Offer valid from June 10 to June 20, 2025. Applicable for dine-in and takeaway orders at Burger Joint (Magsaysay Avenue). Not valid with other discounts or promotions.',
+    shopId: '1', // Linked to Burger Joint
+    image:
+      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=600&h=320&fit=crop',
+    discountPercent: 20,
+    validFrom: '2025-06-10T00:00:00Z',
+    validUntil: '2025-06-20T23:59:59Z',
+    isActive: true,
+    applicableToAllShops: false,
+    applicableShopIds: ['1'],
   },
   {
     id: 'so_003',
-    promoImageUrl:
-      'https://images.unsplash.com/photo-1526178094224-95108a9590cf?q=80&w=600&h=320&fit=crop',
-    title: 'New Tech Gadgets - Launch Offer',
-    altText: 'Advertisement for new tech gadgets with a sleek product shot.',
-    targetPath: '/(tabs)/(home)/(shops)/categories/mobile',
+    title: 'Relax & Rejuvenate: 15% Off Spa Services',
+    description:
+      'Pamper yourself with our premium spa services. Enjoy a 15% discount on all massages and facial treatments at Serenity Spa & Wellness.',
+    termsAndConditions:
+      'Offer valid for appointments made between June 15 and July 15, 2025. Prior booking is required. Mention this offer upon booking. Cannot be combined with other promotions.',
+    shopId: '2', // Linked to Serenity Spa & Wellness
+    image:
+      'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=600&h=320&fit=crop',
+    discountPercent: 15,
+    validFrom: '2025-06-15T00:00:00Z',
+    validUntil: '2025-07-15T23:59:59Z',
+    isActive: true,
+    applicableToAllShops: false,
+    applicableShopIds: ['2'],
   },
   {
     id: 'so_004',
-    promoImageUrl:
-      'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=600&h=320&fit=crop',
-    title: 'Fashion Frenzy: Seasonal Sale',
-    altText: 'Advertisement for a fashion sale with stylish apparel.',
-    targetPath: '/(tabs)/(home)/(shops)/categories/clothing',
+    title: "Coffee Lover's Treat: Buy 1 Get 1 Free on Bicol Blend",
+    description:
+      'Share a cup of our signature Bicol Blend Americano with a friend! Buy one and get the second one free at Brew & Beans Coffee House. Perfect for your coffee breaks.',
+    termsAndConditions:
+      'Offer valid every Monday to Wednesday for the month of June 2025. Applicable for Bicol Blend Americano (hot or iced) only. The free item must be of equal or lesser value. Not valid with other discounts.',
+    shopId: '3', // Linked to Brew & Beans Coffee House
+    image:
+      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=600&h=320&fit=crop',
+    discountFixedAmount: 0, // Or handle BOGO logic in the component
+    validFrom: '2025-06-01T00:00:00Z',
+    validUntil: '2025-06-30T23:59:59Z',
+    isActive: true,
+    applicableToAllShops: false,
+    applicableShopIds: ['3'],
   },
 ];
+
+// Helper function to get a special offer by its ID
+export const getSpecialOfferById = (offerId) => {
+  return specialOffersData.find((offer) => offer.id === offerId) || null;
+};
+
 // --- END: New Special Offers Data ---

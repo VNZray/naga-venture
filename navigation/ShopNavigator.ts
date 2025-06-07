@@ -81,7 +81,10 @@ export const ShopNavigator = {
   /**
    * Navigate to a special offer (if the target path is provided)
    */
-  goToSpecialOffer: (targetPath: string) => {
-    router.push(targetPath);
+  /**
+   * Navigate to a specific special offer's details page
+   */
+  goToSpecialOfferDetails: (offerId: string) => {
+    router.push(`/TouristApp/(tabs)/(home)/(shops)/offer/${offerId}`);
   },
 } as const;

@@ -1,12 +1,18 @@
 // src/hooks/useShops.ts
 import {
   destinations as allShopsData,
-  getMainCategoryById,
+  getMainCategoryById, // Added import for specialOffersData
+  getSpecialOfferById,
   shopsData,
+  specialOffersData,
   featuredShops as staticFeatured,
   mainCategories as staticMainCategories,
 } from '@/Controller/ShopData';
-import type { MainCategory as MainShopCategory, ShopData } from '@/types/shop'; // Renamed MainCategory to MainShopCategory
+import type {
+  MainCategory as MainShopCategory,
+  ShopData,
+  SpecialOffer,
+} from '@/types/shop'; // Renamed MainCategory to MainShopCategory and added SpecialOffer
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import debounce from 'lodash.debounce';
 import { useEffect, useState } from 'react';
@@ -168,6 +174,39 @@ export const useMainCategories = () => {
     queryFn: fetchMainCategories,
   });
 };
+
+// --- START: Special Offer Hooks ---
+// Simulated API call to fetch a single special offer by ID
+const fetchSpecialOfferById = async (
+  offerId: string
+): Promise<SpecialOffer | null> => {
+  console.log(`Fetching special offer by ID: ${offerId}`);
+  await new Promise((resolve) => setTimeout(resolve, 250)); // Simulate network delay
+  return getSpecialOfferById(offerId); // Use imported function
+};
+
+export const useSpecialOffer = (offerId: string) => {
+  return useQuery<SpecialOffer | null, Error>({
+    queryKey: ['specialOffer', offerId],
+    queryFn: () => fetchSpecialOfferById(offerId),
+    enabled: !!offerId, // Only run query if offerId is provided
+  });
+};
+
+// Simulated API call to fetch all special offers
+const fetchAllSpecialOffers = async (): Promise<SpecialOffer[]> => {
+  console.log('Fetching all special offers...');
+  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate network delay
+  return specialOffersData; // Use imported data
+};
+
+export const useAllSpecialOffers = () => {
+  return useQuery<SpecialOffer[], Error>({
+    queryKey: ['specialOffers', 'all'],
+    queryFn: fetchAllSpecialOffers,
+  });
+};
+// --- END: Special Offer Hooks ---
 
 // --- MUTATION HOOK for updating data ---
 export const useToggleFavorite = () => {

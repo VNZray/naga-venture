@@ -1,70 +1,55 @@
-import { specialOffersData as importedSpecialOffersData } from '@/Controller/ShopData';
 import SpecialOfferCard from '@/components/shops/SpecialOfferCard';
 import { ShopColors } from '@/constants/ShopColors';
+import { useAllSpecialOffers } from '@/hooks/useShops'; // Import the new hook
 import { ShopNavigator } from '@/navigation/ShopNavigator';
-import { Ionicons } from '@expo/vector-icons';
-import React, { useMemo } from 'react';
+import { SpecialOffer } from '@/types/shop'; // Import the SpecialOffer type
+import React from 'react';
 import {
+  ActivityIndicator, // Added for loading state
   FlatList,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
 
-interface SpecialOfferItem {
-  id: string;
-  promoImageUrl: string;
-  title?: string;
-  altText?: string;
-  targetPath?: string;
-}
-
 export const SpecialOffersSection = () => {
-  const specialOffersData: SpecialOfferItem[] = useMemo(
-    () => importedSpecialOffersData,
-    []
-  );
+  const { data: specialOffersData, isLoading, error } = useAllSpecialOffers(); // Use the hook to fetch all special offers
+
   const handleSpecialOfferPress = (offerId: string) => {
-    const offer = specialOffersData.find((o) => o.id === offerId);
-    if (offer && offer.targetPath) {
-      ShopNavigator.goToSpecialOffer(offer.targetPath);
-    } else {
-      console.log(
-        'Pressed Special Offer:',
-        offerId,
-        '- No targetPath defined or offer not found.'
-      );
-    }
-  };
-  const handleViewAllSpecialOffers = () => {
-    ShopNavigator.goToAllSpecialOffers();
+    // Navigate to the specific offer details page
+    ShopNavigator.goToSpecialOfferDetails(offerId);
   };
 
-  const renderSpecialOfferCard = ({ item }: { item: SpecialOfferItem }) => (
+  const renderSpecialOfferCard = ({ item }: { item: SpecialOffer }) => (
     <SpecialOfferCard offer={item} onPress={handleSpecialOfferPress} />
   );
 
+  if (isLoading) {
+    return (
+      <View style={[styles.section, styles.centered]}>
+        <ActivityIndicator size="large" color={ShopColors.accent} />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.section, styles.centered]}>
+        <Text style={styles.errorText}>
+          Could not load special offers. Please try again later.
+        </Text>
+      </View>
+    );
+  }
+
   if (!specialOffersData || specialOffersData.length === 0) {
-    return null; // Don't render the section if there's no data
+    return null;
   }
 
   return (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Special Offers</Text>
-        <TouchableOpacity
-          style={styles.viewAllButton}
-          onPress={handleViewAllSpecialOffers}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.viewAllText}>View All</Text>
-          <Ionicons
-            name="chevron-forward"
-            size={14}
-            color={ShopColors.accent}
-          />
-        </TouchableOpacity>
       </View>
       <FlatList
         data={specialOffersData}
@@ -85,9 +70,21 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 12,
   },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: 200,
+  },
+  errorText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    color: ShopColors.error,
+    textAlign: 'center',
+    paddingHorizontal: 16,
+  },
   sectionHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start', // Or 'center' if title should be centered
     alignItems: 'center',
     paddingHorizontal: 16,
     marginBottom: 8,
@@ -96,18 +93,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Poppins-SemiBold',
     color: ShopColors.textPrimary,
-  },
-  viewAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-  },
-  viewAllText: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Medium',
-    color: ShopColors.accent,
-    marginRight: 4,
   },
   horizontalListContentContainer: {
     paddingHorizontal: 16,
