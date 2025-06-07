@@ -25,5 +25,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 ## Tourist Spots Module - Emmanuel Collao
 
 ## Shops Module - Hans Gabriel Candor
+Make sure to install 
+npm install @tanstack/react-query - used to handle data fetching and custom hooks easier
 
 ## Events Module - Wayne Sanao

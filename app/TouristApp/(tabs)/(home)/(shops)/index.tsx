@@ -1,12 +1,8 @@
+import ShopDirectory from '@/components/shops/ShopDirectory';
+import { mainCategories } from '@/Controller/ShopData';
 import React, { useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Text, TouchableOpacity, View } from 'react-native';
-import ShopDirectory from '@/components/shops/ShopDirectory';
-import {
-  destinations,
-  featuredShops,
-  mainCategories,
-} from '@/Controller/ShopData';
 
 // Error fallback
 const ShopErrorFallback = ({ error, resetErrorBoundary }: any) => (
@@ -50,11 +46,7 @@ const ShopsIndex = () => {
         console.error('Shop Directory Error:', error);
       }}
     >
-      <ShopDirectory
-        shops={destinations}
-        categories={categories}
-        featuredShops={featuredShops}
-      />
+      <ShopDirectory categories={categories} />
     </ErrorBoundary>
   );
 };

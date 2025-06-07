@@ -5,15 +5,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import React, { useCallback, useRef, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
   Animated,
   Dimensions,
+  FlatList,
   Image,
-  Linking,
   Modal,
-  Platform,
-  Share,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -37,17 +33,32 @@ const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 const HERO_HEIGHT = 280;
 const COLLAPSED_HEADER_HEIGHT = 60;
 
-interface ShopDetailProps {
-  shop: ShopData | null;
+// Define a specific type for the FlatList data item
+interface TabContentItem {
+  key: string;
+  content: React.ReactNode;
 }
 
-const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
-  // State Management
-  const [shop] = useState<ShopData | null>(initialShopData);
-  const [isLoading] = useState(!initialShopData);
-  const [isFavorited, setIsFavorited] = useState(
-    initialShopData?.isFavorited || false
-  );
+// New props interface
+interface ShopDetailProps {
+  shop: ShopData; // No longer nullable here, the parent will handle the 'not found' case
+  onFavoriteToggle: () => void;
+  onShare: () => void;
+  onCall: () => void;
+  onDirections: () => void;
+  onWebsite: () => void;
+  // ... any other callbacks needed
+}
+
+const ShopDetail: React.FC<ShopDetailProps> = ({
+  shop, // The component now receives the shop data directly
+  onFavoriteToggle,
+  onShare,
+  onCall,
+  onDirections,
+  onWebsite,
+}) => {
+  // State for UI elements is OK to keep (modals, animations)
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(
     null
@@ -63,68 +74,20 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
     { key: 'photos', title: 'Photos' },
   ]);
 
-  // Get safe area insets for proper spacing
   const insets = useSafeAreaInsets();
-
-  // Animated Values for Smooth Scrolling
   const scrollY = useRef(new Animated.Value(0)).current;
-
-  // Track collapsed header visibility
   const [isCollapsedHeaderVisible, setIsCollapsedHeaderVisible] =
     useState(false);
 
-  // Event Handlers
-  const handleFavoriteToggle = useCallback(() => {
-    setIsFavorited(!isFavorited);
-    if (shop) {
-      console.log(`Shop ${shop.id} favorite status: ${!isFavorited}`);
-    }
-  }, [isFavorited, shop]);
+  // The isFavorited status now comes directly from the up-to-date shop prop
+  const isFavorited = shop.isFavorited;
 
-  const handleShare = useCallback(async () => {
-    if (!shop) return;
-
-    try {
-      await Share.share({
-        message: `Check out ${shop.name} on Naga Venture! ${shop.tagline || ''}`,
-        url: `nagaventure://shop/${shop.id}`,
-      });
-    } catch (error) {
-      console.error('Error sharing:', error);
-    }
-  }, [shop]);
-
-  const handleCall = useCallback(() => {
-    if (!shop?.contact) return;
-
-    const phoneNumber = shop.contact.replace(/[^0-9+]/g, '');
-    Linking.openURL(`tel:${phoneNumber}`).catch(() => {
-      Alert.alert('Error', 'Unable to make call');
-    });
-  }, [shop?.contact]);
-
-  const handleDirections = useCallback(() => {
-    if (!shop?.mapLocation) return;
-
-    const { latitude, longitude } = shop.mapLocation;
-    const url = Platform.select({
-      ios: `maps:${latitude},${longitude}`,
-      android: `geo:${latitude},${longitude}`,
-    });
-
-    if (url) {
-      Linking.openURL(url).catch(() => {
-        Alert.alert('Error', 'Unable to open maps');
-      });
-    }
-  }, [shop?.mapLocation]);
-
-  const handleWebsite = useCallback(() => {
-    if (!shop?.socialLinks?.website) return;
-    Linking.openURL(shop.socialLinks.website).catch(() => {
-      Alert.alert('Error', 'Unable to open website');
-    });
-  }, [shop?.socialLinks?.website]);
+  // These handlers ARE used in the JSX below, so they are not unused.
+  const handleFavoriteToggle = () => onFavoriteToggle();
+  const handleShare = () => onShare();
+  const handleCall = () => onCall();
+  const handleDirections = () => onDirections();
+  const handleWebsite = () => onWebsite();
 
   const handleMenuItemPress = useCallback((item: MenuItem) => {
     setSelectedMenuItem(item);
@@ -136,6 +99,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
 
   const handleReviewHelpful = useCallback((reviewId: string) => {
     console.log(`Review ${reviewId} marked as helpful`);
+    // In a real app, this might call a prop like onReviewHelpful(reviewId)
   }, []);
 
   // Animation calculations
@@ -157,7 +121,6 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
     extrapolate: 'clamp',
   });
 
-  // Handle scroll to track collapsed header visibility
   const handleScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { y: scrollY } } }],
     {
@@ -169,25 +132,24 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
     }
   );
 
-  // Tab Content Renderers
+  // Tab Content Renderers - Return as simple components
   const renderTabContent = () => {
-    if (!shop) return null;
-
+    // No need to check for !shop, as it's guaranteed by the new props interface
     switch (index) {
       case 0:
         return (
           <ShopDetailMenuSection
             shop={shop}
-            onMenuItemPress={handleMenuItemPress}
+            onMenuItemPress={handleMenuItemPress} // Use local handler
           />
         );
       case 1:
-        return <ShopDetailPromotionsSection shop={shop} />; // NEW TAB CONTENT
+        return <ShopDetailPromotionsSection shop={shop} />;
       case 2:
         return (
           <ShopDetailInfoSection
             shop={shop}
-            onDirectionsPress={handleDirections}
+            onDirectionsPress={onDirections} // Directly pass prop
           />
         );
       case 3:
@@ -206,58 +168,14 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
           />
         );
       default:
-        return null;
+        return <View />;
     }
   };
 
-  // Loading State
-  if (isLoading) {
+  // FlatList Header Component - Contains hero, actions, and tabs
+  const renderListHeader = () => {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={ShopColors.accent} />
-          <Text style={styles.loadingText}>Loading Shop Details...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  // Not Found State
-  if (!shop) {
-    return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <View style={styles.notFoundContainer}>
-          <Ionicons
-            name="storefront-outline"
-            size={60}
-            color={ShopColors.textSecondary}
-          />
-          <Text style={styles.notFoundTitle}>Shop Not Found</Text>
-          <Text style={styles.notFoundText}>
-            The shop you are looking for does not exist or could not be loaded.
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.goBackButton}
-          >
-            <Text style={styles.goBackButtonText}>Go Back</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  // Main Render
-  return (
-    <View style={styles.container}>
-      {/* Main Scroll View */}
-      <Animated.ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        bounces={false}
-      >
+      <>
         {/* Hero Section */}
         <View style={styles.heroContainer}>
           <Image
@@ -266,7 +184,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
             resizeMode="cover"
           />
 
-          {/* Shop Info Overlay - LOGO REMOVED */}
+          {/* Shop Info Overlay */}
           <LinearGradient
             colors={['transparent', 'rgba(0,0,0,0.8)']}
             style={styles.shopInfoOverlay}
@@ -300,12 +218,12 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
           </LinearGradient>
         </View>
 
-        {/* Quick Actions Bar - Only in ScrollView */}
+        {/* Quick Actions Bar */}
         <View style={styles.quickActionsBar}>
           {shop.contact && (
             <TouchableOpacity
               style={styles.quickActionButton}
-              onPress={handleCall}
+              onPress={handleCall} // Use local handler
             >
               <Ionicons name="call" size={20} color={ShopColors.accent} />
               <Text style={styles.quickActionText}>Call</Text>
@@ -315,7 +233,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
           {shop.mapLocation && (
             <TouchableOpacity
               style={styles.quickActionButton}
-              onPress={handleDirections}
+              onPress={handleDirections} // Use local handler
             >
               <Ionicons name="navigate" size={20} color={ShopColors.accent} />
               <Text style={styles.quickActionText}>Directions</Text>
@@ -325,7 +243,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
           {shop.socialLinks?.website && (
             <TouchableOpacity
               style={styles.quickActionButton}
-              onPress={handleWebsite}
+              onPress={handleWebsite} // Use local handler
             >
               <Ionicons name="globe" size={20} color={ShopColors.accent} />
               <Text style={styles.quickActionText}>Website</Text>
@@ -334,14 +252,14 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
 
           <TouchableOpacity
             style={styles.quickActionButton}
-            onPress={handleShare}
+            onPress={handleShare} // Use local handler
           >
             <Ionicons name="share-social" size={20} color={ShopColors.accent} />
             <Text style={styles.quickActionText}>Share</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Tab Navigation - In ScrollView */}
+        {/* Tab Navigation */}
         <View style={styles.tabNavigation}>
           {routes.map((route, i) => (
             <TouchableOpacity
@@ -360,10 +278,36 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
             </TouchableOpacity>
           ))}
         </View>
+      </>
+    );
+  };
 
-        {/* Tab Content */}
-        <View style={styles.tabContent}>{renderTabContent()}</View>
-      </Animated.ScrollView>
+  // FlatList Data - Single item containing tab content
+  const flatListData: TabContentItem[] = [
+    { key: 'tabContent', content: renderTabContent() },
+  ];
+
+  const renderFlatListItem = ({ item }: { item: TabContentItem }) => {
+    return <View style={styles.tabContentContainer}>{item.content}</View>;
+  };
+
+  // isLoading and !shop (Not Found) states are now handled by the parent component.
+
+  // Main Render - Using FlatList instead of ScrollView
+  return (
+    <View style={styles.container}>
+      {/* Main FlatList - No more nested ScrollView! */}
+      <FlatList
+        data={flatListData}
+        keyExtractor={(item) => item.key}
+        renderItem={renderFlatListItem}
+        ListHeaderComponent={renderListHeader}
+        showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
+        bounces={false}
+        contentContainerStyle={styles.flatListContent}
+      />
 
       {/* Fixed Header Actions (Always Visible on Hero) */}
       <Animated.View
@@ -383,9 +327,11 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
         </TouchableOpacity>
 
         <View style={styles.headerRightActions}>
+          {/* Corrected: use local handler, comment outside JSX element */}
           <TouchableOpacity style={styles.headerButton} onPress={handleShare}>
             <Ionicons name="share-outline" size={24} color="#FFFFFF" />
           </TouchableOpacity>
+          {/* Corrected: use local handler */}
           <TouchableOpacity
             style={styles.headerButton}
             onPress={handleFavoriteToggle}
@@ -399,7 +345,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
         </View>
       </Animated.View>
 
-      {/* Collapsed Header - FIXED ERROR AND REMOVED LOGO */}
+      {/* Collapsed Header */}
       <Animated.View
         style={[
           styles.collapsedHeader,
@@ -430,6 +376,7 @@ const ShopDetail: React.FC<ShopDetailProps> = ({ shop: initialShopData }) => {
             </View>
 
             <View style={styles.collapsedActions}>
+              {/* Corrected: use local handler */}
               <TouchableOpacity
                 style={styles.collapsedActionButton}
                 onPress={handleShare}
@@ -532,9 +479,13 @@ const styles = StyleSheet.create({
     backgroundColor: ShopColors.background,
   },
 
-  // Main Scroll View
-  scrollView: {
+  // FlatList styles
+  flatListContent: {
+    flexGrow: 1,
+  },
+  tabContentContainer: {
     flex: 1,
+    minHeight: screenHeight, // Ensure content takes full height
   },
 
   // Hero Section
@@ -561,7 +512,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   shopName: {
-    fontSize: 28, // Increased font size since no logo
+    fontSize: 28,
     fontFamily: 'Poppins-Bold',
     color: '#FFFFFF',
     textShadowColor: 'rgba(0,0,0,0.5)',
@@ -570,7 +521,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   shopTagline: {
-    fontSize: 16, // Increased font size since no logo
+    fontSize: 16,
     fontFamily: 'Poppins-Regular',
     color: '#FFFFFF',
     opacity: 0.9,
@@ -671,13 +622,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-SemiBold',
   },
 
-  // Tab Content
-  tabContent: {
-    minHeight: screenHeight,
-    backgroundColor: ShopColors.background,
-  },
-
-  // Collapsed Header - LOGO REMOVED
+  // Collapsed Header
   collapsedHeader: {
     position: 'absolute',
     top: 0,
@@ -830,4 +775,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ShopDetail;
+export default React.memo(ShopDetail); // Memoize this component!

@@ -1,29 +1,77 @@
-// app/(tabs)/(home)/(shops)/(details)/[shopId].tsx - Clean and simple
-import ShopDetail from "@/components/shops/ShopDetail";
-import { useLocalSearchParams } from "expo-router";
-import React from "react";
-import { shopsData } from "@/Controller/ShopData";
+// app/(tabs)/(home)/(shops)/(details)/[shopId].tsx - REFACTORED
 
-/**
- * ShopDetails - Clean and simple using our new ShopDetail component
- * 
- * This demonstrates the new simple approach:
- * 1. Get shop data from parameters
- * 2. Pass data to ShopDetail component
- * 3. ShopDetail handles all the UI and navigation
- */
-const ShopDetails = () => {
+import { ErrorState } from '@/components/shops/ErrorState';
+import ShopDetail from '@/components/shops/ShopDetail';
+import ShopNotFound from '@/components/shops/ShopNotFound'; // Import reusable ShopNotFound
+import ShopDetailSkeleton from '@/components/shops/skeletons/ShopDetailSkeleton';
+import { useShop, useToggleFavorite } from '@/hooks/useShops';
+import {
+  callPhoneNumber,
+  openDirections,
+  openWebsite,
+  shareShop,
+} from '@/services/InteractionService'; // Import service functions
+import type { ShopData } from '@/types/shop';
+import { useLocalSearchParams } from 'expo-router';
+import React from 'react';
+
+const ShopDetailsPage = () => {
   const { shopId } = useLocalSearchParams();
-    // Handle shopId which can be string or string[]
-  const shopKey = Array.isArray(shopId) ? shopId[0] : shopId;
-  const shop = shopKey ? shopsData[shopKey as unknown as keyof typeof shopsData] : null;
+  const id = Array.isArray(shopId) ? shopId[0] : shopId || '';
 
-  // Handle case where shop is not found
-  if (!shop) {
-    return <ShopDetail shop={null} />;
+  const { data: shop, isLoading, isError, refetch } = useShop(id);
+  const toggleFavoriteMutation = useToggleFavorite();
+
+  const handleFavoriteToggle = () => {
+    if (shop) {
+      toggleFavoriteMutation.mutate(shop.id);
+    }
+  };
+
+  // Use functions from InteractionService
+  const handleShare = () => {
+    shareShop(shop);
+  };
+
+  const handleCall = () => {
+    callPhoneNumber(shop?.contact, shop?.name);
+  };
+
+  const handleDirections = () => {
+    openDirections(shop?.name || 'Shop', shop?.location, shop?.mapLocation);
+  };
+
+  const handleWebsite = () => {
+    openWebsite(shop?.socialLinks?.website, shop?.name);
+  };
+
+  if (isLoading) {
+    return <ShopDetailSkeleton />;
   }
 
-  return <ShopDetail shop={shop as any} />;
+  if (isError) {
+    return (
+      <ErrorState message="Could not load shop details." onRetry={refetch} />
+    );
+  }
+
+  if (!shop) {
+    // Use the new ShopNotFound component
+    return <ShopNotFound />;
+  }
+
+  const currentShop = shop as ShopData;
+
+  return (
+    <ShopDetail
+      shop={currentShop}
+      onFavoriteToggle={handleFavoriteToggle}
+      onShare={handleShare}
+      onCall={handleCall}
+      onDirections={handleDirections}
+      onWebsite={handleWebsite}
+    />
+  );
 };
 
-export default ShopDetails;
+export default ShopDetailsPage;

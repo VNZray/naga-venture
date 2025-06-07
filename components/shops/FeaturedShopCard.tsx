@@ -1,15 +1,10 @@
 import { ShopColors } from '@/constants/ShopColors';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import {
-    ImageBackground,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient'; // Assuming expo-linear-gradient is available
-import type { ShopCardProps } from './types'; // We can reuse or adapt ShopCardProps
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import type { ShopCardProps } from './types';
 
 // Props might be identical to ShopCardProps, or you might want to simplify/extend
 // For now, let's assume it's similar enough to reuse ShopCardProps.
@@ -40,7 +35,13 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
     },
     imageBackground: {
       flex: 1,
+      position: 'relative',
       justifyContent: 'flex-end', // Align content to the bottom
+    },
+    image: {
+      width: '100%',
+      height: '100%',
+      position: 'absolute',
     },
     gradient: {
       position: 'absolute',
@@ -48,10 +49,12 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
       right: 0,
       bottom: 0,
       height: '70%', // Gradient covers bottom part for text readability
+      zIndex: 1, // Above image but below content
     },
     contentContainer: {
       padding: 16,
       position: 'relative', // For absolute positioning of featured tag
+      zIndex: 2, // Ensure content appears above gradient
     },
     name: {
       fontSize: 18,
@@ -71,6 +74,7 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
       paddingHorizontal: 8,
       paddingVertical: 4,
       borderRadius: 10,
+      zIndex: 3, // Above gradient and content
     },
     ratingText: {
       color: '#FFFFFF',
@@ -86,6 +90,7 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
       paddingHorizontal: 10,
       paddingVertical: 4,
       borderRadius: 8,
+      zIndex: 3, // Above gradient and content
     },
     featuredTagText: {
       color: '#FFFFFF',
@@ -100,11 +105,14 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
       onPress={() => onPress(shop.id)}
       activeOpacity={0.9}
     >
-      <ImageBackground
-        source={{ uri: shop.image }}
-        style={styles.imageBackground}
-        resizeMode="cover"
-      >
+      <View style={styles.imageBackground}>
+        <Image
+          source={{ uri: shop.image }}
+          style={styles.image}
+          contentFit="cover"
+          transition={200}
+          placeholder="LKN]Rv%2Tw=w]~RBVZRi};RPxuwH"
+        />
         <LinearGradient
           colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.8)']}
           style={styles.gradient}
@@ -114,20 +122,18 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
             {shop.name}
           </Text>
         </View>
-
         {shop.rating !== undefined && shop.rating !== null && (
           <View style={styles.ratingBadge}>
             <Ionicons name="star" size={14} color="#FFD700" />
             <Text style={styles.ratingText}>{shop.rating.toFixed(1)}</Text>
           </View>
         )}
-
         <View style={styles.featuredTag}>
           <Text style={styles.featuredTagText}>FEATURED</Text>
         </View>
-      </ImageBackground>
+      </View>
     </TouchableOpacity>
   );
 };
 
-export default FeaturedShopCard;
+export default React.memo(FeaturedShopCard);

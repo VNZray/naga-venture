@@ -1,0 +1,180 @@
+[33mb730204[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mShop-Module-MonoRepo[m[33m, [m[1;31morigin/Shop-Module-MonoRepo[m[33m)[m ShopCardsfixed
+[33m06f31dd[m Solved the Issue
+[33m97544bc[m Merge pull request #46 from VNZray/Shop-Module-MonoRepo
+[33m34406b4[m There still error with gradient
+[33m31d770f[m addedd web navigations for admin and business
+[33m50d526b[m  API docs
+[33m32c74c1[m there still error with linear gradient
+[33mb110a74[m Revert "Major Polishing adding skeleton loading debouncing of search and Refactor View and Data Layer Logic"
+[33mc0fb3aa[m Merge branch 'Accommodation-Module'
+[33mbd932cc[m Major Polishing adding skeleton loading debouncing of search and Refactor View and Data Layer Logic
+[33me3fa26d[m Merge branch 'master' of https://github.com/VNZray/naga-venture
+[33m16a3d0d[m added web pages
+[33m9cd91b9[m This is the backup commit of Shop-Module-MonoRepo
+[33mbdfde4e[m Finish the last section of shop details
+[33m534825b[m Updated Reviews Section
+[33m60549d0[m Merge pull request #43 from VNZray/Shop-Module-MonoRepo
+[33m91d4dd0[m Fixed Promotion Discount Logic and Errors
+[33m8dfa725[m Aesthetic Pleasing Info UI
+[33m2773897[m Fixed UI of profile Info, Promotions and Offers
+[33mebece4a[m  Fixed errors regarding menu section of shop profile now functional
+[33m33601df[m Merge pull request #42 from VNZray/Shop-Module-MonoRepo
+[33mad7f4ba[m Unfixed error hahaha
+[33m79fad1e[m added collapsible header
+[33mf779247[m Sleek Looking Shop Details
+[33me066548[m New ShopDetail UI
+[33m070b051[m Merge pull request #41 from VNZray/Shop-Module-MonoRepo
+[33ma8809fc[m Fixed Error Migrations
+[33m76e4db2[m Merge pull request #40 from VNZray/Shop-Module-MonoRepo
+[33m5a888f4[m Finished Integrating Shop-Module-MonoRpeo
+[33m6ff5e13[m[33m ([m[1;32mmaster[m[33m)[m minor changes
+[33mf8bc021[m fixed error
+[33md2168bf[m Merge branch 'master' of https://github.com/VNZray/naga-venture
+[33md14cdb9[m monorepo architecture implemented
+[33mf59dd0f[m Merge pull request #39 from VNZray/Shop-Module
+[33m60cda22[m ShopDetails
+[33m1ad2fd5[m Merge pull request #38 from VNZray/Shop-Module
+[33m838505d[m Added the functionalities of view all
+[33m751a322[m "fixed error component stack"
+[33m5cbb7f6[m Merge pull request #37 from VNZray/Shop-Module
+[33m70d5caa[m fixed UI Shop Directory Layout
+[33m6ea1587[m fixed categories
+[33mae3466c[m "Removed Utils
+[33m15c6a9f[m Merge pull request #36 from VNZray/Shop-Module
+[33m7921e6f[m ADded Specific components
+[33m1818e6e[m Visual Hierarchy
+[33m118e60c[m Merge pull request #35 from VNZray/Shop-Module
+[33me130c8b[m Added new RecommendedShopCard Component for a unique look in the recommended
+[33m00646ec[m Improved Card UI/UX Design of Featured Shops
+[33m0f6ac2c[m Merge pull request #34 from VNZray/Shop-Module
+[33me78937a[m Implemented proper esLinting to get away from Text Error hell
+[33mee85c64[m Fixed all Text componenet issues
+[33me51be04[m Merge branch 'master' of https://github.com/VNZray/naga-venture
+[33mdf99b1d[m hehe
+[33mc61aebf[m fixed 1 text component stack haha
+[33mbe7694e[m Merge pull request #33 from VNZray/Shop-Module
+[33mebedbe1[m Component Stack
+[33mf01d9cf[m Text component probloems
+[33m34313fc[m Minor
+[33m09857e0[m Made a lot of configurations regarding the colorthem. So i decided to remove light and darkmode theme yes
+[33m0a109cf[m a
+[33md3bbc23[m Revert "Revision 1 of UI"
+[33m8abe72e[m Revision 1 of UI
+[33m2340810[m Simplified Components avoid Over Engineering
+[33ma503f5f[m  Merge MAster to Shop Module
+[33mbc33ffb[m gg
+[33m4e9fb90[m[33m ([m[1;31morigin/Accommodation-Module[m[33m)[m Merge pull request #31 from VNZray/master
+[33mf80fdca[m Merge pull request #29 from VNZray/Tourist-Spot-Module
+[33mee0ce0c[m[33m ([m[1;31morigin/Tourist-Spot-Module[m[33m)[m Merge branch 'master' into Tourist-Spot-Module
+[33ma675eac[m Merge pull request #28 from VNZray/master
+[33mbfde180[m hehe
+[33m6cd85d9[m minor changes
+[33mf450b11[m Major Refactoring of Shop Components into proper file architecture management
+[33m40df6ae[m fixed the ratings logic
+[33me71b4a9[m hehe
+[33m1264c0b[m Merge branch 'Accommodation-Module' of https://github.com/VNZray/naga-venture into Accommodation-Module
+[33m8e19b64[m update the review UI for accommodation and rooms
+[33m183c6df[m fixed the map issue
+[33m1fab106[m fix the use effect issue
+[33mb18bfa5[m hehe
+[33m71439f2[m removed the accommodation
+[33m4ba52bf[m Added a new components like recommened for you near you advanced searchs etc
+[33m55b913d[m hehe
+[33mf8aa843[m hehe
+[33m04cce6d[m Merge branch 'master' of https://github.com/VNZray/naga-venture
+[33mfc5dd7f[m changes here and there
+[33m2daa429[m context
+[33m748d057[m r
+[33m51187e3[m Merge pull request #26 from VNZray/Shop-Module
+[33m475703f[m a
+[33m56af2f9[m Fixed Categories from popular to main categories. Added Page layout for sub categories
+[33md11729c[m Merge pull request #25 from VNZray/Shop-Module
+[33m377ac5f[m Merge branch 'master' of https://github.com/VNZray/naga-venture into Shop-Module
+[33mbcb954e[m fix UI Categories still need some improvements
+[33md9fa8f9[m little to no changes
+[33m7787c6b[m a
+[33m654e6bc[m haha
+[33m8035ad8[m minor changes
+[33mf36ab3c[m Merge branch 'Tourist-Spot-Module' of https://github.com/VNZray/naga-venture into Tourist-Spot-Module
+[33mfb8a982[m a
+[33m20a77f0[m Merge pull request #24 from VNZray/master
+[33mf053e1a[m added map ui
+[33md0a065d[m Merge pull request #23 from VNZray/Shops-Module
+[33m295588c[m hahaha
+[33mf04b796[m haha
+[33m5f46fc3[m Merge pull request #22 from VNZray/Tourist-Spot-Module
+[33me816dbd[m fixed!
+[33me6e55a3[m Merge branch 'Tourist-Spot-Module' of https://github.com/VNZray/naga-venture into Tourist-Spot-Module
+[33m00fdb9b[m idk anymore
+[33m2cac2ee[m Merge pull request #20 from VNZray/Event-Module
+[33mc52ce6d[m[33m ([m[1;31morigin/Event-Module[m[33m)[m Merge pull request #19 from VNZray/master
+[33mb3113bc[m hehe
+[33mb1dc6b2[m hahaha
+[33mbab8512[m removed file
+[33m03e5911[m minor changes
+[33m1c2d9f4[m Merge branch 'master' of https://github.com/VNZray/naga-venture
+[33m5c05bbd[m Update package dependencies, enhance event handling, and improve UI components
+[33m0e1aa3d[m WOHOOO
+[33m6bdabb6[m Merge pull request #18 from VNZray/Accommodation-Module
+[33mbc9b1d2[m Merge pull request #17 from VNZray/Tourist-Spot-Module
+[33m4e22da0[m tsx convertion
+[33m311374a[m Merge branch 'Tourist-Spot-Module' of https://github.com/VNZray/naga-venture into Shop-Module
+[33m4e3d529[m Change file types from jsx to tsx
+[33m95162bd[m minor changes
+[33m4717463[m booking form and feedback functionality
+[33m6e3da94[m meow meow meow meow
+[33m1d6800e[m wew
+[33md26b68e[m a
+[33m6241eae[m Merge pull request #16 from VNZray/Tourist-Spot-Module
+[33m4a7fc45[m Merge branch 'master' into Tourist-Spot-Module
+[33mb742caf[m a
+[33m786de6d[m a
+[33md0a7082[m minor changes
+[33m04c9e52[m wew
+[33mc18f10c[m Merge pull request #14 from VNZray/Accommodation-Module
+[33m0dcae97[m Merge pull request #13 from VNZray/master
+[33mf4d4038[m minor changes
+[33md4d669b[m change file type
+[33m602bc1b[m a
+[33m05eee18[m added reviews ui component
+[33m7fcf1e8[m Refactored my Shop Module into several components to keep it clean
+[33m9f818d0[m AYQ NA LORD
+[33m66a45f5[m OMG paano to  my god
+[33m9bfa87a[m GG github branch
+[33mf9f1ac0[m GGGGG case sensitive goodbye shop-module hello Shop-Module HAHAHAHAHAHA ggggg
+[33m837cf9f[m proper styling on some screens
+[33mb87ee2e[m components
+[33m9aa942b[m Merge branch 'master' of https://github.com/VNZray/naga-venture
+[33mcdd7cfc[m minor changes
+[33m7982832[m Merge pull request #10 from VNZray/Tourist-Spot-Module
+[33m7d7e281[m Merge branch 'master' into Tourist-Spot-Module
+[33m586b1e5[m wew
+[33m4c5ef2a[m mayu na ako sa mood
+[33ma34de79[m up
+[33m3c79b34[m wew
+[33m0a5d44b[m Merge branch 'master' of https://github.com/VNZray/naga-venture
+[33md0503ee[m use context
+[33m2d0871e[m Starting of the Shop Module Design
+[33m5417be1[m Merge pull request #8 from VNZray/Accommodation-Module
+[33m4514475[m Merge pull request #7 from VNZray/master
+[33m2ec8cb2[m minor changes
+[33m32ce536[m[33m ([m[1;32mTourist-Spot-Module[m[33m)[m a
+[33ma20f897[m asdadQD
+[33m5a6a2f9[m layout
+[33mef5a669[m Done
+[33md0c2718[m added room profile
+[33m3ec6766[m welp
+[33m66ddfa4[m Merge pull request #6 from VNZray/master
+[33mb5ca95a[m Merge pull request #5 from VNZray/Accommodation-Module
+[33maa56a27[m Merge pull request #4 from VNZray/master
+[33m3b5ad7e[m Merge branch 'master' of https://github.com/VNZray/naga-venture
+[33m57795f4[m Added accommodation card, profile page, and custom tab component
+[33m9f86c44[m data now segregated
+[33m071a1ab[m initial
+[33m48af3e4[m Merge pull request #3 from VNZray/master
+[33m4548707[m Merge pull request #2 from VNZray/Accommodation-Module
+[33m1f59e79[m Merge pull request #1 from VNZray/master
+[33m728d842[m hehe
+[33m17b38c7[m hi
+[33mc63ff55[m first commit
+[33m2e9c5c4[m Initial commit
