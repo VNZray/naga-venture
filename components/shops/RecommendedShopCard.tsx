@@ -180,4 +180,4 @@ const RecommendedShopCard: React.FC<RecommendedShopCardProps> = ({
   );
 };
 
-export default RecommendedShopCard;
+export default React.memo(RecommendedShopCard);

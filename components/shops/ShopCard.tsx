@@ -249,4 +249,4 @@ const ShopCard: React.FC<ShopCardProps> = ({
   );
 };
 
-export default ShopCard;
+export default React.memo(ShopCard);
