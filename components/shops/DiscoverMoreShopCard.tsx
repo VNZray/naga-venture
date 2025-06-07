@@ -171,4 +171,4 @@ const DiscoverMoreShopCard: React.FC<DiscoverMoreShopCardProps> = ({
   );
 };
 
-export default DiscoverMoreShopCard;
+export default React.memo(DiscoverMoreShopCard);

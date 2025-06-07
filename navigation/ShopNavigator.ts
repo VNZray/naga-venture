@@ -40,6 +40,22 @@ export const ShopNavigator = {
     router.push('/TouristApp/(tabs)/(home)/(shops)/AllCategories');
   },
   /**
+   * Navigate to a main category page
+   */
+  goToMainCategory: (categoryId: string) => {
+    router.push(`/TouristApp/(tabs)/(home)/(shops)/(categories)/${categoryId}`);
+  },
+
+  /**
+   * Navigate to a subcategory page
+   */
+  goToSubcategory: (subcategoryId: string) => {
+    router.push(
+      `/TouristApp/(tabs)/(home)/(shops)/(subcategory)/${subcategoryId}`
+    );
+  },
+
+  /**
    * Navigate to search results with a query
    */
   goToSearchResults: (query: string) => {
@@ -65,7 +81,10 @@ export const ShopNavigator = {
   /**
    * Navigate to a special offer (if the target path is provided)
    */
-  goToSpecialOffer: (targetPath: string) => {
-    router.push(targetPath);
+  /**
+   * Navigate to a specific special offer's details page
+   */
+  goToSpecialOfferDetails: (offerId: string) => {
+    router.push(`/TouristApp/(tabs)/(home)/(shops)/offer/${offerId}`);
   },
 } as const;

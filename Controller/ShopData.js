@@ -1199,39 +1199,108 @@ export const featuredShops = [shopsData['1'], shopsData['2'], shopsData['3']];
 export const destinations = Object.values(shopsData);
 
 // --- START: New Special Offers Data ---
-export const specialOffersData = [
-  {
+// Updated to be an object and match SpecialOffer type
+export const specialOffersData = {
+  so_001: {
     id: 'so_001',
-    promoImageUrl:
-      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=600&h=320&fit=crop', // Example Unsplash image (replace with actual promo images)
     title: 'Weekend Getaway Deals',
+    description:
+      'Amazing deals for your next weekend adventure. Explore scenic spots and enjoy local culture with our curated packages.',
+    termsAndConditions:
+      'Offer valid for bookings made through our app. Subject to availability. Cannot be combined with other promos. Travel insurance not included. Valid for travel dates within the next 3 months.',
+    image:
+      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=600&h=320&fit=crop',
+    promoImageUrl:
+      'https://images.unsplash.com/photo-1508057198894-247b23fe5ade?q=80&w=600&h=320&fit=crop', // Retained for compatibility if used elsewhere
     altText:
-      'Advertisement for weekend getaway travel packages with a scenic view.',
-    targetPath: '/(tabs)/(home)/(offers)/weekend-deals', // Example navigation path
+      'Advertisement for weekend getaway travel packages with a scenic view.', // Retained for compatibility
+    targetPath: '/(tabs)/(home)/(offers)/weekend-deals', // Retained for compatibility
+    validFrom: '2024-06-01T00:00:00Z',
+    validUntil: '2024-08-31T23:59:59Z',
+    isActive: true,
+    discountPercent: 15,
+    applicableShopIds: ['1', '3'], // Example: Burger Joint & Brew & Beans
+    applicableToAllShops: false,
+    type: 'discount',
+    category: 'travel',
   },
-  {
+  so_002: {
     id: 'so_002',
+    title: 'Restaurant Discounts: Up to 50% Off!',
+    description:
+      'Dine at your favorite Naga restaurants and enjoy up to 50% off on selected dishes. Perfect for foodies!',
+    termsAndConditions:
+      'Discount varies per restaurant and item. Valid for dine-in only. Present this offer in the app to avail. Not valid on holidays. Minimum spend may be required at some locations.',
+    image:
+      'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=600&h=320&fit=crop',
     promoImageUrl:
       'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?q=80&w=600&h=320&fit=crop',
-    title: 'Restaurant Discounts: Up to 50% Off!',
     altText: 'Advertisement for restaurant discounts showing delicious food.',
     targetPath: '/(tabs)/(home)/(shops)/categories/dining',
+    validFrom: '2024-05-15T00:00:00Z',
+    validUntil: '2024-07-15T23:59:59Z',
+    isActive: true,
+    discountPercent: 50, // "Up to"
+    shopId: '1', // Example: Burger Joint specific offer
+    applicableToAllShops: false,
+    type: 'percentage_off',
+    category: 'dining',
   },
-  {
+  so_003: {
     id: 'so_003',
+    title: 'New Tech Gadgets - Launch Offer',
+    description:
+      'Be the first to own the latest tech! Special launch prices on new smartphones, laptops, and accessories.',
+    termsAndConditions:
+      'Offer valid while stocks last. Limited to one unit per customer for select items. Warranty terms apply. Check in-store for participating brands.',
+    image:
+      'https://images.unsplash.com/photo-1526178094224-95108a9590cf?q=80&w=600&h=320&fit=crop',
     promoImageUrl:
       'https://images.unsplash.com/photo-1526178094224-95108a9590cf?q=80&w=600&h=320&fit=crop',
-    title: 'New Tech Gadgets - Launch Offer',
     altText: 'Advertisement for new tech gadgets with a sleek product shot.',
-    targetPath: '/(tabs)/(home)/(shops)/categories/mobile',
+    targetPath: '/(tabs)/(home)/(shops)/categories/mobile', // Example path, adjust as needed
+    validFrom: '2024-06-10T00:00:00Z',
+    validUntil: '2024-06-30T23:59:59Z',
+    isActive: true,
+    discountFixedAmount: 500, // e.g. P500 off
+    applicableShopIds: ['4'], // Example: TechHub
+    applicableToAllShops: false,
+    type: 'fixed_amount_off',
+    category: 'electronics',
   },
-  {
+  so_004: {
     id: 'so_004',
+    title: 'Fashion Frenzy: Seasonal Sale',
+    description:
+      'Refresh your wardrobe with our seasonal fashion sale. Discounts on clothing, shoes, and accessories.',
+    termsAndConditions:
+      'Valid on selected items only. Sizes and availability may vary. Exchange policy applies. Not valid for gift cards.',
+    image:
+      'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=600&h=320&fit=crop',
     promoImageUrl:
       'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=600&h=320&fit=crop',
-    title: 'Fashion Frenzy: Seasonal Sale',
     altText: 'Advertisement for a fashion sale with stylish apparel.',
-    targetPath: '/(tabs)/(home)/(shops)/categories/clothing',
+    targetPath: '/(tabs)/(home)/(shops)/categories/clothing', // Example path
+    validFrom: '2024-07-01T00:00:00Z',
+    validUntil: '2024-07-31T23:59:59Z',
+    isActive: true,
+    discountPercent: 30,
+    applicableToAllShops: true, // Example: Applies to all clothing stores
+    type: 'sale_event',
+    category: 'fashion',
   },
-];
+};
 // --- END: New Special Offers Data ---
+
+// Helper function to get a special offer by its ID
+export const getSpecialOfferById = (id) => {
+  return specialOffersData[id] || null;
+};
+
+// Helper function to get shops by an array of IDs
+export const getShopsByIds = (ids) => {
+  if (!ids || ids.length === 0) {
+    return [];
+  }
+  return ids.map((id) => shopsData[id]).filter((shop) => shop !== undefined);
+};
