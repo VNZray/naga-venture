@@ -5,6 +5,7 @@ import React from 'react';
 import {
   Dimensions,
   Image,
+  Platform,
   StyleSheet,
   useColorScheme as useRNColorScheme,
   View,
@@ -46,6 +47,7 @@ const CardView: React.FC<CardViewProps> = ({
       style={[
         styles.card,
         {
+          maxWidth: 397,
           width: (width ?? Dimensions.get('window').width) * 1,
           height: (height ?? Dimensions.get('window').height) * 0.9,
           borderRadius: radius,
@@ -68,7 +70,8 @@ const CardView: React.FC<CardViewProps> = ({
         style={[
           styles.cardTextContainer,
           {
-            backgroundColor,
+            backgroundColor:
+              Platform.OS === 'web' ? '#FFFFFF' : backgroundColor,
             shadowColor: isDarkMode ? '#f3f3f3' : '#000000',
             shadowOpacity: isDarkMode ? 0 : 0.2,
             shadowOffset: { width: 0, height: 0 },
@@ -76,8 +79,16 @@ const CardView: React.FC<CardViewProps> = ({
           },
         ]}
       >
-        <ThemedText type="cardTitle">{title}</ThemedText>
-        <ThemedText type="cardSubTitle">
+        <ThemedText
+          darkColor={Platform.OS === 'web' ? '#000' : '#000'}
+          type="cardTitle"
+        >
+          {title}
+        </ThemedText>
+        <ThemedText
+          darkColor={Platform.OS === 'web' ? '#000' : '#000'}
+          type="cardSubTitle"
+        >
           <MaterialCommunityIcons name="map-marker" size={14} color="#FFB007" />{' '}
           {subtitle}
         </ThemedText>
@@ -95,6 +106,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
+    flex: 1,
   },
   imageWrapper: {
     width: '100%',
