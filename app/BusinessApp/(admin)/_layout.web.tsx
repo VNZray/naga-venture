@@ -1,5 +1,6 @@
 import AdminHeader from '@/components/AdminHeader';
 import { ThemedText } from '@/components/ThemedText';
+import { AccommodationProvider } from '@/context/AccommodationContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FontAwesome } from '@expo/vector-icons';
 import {
@@ -44,45 +45,47 @@ export default function AdminLayout() {
 
   const colorScheme = useColorScheme();
   return (
-    <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
-      <View style={styles.container}>
-        {/* Sidebar */}
-        <View style={styles.sidebar}>
-          <Text style={styles.logo}>Naga Venture</Text>
-          {navItems.map((item) => (
-            <Pressable
-              key={item.name}
-              style={styles.navItem}
-              onPress={() => {
-                setHeaderTitle(item.name);
-                router.push(item.path as any);
-              }}
-            >
-              <View style={styles.navRow}>
-                <FontAwesome
-                  name={item.icon}
-                  size={20}
-                  color="#fff"
-                  style={styles.navIcon}
-                />
-                <ThemedText style={styles.navText}>{item.name}</ThemedText>
-              </View>
-            </Pressable>
-          ))}
-        </View>
+    <AccommodationProvider>
+      <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
+        <View style={styles.container}>
+          {/* Sidebar */}
+          <View style={styles.sidebar}>
+            <Text style={styles.logo}>Naga Venture</Text>
+            {navItems.map((item) => (
+              <Pressable
+                key={item.name}
+                style={styles.navItem}
+                onPress={() => {
+                  setHeaderTitle(item.name);
+                  router.push(item.path as any);
+                }}
+              >
+                <View style={styles.navRow}>
+                  <FontAwesome
+                    name={item.icon}
+                    size={20}
+                    color="#fff"
+                    style={styles.navIcon}
+                  />
+                  <ThemedText style={styles.navText}>{item.name}</ThemedText>
+                </View>
+              </Pressable>
+            ))}
+          </View>
 
-        <View style={styles.content}>
-          <AdminHeader
-            headerTitle={headerTitle}
-            headerUserName="ray"
-            headerUserEmail="ray@gmail.com"
-          />
-          <Stack
-            screenOptions={{ headerShown: false, headerBackVisible: false }}
-          ></Stack>
+          <View style={styles.content}>
+            <AdminHeader
+              headerTitle={headerTitle}
+              headerUserName="ray"
+              headerUserEmail="ray@gmail.com"
+            />
+            <Stack
+              screenOptions={{ headerShown: false, headerBackVisible: false }}
+            ></Stack>
+          </View>
         </View>
-      </View>
-    </ThemeProvider>
+      </ThemeProvider>
+    </AccommodationProvider>
   );
 }
 
