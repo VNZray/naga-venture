@@ -1,5 +1,5 @@
 import { Session, User as SupabaseUser } from '@supabase/supabase-js';
-import { useQuery, useQueryClient } from '@tanstack/react-query'; // QueryClient might not be needed here if already provided at root
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import React, {
   createContext,
   ReactNode,
@@ -8,29 +8,10 @@ import React, {
   useState,
 } from 'react';
 import { supabase } from '../lib/supabase';
+import { Profile as UserProfile, UserRole } from '../types/supabase';
 
-// Define the user role enum
-export type UserRole =
-  | 'tourism_admin'
-  | 'business_listing_manager'
-  | 'tourism_content_manager'
-  | 'business_registration_manager'
-  | 'business_owner'
-  | 'tourist';
-
-// Define the profile interface based on database schema
-export interface UserProfile {
-  id: string;
-  email: string;
-  first_name: string | null;
-  last_name: string | null;
-  phone_number: string | null;
-  profile_image_url: string | null;
-  role: UserRole;
-  is_verified: boolean;
-  created_at: string;
-  updated_at: string;
-}
+// Re-export types for backward compatibility
+export type { UserProfile, UserRole };
 
 // Define the context type
 interface AuthContextType {
