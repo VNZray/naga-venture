@@ -1,6 +1,7 @@
 import AdminHeader from '@/components/AdminHeader';
 import { ThemedText } from '@/components/ThemedText';
 import { AccommodationProvider } from '@/context/AccommodationContext';
+import { useAuth } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FontAwesome } from '@expo/vector-icons';
 import {
@@ -9,7 +10,7 @@ import {
   ThemeProvider,
 } from '@react-navigation/native';
 import { Stack, router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 type FontAwesomeIconName =
@@ -42,7 +43,12 @@ const navItems: { name: string; path: string; icon: FontAwesomeIconName }[] = [
 ];
 export default function AdminLayout() {
   const [headerTitle, setHeaderTitle] = useState('Dashboard');
-
+  const { user } = useAuth();
+  useEffect(() => {
+    if (!user) {
+      router.replace('/BusinessApp');
+    }
+  }, [user]);
   const colorScheme = useColorScheme();
   return (
     <AccommodationProvider>
@@ -76,8 +82,8 @@ export default function AdminLayout() {
           <View style={styles.content}>
             <AdminHeader
               headerTitle={headerTitle}
-              headerUserName="ray"
-              headerUserEmail="ray@gmail.com"
+              headerUserName={user?.name ?? ''}
+              headerUserEmail={user?.email ?? ''}
             />
             <Stack
               screenOptions={{ headerShown: false, headerBackVisible: false }}
@@ -112,7 +118,7 @@ const styles = StyleSheet.create({
   },
   navText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
   },
   content: {
     flex: 1,
