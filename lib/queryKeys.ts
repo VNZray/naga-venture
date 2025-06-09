@@ -50,6 +50,19 @@ const queryKeys = {
     byCategory: (category: string) =>
       [...queryKeys.specialOffers.lists(), { category }] as const,
   },
+
+  // Authentication query keys
+  auth: {
+    all: ['auth'] as const,
+    profile: (userId: string) =>
+      [...queryKeys.auth.all, 'profile', userId] as const,
+    profiles: () => [...queryKeys.auth.all, 'profiles'] as const,
+    profilesByRole: (role: string) =>
+      [...queryKeys.auth.profiles(), { role }] as const,
+    session: () => [...queryKeys.auth.all, 'session'] as const,
+    permissions: (userId: string) =>
+      [...queryKeys.auth.all, 'permissions', userId] as const,
+  },
 } as const;
 
 export default queryKeys;
@@ -58,6 +71,7 @@ export default queryKeys;
 export const shopKeys = queryKeys.shops;
 export const categoryKeys = queryKeys.categories;
 export const specialOfferKeys = queryKeys.specialOffers;
+export const authKeys = queryKeys.auth;
 
 // Utility types for better TypeScript support
 export type ShopQueryKey =
@@ -86,3 +100,11 @@ export type SpecialOfferQueryKey =
   | ReturnType<typeof queryKeys.specialOffers.detail>
   | ReturnType<typeof queryKeys.specialOffers.active>
   | ReturnType<typeof queryKeys.specialOffers.byCategory>;
+
+export type AuthQueryKey =
+  | typeof queryKeys.auth.all
+  | ReturnType<typeof queryKeys.auth.profile>
+  | ReturnType<typeof queryKeys.auth.profiles>
+  | ReturnType<typeof queryKeys.auth.profilesByRole>
+  | ReturnType<typeof queryKeys.auth.session>
+  | ReturnType<typeof queryKeys.auth.permissions>;

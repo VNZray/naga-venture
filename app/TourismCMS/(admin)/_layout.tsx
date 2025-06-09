@@ -10,8 +10,14 @@ import {
   ThemeProvider,
 } from '@react-navigation/native';
 import { Stack, router } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 type FontAwesomeIconName =
   | 'dashboard'
@@ -20,46 +26,106 @@ type FontAwesomeIconName =
   | 'briefcase'
   | 'comments'
   | 'map'
-  | 'tree';
+  | 'tree'
+  | 'cog'
+  | 'user-plus'
+  | 'list';
 
-const navItems: { name: string; path: string; icon: FontAwesomeIconName }[] = [
+interface NavItem {
+  name: string;
+  path: string;
+  icon: FontAwesomeIconName;
+  roles: string[]; // Allowed roles for this nav item
+}
+
+// Define navigation items with role-based access
+const allNavItems: NavItem[] = [
   {
     name: 'Dashboard',
-    path: '/TourismApp/(admin)/dashboard',
+    path: '/TourismCMS/(admin)/dashboard',
     icon: 'dashboard',
+    roles: [
+      'tourism_admin',
+      'business_listing_manager',
+      'tourism_content_manager',
+      'business_registration_manager',
+    ],
   },
   {
-    name: 'Registration',
-    path: '/TourismApp/(admin)/registration',
-    icon: 'users',
+    name: 'User Registration',
+    path: '/TourismCMS/(admin)/registration',
+    icon: 'user-plus',
+    roles: ['tourism_admin', 'business_registration_manager'],
   },
   {
-    name: 'Accommodations',
-    path: '/TourismApp/(admin)/accommodation',
+    name: 'Business Listings',
+    path: '/TourismCMS/(admin)/businesses',
     icon: 'briefcase',
+    roles: ['tourism_admin', 'business_listing_manager'],
   },
   {
     name: 'Tourist Spots',
-    path: '/TourismApp/(admin)/spot',
+    path: '/TourismCMS/(admin)/tourist-spots',
     icon: 'tree',
+    roles: ['tourism_admin', 'tourism_content_manager'],
   },
-  { name: 'Events', path: '/TourismApp/(admin)/event', icon: 'comments' },
-  { name: 'Shops', path: '/TourismApp/(admin)/shop', icon: 'exchange' },
   {
-    name: 'Map',
-    path: '/TourismApp/(admin)/maps',
-    icon: 'map',
+    name: 'Events',
+    path: '/TourismCMS/(admin)/events',
+    icon: 'comments',
+    roles: ['tourism_admin', 'tourism_content_manager'],
+  },
+  {
+    name: 'Accommodations',
+    path: '/TourismCMS/(admin)/accommodation',
+    icon: 'list',
+    roles: ['tourism_admin', 'business_listing_manager'],
+  },
+  {
+    name: 'Content Management',
+    path: '/TourismCMS/(admin)/content',
+    icon: 'exchange',
+    roles: ['tourism_admin', 'tourism_content_manager'],
+  },
+  {
+    name: 'System Settings',
+    path: '/TourismCMS/(admin)/settings',
+    icon: 'cog',
+    roles: ['tourism_admin'], // Only tourism_admin can access system settings
   },
 ];
+
 export default function AdminLayout() {
   const [headerTitle, setHeaderTitle] = useState('Dashboard');
-  const { user } = useAuth();
+  const { user, profile, isLoading, isProfileLoading } = useAuth();
+  const colorScheme = useColorScheme();
+
+  // Filter navigation items based on user role
+  const navItems = useMemo(() => {
+    if (!profile?.role) return [];
+    return allNavItems.filter((item) => item.roles.includes(profile.role));
+  }, [profile?.role]);
+
   useEffect(() => {
     if (!user) {
       router.replace('/TouristApp');
     }
   }, [user]);
-  const colorScheme = useColorScheme();
+
+  // Show loading state while authentication is being determined
+  if (isLoading || isProfileLoading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color="#0A1B47" />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
+
+  // Redirect if user is not authenticated
+  if (!user || !profile) {
+    return null; // This will trigger the useEffect redirect
+  }
   return (
     <AccommodationProvider>
       <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
@@ -88,11 +154,16 @@ export default function AdminLayout() {
               </Pressable>
             ))}
           </View>
-
           <View style={styles.content}>
             <AdminHeader
               headerTitle={headerTitle}
-              headerUserName={user?.name ?? ''}
+              headerUserName={
+                profile
+                  ? `${profile.first_name || ''} ${
+                      profile.last_name || ''
+                    }`.trim() || 'User'
+                  : 'User'
+              }
               headerUserEmail={user?.email ?? ''}
             />
             <Stack
@@ -139,5 +210,16 @@ const styles = StyleSheet.create({
   },
   navIcon: {
     marginRight: 16,
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#0A1B47',
+    fontWeight: '500',
   },
 });

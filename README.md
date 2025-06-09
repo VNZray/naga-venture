@@ -26,6 +26,8 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Shops Module - Hans Gabriel Candor
 Make sure to install 
-npm install @tanstack/react-query - used to handle data fetching and custom hooks easier
+npm install @supabase/supabase-js @tanstack/react-query react-hook-form zod react-native-url-polyfill @react-navigation/native
+npm install @react-navigation/stack react-native-screens react-native-safe-area-context
+npm install @react-native-async-storage/async-storage
 
 ## Events Module - Wayne Sanao

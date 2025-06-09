@@ -2,9 +2,8 @@ import logo from '@/assets/images/logo.png';
 import PressableButton from '@/components/PressableButton';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/context/AuthContext';
-import { users } from '@/Controller/User';
 import { Image } from 'expo-image';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { TextInput } from 'react-native-paper';
@@ -13,25 +12,34 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const LoginWeb = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth();
+  const { signInWithEmail, isLoading, error } = useAuth();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Email and password are required.');
       return;
     }
 
-    const matchedUser = users.find(
-      (u) => u.email === email && u.password === password
-    );
+    try {
+      await signInWithEmail(email, password);
 
-    if (matchedUser) {
-      login(matchedUser);
-      router.replace('/TourismApp/(admin)');
-    } else {
-      Alert.alert('Login Failed', 'Incorrect email or password.');
+      // If no error is thrown, the auth state change will handle navigation
+      // We can navigate immediately since signInWithEmail doesn't throw on auth errors
+      if (!error) {
+        router.replace('/TourismCMS/(admin)');
+      }
+    } catch (err) {
+      console.error('Unexpected login error:', err);
+      Alert.alert('Login Failed', 'An unexpected error occurred.');
     }
   };
+
+  // Show error alert when error state changes
+  React.useEffect(() => {
+    if (error) {
+      Alert.alert('Login Failed', error.message || 'Authentication failed.');
+    }
+  }, [error]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -54,7 +62,6 @@ const LoginWeb = () => {
               <Image source={logo} style={styles.logo} />
               <Text style={styles.logoText}>Naga Venture</Text>
             </View>
-
             <View style={{ marginBottom: 20 }}>
               <ThemedText darkColor="#000" type="title">
                 Sign In
@@ -63,7 +70,6 @@ const LoginWeb = () => {
                 Navigate with Ease - Your Ultimate City Directory
               </ThemedText>
             </View>
-
             <View style={{ gap: 16 }}>
               <TextInput
                 mode="outlined"
@@ -81,10 +87,10 @@ const LoginWeb = () => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-
-              <Link href="/TouristApp/(screens)/ForgotPassword">
-                <ThemedText type="link">Forgot Password?</ThemedText>
-              </Link>
+              {/* TODO: Create forgot password page for Tourism CMS */}
+              <Text style={{ color: '#007AFF', fontSize: 14 }}>
+                Forgot Password?
+              </Text>
             </View>
 
             <View style={{ marginTop: 20 }}>
@@ -96,18 +102,23 @@ const LoginWeb = () => {
                 IconSize={24}
                 color={'#DEE3F2'}
                 direction="column"
-                Title="Login"
+                Title={isLoading ? 'Signing In...' : 'Login'}
                 onPress={handleLogin}
+                disabled={isLoading}
               />
             </View>
 
             <View style={styles.signupRow}>
-              <ThemedText darkColor="#000" type="default2">
-                Don&#39;t Have an Account?
+              <ThemedText darkColor="#666" type="default2">
+                Tourism CMS - Admin Access Only
               </ThemedText>
-              <Link href="/BusinessApp/register">
-                <ThemedText type="link">Sign Up</ThemedText>
-              </Link>
+              {/* Temporary link to create admin user */}
+              <Text
+                style={{ color: '#007AFF', fontSize: 14, marginLeft: 10 }}
+                onPress={() => router.push('/TourismCMS/register')}
+              >
+                Setup Admin
+              </Text>
             </View>
           </View>
         </View>

@@ -1,5 +1,5 @@
 // hooks/useShops.ts - Professional Shop Data Management
-import queryKeys from '@/api/queryKeys';
+import queryKeys from '@/lib/queryKeys';
 import {
   getMainCategoryById,
   getShopsByIds,

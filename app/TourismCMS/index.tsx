@@ -7,7 +7,8 @@ import React from 'react';
 import { ImageBackground, Text, View } from 'react-native';
 import { PaperProvider } from 'react-native-paper';
 import 'react-native-url-polyfill/auto';
-const index = () => {
+
+const Index = () => {
   const [fontsLoaded] = useFonts({
     'Poppins-Black': require('@/assets/fonts/Poppins/Poppins-Black.ttf'),
     'Poppins-Regular': require('@/assets/fonts/Poppins/Poppins-Regular.ttf'),
@@ -81,18 +82,8 @@ const index = () => {
               type="secondary"
               color={'#DEE3F2'}
               direction="column"
-              Title="Login"
-              onPress={() => router.navigate('/TourismApp/login')}
-            ></PressableButton>
-            <PressableButton
-              TextSize={16}
-              width={'100%'}
-              height={55}
-              type="tertiary"
-              color={'#000'}
-              direction="column"
-              Title="Register"
-              onPress={() => router.navigate('/TourismApp/register')}
+              Title="Admin Login"
+              onPress={() => router.navigate('/TourismCMS/login')}
             ></PressableButton>
           </View>
         </LinearGradient>
@@ -101,4 +92,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default Index;

@@ -21,7 +21,7 @@ export default {
         backgroundColor: '#ffffff',
       },
       edgeToEdgeEnabled: true,
-      package: "com.malzafre.nagaventure",
+      package: 'com.malzafre.nagaventure',
     },
     web: {
       bundler: 'metro',
@@ -51,6 +51,8 @@ export default {
       policy: 'appVersion',
     },
     extra: {
+      EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
       REACT_NATIVE_SUPABASE_URL: process.env.REACT_NATIVE_SUPABASE_URL,
       REACT_NATIVE_ANON_KEY: process.env.REACT_NATIVE_ANON_KEY,
       eas: {

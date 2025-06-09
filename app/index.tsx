@@ -1,18 +1,16 @@
-import BusinessApp from './BusinessApp';
-import TourismApp from './TourismApp'; // full web
-import TouristApp from './TouristApp';
+import { Redirect } from 'expo-router';
 
-const CURRENT_APP: 'business' | 'tourism' | 'tourist' = 'tourist';
+const CURRENT_APP: 'business' | 'tourism' | 'tourist' = 'tourism';
 
 export default function App() {
   switch (CURRENT_APP) {
     case 'business':
-      return <BusinessApp />;
+      return <Redirect href="/BusinessApp" />;
     case 'tourism':
-      return <TourismApp />;
+      return <Redirect href="/TourismCMS" />;
     case 'tourist':
-      return <TouristApp />;
+      return <Redirect href="/TouristApp" />;
     default:
-      return <div>Invalid app selection</div>;
+      return <Redirect href="/TourismCMS" />;
   }
 }
