@@ -29,5 +29,14 @@ Make sure to install
 npm install @supabase/supabase-js @tanstack/react-query react-hook-form zod react-native-url-polyfill @react-navigation/native
 npm install @react-navigation/stack react-native-screens react-native-safe-area-context
 npm install @react-native-async-storage/async-storage
+npx supabase gen types typescript --project-id vqyjssvywyvpmvkcbtxg --schema public > naga-venture/types/database.ts (to update database type interface)
+npm install react-hook-form zod @hookform/resolvers
+
+admin123
+
+admin@nagaventure.com
+tcmadmin@nagaventures.com
+blmadmin@nagaventures.com
+brmadmin@nagaventures.com
 
 ## Events Module - Wayne Sanao

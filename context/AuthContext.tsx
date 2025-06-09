@@ -1,4 +1,5 @@
 import { Session, User as SupabaseUser } from '@supabase/supabase-js';
+import { useQuery, useQueryClient } from '@tanstack/react-query'; // QueryClient might not be needed here if already provided at root
 import React, {
   createContext,
   ReactNode,
@@ -33,31 +34,17 @@ export interface UserProfile {
 
 // Define the context type
 interface AuthContextType {
-  // Supabase session and user
   session: Session | null;
   user: SupabaseUser | null;
-
-  // Custom profile data
-  profile: UserProfile | null;
-
-  // Loading states
-  isLoading: boolean;
-  isProfileLoading: boolean;
-
-  // Error state
-  error: Error | null;
-
-  // Auth methods
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  isLoading: boolean; // Combined loading state
+  authError: Error | null;
   signInWithEmail: (email: string, password: string) => Promise<void>;
-  signUp: (
-    email: string,
-    password: string,
-    profileData?: Partial<UserProfile>
-  ) => Promise<{ error: any }>;
-  signOut: () => Promise<{ error: any }>;
+  signOut: () => Promise<void>;
+  userProfile: UserProfile | null;
+  isUserProfileLoading: boolean;
+  userProfileError: Error | null;
 
-  // Legacy compatibility
+  // Legacy compatibility (can be reviewed/removed later if not used)
   login: (userData: any) => void;
   logout: () => void;
 
@@ -75,220 +62,131 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Helper function to fetch user profile with RLS error handling
-const fetchUserProfile = async (
-  userId: string
-): Promise<UserProfile | null> => {
-  if (!userId) return null;
-
-  try {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-
-    if (error) {
-      // Handle RLS infinite recursion error
-      if (
-        error.code === '42P17' ||
-        error.message.includes('infinite recursion')
-      ) {
-        console.warn(
-          'RLS infinite recursion detected. Using fallback profile.'
-        );
-        // Get user info from auth session
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (user) {
-          return {
-            id: user.id,
-            email: user.email || '',
-            first_name: user.user_metadata?.first_name || null,
-            last_name: user.user_metadata?.last_name || null,
-            phone_number: null,
-            profile_image_url: null,
-            role: 'tourist', // Default role
-            is_verified: false,
-            created_at: user.created_at || new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          } as UserProfile;
-        }
-      }
-      console.error('Profile fetch error:', error);
-      return null;
-    }
-
-    return data as UserProfile;
-  } catch (error) {
-    console.error('Error fetching profile:', error);
-    return null;
-  }
-};
-
 // AuthProvider implementation
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // For initial auth check
-  const [isProfileLoading, setIsProfileLoading] = useState(false); // For profile data fetching
-  const [error, setError] = useState<Error | null>(null);
+  const [isLoadingInitial, setIsLoadingInitial] = useState(true);
+  const [authError, setAuthError] = useState<Error | null>(null);
 
+  const queryClient = useQueryClient();
+  const user = session?.user ?? null;
+
+  console.log(
+    '[AuthContext] Render: isLoadingInitial:',
+    isLoadingInitial,
+    'User exists:',
+    !!user,
+    'Session exists:',
+    !!session
+  );
+  const {
+    data: userProfile,
+    isLoading: isUserProfileLoading,
+    error: userProfileError,
+  } = useQuery<UserProfile | null, Error>({
+    queryKey: ['userProfile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) {
+        console.log(
+          '[AuthContext] TanStack Query: Skipping profile fetch - no user ID'
+        );
+        return null;
+      }
+      console.log(
+        `[AuthContext] TanStack Query: Fetching profile for user ${user.id}`
+      );
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error(
+          `[AuthContext] TanStack Query: Error fetching profile for user ${user.id}`,
+          error
+        );
+        throw error;
+      }
+
+      console.log(
+        `[AuthContext] TanStack Query: Profile fetched for user ${user.id}`,
+        data
+      );
+      return data;
+    },
+    enabled: !!user,
+    retry: 1,
+  });
+
+  // Combined loading state: initial auth check OR profile loading for authenticated user
+  const isLoading = isLoadingInitial || (!!user && isUserProfileLoading);
+
+  console.log(
+    '[AuthContext] TanStack Query status:',
+    'isUserProfileLoading:',
+    isUserProfileLoading,
+    'userProfile defined:',
+    userProfile !== undefined,
+    'Combined isLoading:',
+    isLoading
+  );
   // Effect for initializing session and listening to auth changes
   useEffect(() => {
-    console.log('[AuthContext] Initializing AuthState...');
-    // setIsLoading(true); // isLoading is already true by default
+    console.log(
+      '[AuthContext] Main useEffect for session/auth listener triggered.'
+    );
 
+    // Initial check for session
     supabase.auth
       .getSession()
       .then(({ data: { session: currentSession } }) => {
-        console.log('[AuthContext] getSession completed.', currentSession);
+        console.log(
+          '[AuthContext] getSession success. Current session:',
+          !!currentSession
+        );
         setSession(currentSession);
-        const currentUser = currentSession?.user ?? null;
-        setUser(currentUser); // This will trigger the user-dependent useEffect if currentUser exists
-
-        if (!currentUser) {
-          // No active session from getSession, initial auth check is done for this path.
-          setIsLoading(false);
-          setProfile(null);
-          setIsProfileLoading(false); // Ensure this is also false
-          console.log(
-            '[AuthContext] No active session from getSession. isLoading set to false.'
-          );
-        } else {
-          // User exists from getSession. isLoading remains true.
-          // The useEffect([user,...]) will be triggered to fetch the profile.
-          // onAuthStateChange with INITIAL_SESSION or SIGNED_IN might also fire.
-          console.log(
-            `[AuthContext] Active session found by getSession for user ${currentUser.id}. Profile will be fetched if needed by user effect.`
-          );
-        }
+        setIsLoadingInitial(false);
       })
       .catch((err) => {
         console.error('[AuthContext] Error in getSession:', err);
-        setIsLoading(false); // Stop loading on error
-        setProfile(null);
-        setIsProfileLoading(false);
+        setAuthError(err);
+        setIsLoadingInitial(false);
       });
-
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+    } = supabase.auth.onAuthStateChange((event, newSession) => {
       console.log(
-        `[AuthContext] onAuthStateChange event: ${event}, User: ${newSession?.user?.id}, Current Profile ID: ${profile?.id}, isProfileLoading: ${isProfileLoading}, isLoading: ${isLoading}`
+        `[AuthContext] onAuthStateChange event: ${event}, New session:`,
+        !!newSession
       );
       setSession(newSession);
-      const newAuthUser = newSession?.user ?? null;
-      // Setting user here will trigger the user-dependent useEffect if newAuthUser is different or causes a relevant state change.
-      setUser(newAuthUser);
 
-      if (event === 'SIGNED_IN' && newAuthUser) {
-        console.log(
-          `[AuthContext] SIGNED_IN handler for user ${newAuthUser.id}.`
-        );
-        // Scenario 1: Profile for this user is already loaded and no fetch is in progress.
-        if (profile?.id === newAuthUser.id && !isProfileLoading) {
-          console.log(
-            '[AuthContext] SIGNED_IN: Profile already loaded for this user. No fetch needed.'
-          );
-          setIsLoading(false); // Ensure overall loading indicator is off.
-        }
-        // Scenario 2: A profile fetch is already in progress (possibly for this user or another).
-        else if (isProfileLoading) {
-          console.log(
-            '[AuthContext] SIGNED_IN: Profile fetch already in progress. Skipping new fetch.'
-          );
-          // The ongoing fetch's finally block will handle setting isLoading and isProfileLoading.
-          // If the ongoing fetch is for a *different* user, the setUser above might trigger the user effect
-          // to correct this once the current fetch completes.
-        }
-        // Scenario 3: Need to fetch profile (no profile, different user's profile, or no fetch in progress for current user).
-        else {
-          console.log(
-            `[AuthContext] SIGNED_IN: Conditions met to fetch profile for user ${newAuthUser.id}.`
-          );
-          setIsProfileLoading(true);
-          // Clear profile if it's for a different user or to ensure fresh state
-          if (!profile || profile.id !== newAuthUser.id) {
-            setProfile(null);
-          }
+      const oldUserId = session?.user?.id;
 
-          try {
-            const profileData = await fetchUserProfile(newAuthUser.id);
-            console.log(
-              '[AuthContext] SIGNED_IN: Profile fetched successfully.',
-              profileData
-            );
-            setProfile(profileData);
-          } catch (profileError) {
-            console.error(
-              '[AuthContext] SIGNED_IN: Error fetching profile:',
-              profileError
-            );
-            setError(
-              profileError instanceof Error
-                ? profileError
-                : new Error('Failed to fetch profile')
-            );
-            setProfile(null);
-          } finally {
-            setIsProfileLoading(false);
-            setIsLoading(false); // Mark loading as complete after this auth event processing.
-          }
-        }
-      } else if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT') {
         console.log(
-          '[AuthContext] SIGNED_OUT: Clearing user, profile, and error states.'
+          '[AuthContext] SIGNED_OUT: Clearing authError and profile cache for user:',
+          oldUserId
         );
-        // setUser(null); // Already handled by common setUser(newAuthUser) call where newAuthUser would be null
-        setProfile(null);
-        setError(null);
-        setIsProfileLoading(false);
-        setIsLoading(false);
-      } else if (event === 'USER_UPDATED' && newAuthUser) {
-        console.log(
-          `[AuthContext] USER_UPDATED event for user ${newAuthUser.id}.`
-        );
-        // setUser(newAuthUser) is already called.
-        // If profile needs re-fetch based on user_metadata, the user effect might handle it if profile.id mismatches,
-        // or specific logic could be added here.
-        // For now, ensure isLoading is false if no profile fetch is triggered by this.
-        if (!isProfileLoading) {
-          setIsLoading(false);
-        }
-      } else if (event === 'INITIAL_SESSION') {
-        console.log(
-          `[AuthContext] INITIAL_SESSION event. User from session: ${newAuthUser?.id}`
-        );
-        if (newAuthUser) {
-          // User is present from initial session.
-          // If profile isn't loaded for this user and no fetch is in progress,
-          // the user-dependent useEffect should pick this up.
-          // isLoading remains true, user-effect will set it false after profile fetch.
-          // If profile *is* already loaded for this user (e.g. from a quick getSession + user effect),
-          // and isProfileLoading is false, then we can set isLoading to false.
-          if (profile?.id === newAuthUser.id && !isProfileLoading) {
-            console.log(
-              '[AuthContext] INITIAL_SESSION: User and matching profile already present. Setting isLoading false.'
-            );
-            setIsLoading(false);
-          } else if (!isProfileLoading) {
-            // Profile not loaded or mismatch, and no fetch in progress. User effect will handle.
-            console.log(
-              '[AuthContext] INITIAL_SESSION: User present, profile needs fetch (will be handled by user effect). isLoading remains true.'
-            );
-          }
+        setAuthError(null);
+
+        if (oldUserId) {
+          queryClient.removeQueries({
+            queryKey: ['userProfile', oldUserId],
+            exact: true,
+          });
         } else {
-          // No user from INITIAL_SESSION. Auth state is determined.
-          console.log(
-            '[AuthContext] INITIAL_SESSION: No user. Setting isLoading to false.'
-          );
-          setProfile(null);
-          setIsProfileLoading(false);
-          setIsLoading(false);
+          queryClient.removeQueries({
+            queryKey: ['userProfile'],
+            exact: false,
+          });
         }
+      } else if (event === 'SIGNED_IN') {
+        console.log('[AuthContext] SIGNED_IN: Clearing authError.');
+        setAuthError(null);
+        // TanStack Query will automatically fetch profile when user becomes available
       }
     });
 
@@ -296,209 +194,132 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log('[AuthContext] Unsubscribing from auth changes.');
       subscription.unsubscribe();
     };
-  }, [profile, isProfileLoading, isLoading]); // Added missing dependencies
-
-  // Effect for fetching profile when user object changes or is initially set,
-  // and profile is missing, for a different user, or a fetch is not already in progress.
-  useEffect(() => {
-    console.log(
-      `[AuthContext] User effect triggered. User ID: ${user?.id}, Profile ID: ${profile?.id}, isProfileLoading: ${isProfileLoading}, isLoading: ${isLoading}`
-    );
-    if (user?.id) {
-      // Only proceed if a profile fetch is not already in progress for the current user context
-      if (!isProfileLoading) {
-        // Fetch if profile is null or for a different user
-        if (!profile || profile.id !== user.id) {
-          console.log(
-            `[AuthContext] User effect: User (${
-              user.id
-            }) requires profile fetch. Current profile: ${
-              profile ? `ID ${profile.id}` : 'null'
-            }.`
-          );
-          setIsProfileLoading(true);
-          // setProfile(null); // Clear profile before fetch if it's stale or null - fetchUserProfile is for user.id
-
-          fetchUserProfile(user.id)
-            .then((profileData) => {
-              console.log(
-                '[AuthContext] User effect: Profile fetched successfully.',
-                profileData
-              );
-              setProfile(profileData);
-            })
-            .catch((profileError) => {
-              console.error(
-                '[AuthContext] User effect: Error fetching profile:',
-                profileError
-              );
-              setError(
-                profileError instanceof Error
-                  ? profileError
-                  : new Error('Failed to fetch profile')
-              );
-              setProfile(null);
-            })
-            .finally(() => {
-              setIsProfileLoading(false);
-              // This effect might be part of the initial load sequence or a user change.
-              // If isLoading was true, and we've now settled the profile, isLoading should become false.
-              console.log(
-                `[AuthContext] User effect: Profile fetch finished. Current isLoading: ${isLoading}. Setting isLoading to false.`
-              );
-              setIsLoading(false);
-            });
-        } else {
-          // User exists, profile exists for this user, and not currently loading.
-          // This means the state is consistent regarding this user and their profile.
-          // If isLoading is true, it means this might be the final step of an initial load.
-          if (isLoading) {
-            console.log(
-              '[AuthContext] User effect: User and matching profile exist. Initial load sequence likely complete. Setting isLoading to false.'
-            );
-            setIsLoading(false);
-          }
-        }
-      } else {
-        console.log(
-          `[AuthContext] User effect: User (${user.id}) present, but profile fetch already in progress by another process. Skipping.`
-        );
-        // If a fetch is in progress, that fetch's finally block will handle isLoading.
-      }
-    } else if (!user) {
-      // User is null. This case is primarily handled by onAuthStateChange SIGNED_OUT.
-      // This branch ensures profile is cleared if user becomes null for any other reason
-      // and that loading states are false if not already.
-      console.log(
-        '[AuthContext] User effect: User is null. Ensuring profile is null and loading states are false.'
-      );
-      setProfile(null); // Ensure profile is cleared
-      if (isProfileLoading) setIsProfileLoading(false); // Should be false if user is null
-      if (isLoading) setIsLoading(false); // If user is null, auth state is determined (not loading).
-    }
-  }, [user, profile, isProfileLoading, isLoading]); // Added missing dependency 'profile'
-
-  // Auth methods
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
-  };
-
-  // New signInWithEmail function as specified
+  }, [queryClient, session?.user?.id]);
   const signInWithEmail = async (
     email: string,
     password: string
   ): Promise<void> => {
-    console.log('[AuthContext] signInWithEmail started.');
-    setIsLoading(true); // Indicate that an auth operation is in progress.
-    setError(null);
+    console.log(
+      `[AuthContext] signInWithEmail: Attempting to sign in ${email}`
+    );
+    setAuthError(null);
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
+      // Pre-emptive sign out to prevent issues with lingering old sessions
+      await supabase.auth.signOut();
+      console.log(
+        '[AuthContext] signInWithEmail: Pre-emptive signOut complete.'
+      );
+
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
 
       if (signInError) {
-        console.error(
-          '[AuthContext] signInWithEmail: Supabase sign-in error:',
-          signInError
-        );
-        setError(new Error(signInError.message || 'Sign in failed'));
-        setIsLoading(false); // Critical: if sign-in itself fails, stop loading.
-      } else {
+        console.error('[AuthContext] signInWithEmail Error:', signInError);
+        setAuthError(new Error(signInError.message || 'Sign in failed.'));
+        // Clear any cached profile data
+        queryClient.removeQueries({ queryKey: ['userProfile'], exact: false });
+      } else if (data.session) {
         console.log(
-          '[AuthContext] signInWithEmail: Supabase sign-in successful. Waiting for onAuthStateChange to handle session and profile.'
+          '[AuthContext] signInWithEmail: signInWithPassword successful. Session data received.'
         );
-        // On success, onAuthStateChange will fire.
-        // It will manage further state updates including profile fetching and ultimately setIsLoading(false).
-        // So, we don't set isLoading to false here on direct success of signInWithPassword.
+        // setSession will be handled by onAuthStateChange
+        // TanStack Query will pick up the new user
+        setAuthError(null);
+      } else {
+        console.warn(
+          '[AuthContext] signInWithEmail: No error but also no session data.'
+        );
+        setAuthError(new Error('Sign in failed. No session data.'));
+        queryClient.removeQueries({ queryKey: ['userProfile'], exact: false });
       }
     } catch (catchedError: any) {
       console.error(
-        '[AuthContext] signInWithEmail: Unexpected error:',
+        '[AuthContext] signInWithEmail Catched Error:',
         catchedError
       );
-      setError(
+      setAuthError(
         catchedError instanceof Error
           ? catchedError
-          : new Error('An unexpected error occurred during sign in.')
+          : new Error('Unexpected sign-in error.')
       );
-      setIsLoading(false); // Critical: on unexpected error, stop loading.
+      queryClient.removeQueries({ queryKey: ['userProfile'], exact: false });
     }
-    // No finally block changing isLoading here. It's handled by success/error paths or onAuthStateChange.
   };
+  const signOut = async (): Promise<void> => {
+    console.log('[AuthContext] signOut: Attempting sign out.');
+    setAuthError(null);
 
-  const signUp = async (
-    email: string,
-    password: string,
-    profileData?: Partial<UserProfile>
-  ) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: profileData || {},
-      },
-    });
-    return { error };
-  };
-
-  const signOut = async () => {
     const { error } = await supabase.auth.signOut();
-    return { error };
+    if (error) {
+      console.error('[AuthContext] signOut Error:', error);
+      setAuthError(error);
+    } else {
+      console.log('[AuthContext] signOut: Successful.');
+      // setSession(null) will be handled by onAuthStateChange
+      // Clearing profile cache is also handled by onAuthStateChange for SIGNED_OUT event
+    }
   };
   // Legacy compatibility methods
   const login = (userData: any) => {
-    // For backward compatibility, set a mock session
-    setUser({
-      id: userData.id?.toString() || '1',
-      email: userData.email,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      app_metadata: {},
-      aud: 'authenticated',
-      user_metadata: {
-        first_name: userData.name?.split(' ')[0] || '',
-        last_name: userData.name?.split(' ').slice(1).join(' ') || '',
-      },
-    } as SupabaseUser);
+    console.warn(
+      "[AuthContext] Legacy 'login' method called. Please use 'signInWithEmail'.",
+      userData
+    );
+    // Potentially call signInWithEmail if userData structure is known and compatible
   };
 
   const logout = () => {
-    setSession(null);
-    setUser(null);
-    setProfile(null);
+    console.warn(
+      "[AuthContext] Legacy 'logout' method called. Please use 'signOut'."
+    );
+    signOut();
   };
 
-  // Utility methods
+  // Utility methods (use `userProfile` from TanStack Query)
   const hasRole = (role: UserRole): boolean => {
-    return profile?.role === role;
+    return userProfile?.role === role;
   };
 
   const hasAnyRole = (roles: UserRole[]): boolean => {
-    return profile ? roles.includes(profile.role) : false;
+    return !!userProfile && roles.some((r) => userProfile.role === r);
   };
 
   const isAdmin = (): boolean => {
-    return hasRole('tourism_admin');
+    // Define what constitutes an admin role based on your UserRole enum
+    return hasAnyRole([
+      'tourism_admin',
+      'business_listing_manager',
+      'tourism_content_manager',
+      'business_registration_manager',
+    ]);
   };
+
+  console.log(
+    '[AuthContext] Provider render. isLoading:',
+    isLoading,
+    'isUserProfileLoading:',
+    isUserProfileLoading,
+    'user:',
+    !!user,
+    'userProfile:',
+    !!userProfile
+  );
   return (
     <AuthContext.Provider
       value={{
         session,
         user,
-        profile,
         isLoading,
-        isProfileLoading,
-        error,
-        signIn,
+        authError,
         signInWithEmail,
-        signUp,
         signOut,
+        userProfile: userProfile ?? null,
+        isUserProfileLoading,
+        userProfileError: userProfileError as Error | null,
         login,
         logout,
         hasRole,
@@ -511,11 +332,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   );
 };
 
-// Hook to access the context safely
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth must be used within an AuthContext.Provider');
   }
   return context;
 };

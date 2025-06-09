@@ -22,14 +22,15 @@ import {
 type FontAwesomeIconName =
   | 'dashboard'
   | 'users'
-  | 'exchange'
-  | 'briefcase'
-  | 'comments'
-  | 'map'
-  | 'tree'
-  | 'cog'
-  | 'user-plus'
-  | 'list';
+  | 'exchange' // For Bookings & Reservations
+  | 'briefcase' // For Business Listings
+  | 'comments' // For Reviews & Ratings
+  | 'map' // For Tourism Content (e.g., Tourist Spots, Promotions)
+  | 'tree' // For Analytics (representing growth/data)
+  | 'cog' // For System Settings
+  | 'user-plus' // For Content Approval & Business Registrations
+  | 'list' // For Categories
+  | 'calendar'; // For Events
 
 interface NavItem {
   name: string;
@@ -52,68 +53,135 @@ const allNavItems: NavItem[] = [
     ],
   },
   {
-    name: 'User Registration',
-    path: '/TourismCMS/(admin)/registration',
-    icon: 'user-plus',
-    roles: ['tourism_admin', 'business_registration_manager'],
+    name: 'User Management',
+    path: '/TourismCMS/(admin)/user-management',
+    icon: 'users',
+    roles: ['tourism_admin'],
   },
   {
     name: 'Business Listings',
-    path: '/TourismCMS/(admin)/businesses',
+    path: '/TourismCMS/(admin)/business-listings',
     icon: 'briefcase',
     roles: ['tourism_admin', 'business_listing_manager'],
   },
   {
-    name: 'Tourist Spots',
-    path: '/TourismCMS/(admin)/tourist-spots',
-    icon: 'tree',
+    name: 'Tourism Content',
+    path: '/TourismCMS/(admin)/tourism-content',
+    icon: 'map',
     roles: ['tourism_admin', 'tourism_content_manager'],
   },
   {
     name: 'Events',
     path: '/TourismCMS/(admin)/events',
-    icon: 'comments',
+    icon: 'calendar',
     roles: ['tourism_admin', 'tourism_content_manager'],
   },
   {
-    name: 'Accommodations',
-    path: '/TourismCMS/(admin)/accommodation',
+    name: 'Categories',
+    path: '/TourismCMS/(admin)/categories',
     icon: 'list',
-    roles: ['tourism_admin', 'business_listing_manager'],
+    roles: [
+      'tourism_admin',
+      'business_listing_manager',
+      'tourism_content_manager',
+    ],
   },
   {
-    name: 'Content Management',
-    path: '/TourismCMS/(admin)/content',
+    name: 'Bookings & Reservations',
+    path: '/TourismCMS/(admin)/bookings-reservations',
     icon: 'exchange',
-    roles: ['tourism_admin', 'tourism_content_manager'],
+    roles: ['tourism_admin'],
+  },
+  {
+    name: 'Reviews & Ratings',
+    path: '/TourismCMS/(admin)/reviews-ratings',
+    icon: 'comments',
+    roles: [
+      'tourism_admin',
+      'business_listing_manager',
+      'tourism_content_manager',
+    ],
+  },
+  {
+    name: 'Content Approval',
+    path: '/TourismCMS/(admin)/content-approval',
+    icon: 'user-plus', // Reusing user-plus; relates to approving new items/users
+    roles: [
+      'tourism_admin',
+      'business_listing_manager',
+      'tourism_content_manager',
+    ],
+  },
+  {
+    name: 'Analytics',
+    path: '/TourismCMS/(admin)/analytics',
+    icon: 'tree', // Using tree to represent data growth/branching
+    roles: [
+      'tourism_admin',
+      'business_listing_manager',
+      'tourism_content_manager',
+      'business_registration_manager',
+    ],
   },
   {
     name: 'System Settings',
-    path: '/TourismCMS/(admin)/settings',
+    path: '/TourismCMS/(admin)/system-settings',
     icon: 'cog',
-    roles: ['tourism_admin'], // Only tourism_admin can access system settings
+    roles: ['tourism_admin'],
+  },
+  {
+    name: 'Business Registrations',
+    path: '/TourismCMS/(admin)/business-registrations',
+    icon: 'user-plus', // Reusing user-plus; highly relevant
+    roles: ['tourism_admin', 'business_registration_manager'],
+  },
+  {
+    name: 'Business Owners',
+    path: '/TourismCMS/(admin)/business-owners',
+    icon: 'users', // Reusing users; relevant to managing a type of user
+    roles: ['tourism_admin', 'business_registration_manager'],
   },
 ];
 
 export default function AdminLayout() {
   const [headerTitle, setHeaderTitle] = useState('Dashboard');
-  const { user, profile, isLoading, isProfileLoading } = useAuth();
+  const { user, userProfile, isLoading, isUserProfileLoading, signOut } =
+    useAuth();
   const colorScheme = useColorScheme();
-
-  // Filter navigation items based on user role
   const navItems = useMemo(() => {
-    if (!profile?.role) return [];
-    return allNavItems.filter((item) => item.roles.includes(profile.role));
-  }, [profile?.role]);
-
+    if (!userProfile?.role) return [];
+    return allNavItems.filter((item) => item.roles.includes(userProfile.role));
+  }, [userProfile?.role]);
   useEffect(() => {
-    if (!user) {
-      router.replace('/TouristApp');
+    // Wait until authentication status and profile are fully loaded
+    if (!isLoading && !isUserProfileLoading) {
+      if (!user) {
+        // If user is not authenticated, redirect to CMS login
+        router.replace('/TourismCMS/login');
+      } else if (
+        userProfile &&
+        userProfile.role &&
+        navItems.length === 0 &&
+        router.canGoBack()
+      ) {
+        // If user is authenticated, has a profile and role, but no sidebar items for them,
+        // and not already on the unauthorized screen (simple check)
+        // A more robust check would be to see if current route is already unauthorized.
+        router.replace('/TourismCMS/(admin)/unauthorized');
+      } else if (
+        userProfile &&
+        userProfile.role &&
+        navItems.length === 0 &&
+        !router.canGoBack()
+      ) {
+        // Edge case: if landed directly on a page they shouldn't access and can't go back (e.g. deep link)
+        router.replace('/TourismCMS/(admin)/unauthorized');
+      }
+      // If user is authenticated and has navItems, they can stay.
     }
-  }, [user]);
-
+  }, [user, userProfile, isLoading, isUserProfileLoading, navItems]);
   // Show loading state while authentication is being determined
-  if (isLoading || isProfileLoading) {
+  if (isLoading || isUserProfileLoading) {
     return (
       <View style={[styles.container, styles.centered]}>
         <ActivityIndicator size="large" color="#0A1B47" />
@@ -122,14 +190,33 @@ export default function AdminLayout() {
     );
   }
 
-  // Redirect if user is not authenticated
-  if (!user || !profile) {
-    return null; // This will trigger the useEffect redirect
+  // Redirect if user is not authenticated or profile is missing (initial check before useEffect runs or if it hasn't redirected yet)
+  if (!user || !userProfile) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color="#0A1B47" />
+        <Text style={styles.loadingText}>Loading User...</Text>
+      </View>
+    );
   }
+  // This case should ideally be caught by the useEffect redirect to unauthorized screen.
+  // This provides a fallback UI if the redirect hasn't happened yet.
+  if (userProfile && userProfile.role && navItems.length === 0) {
+    // It's possible the user is already on the unauthorized screen or being redirected.
+    // Showing a generic loading/redirecting message is safer here than trying to render the full layout.
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color="#0A1B47" />
+        <Text style={styles.loadingText}>Checking permissions...</Text>
+      </View>
+    );
+  }
+
   return (
     <AccommodationProvider>
       <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
         <View style={styles.container}>
+          {' '}
           {/* Sidebar */}
           <View style={styles.sidebar}>
             <Text style={styles.logo}>Naga Venture</Text>
@@ -153,14 +240,40 @@ export default function AdminLayout() {
                 </View>
               </Pressable>
             ))}
+
+            {/* Sign Out Button */}
+            <Pressable
+              style={[styles.navItem, styles.signOutButton]}
+              onPress={async () => {
+                try {
+                  await signOut();
+                  router.replace('/TourismCMS/login');
+                } catch (error) {
+                  console.error('Sign out error:', error);
+                }
+              }}
+            >
+              <View style={styles.navRow}>
+                <FontAwesome
+                  name="sign-out"
+                  size={20}
+                  color="#ff4444"
+                  style={styles.navIcon}
+                />
+                <ThemedText style={[styles.navText, styles.signOutText]}>
+                  Sign Out
+                </ThemedText>
+              </View>
+            </Pressable>
           </View>
           <View style={styles.content}>
+            {' '}
             <AdminHeader
               headerTitle={headerTitle}
               headerUserName={
-                profile
-                  ? `${profile.first_name || ''} ${
-                      profile.last_name || ''
+                userProfile
+                  ? `${userProfile.first_name || ''} ${
+                      userProfile.last_name || ''
                     }`.trim() || 'User'
                   : 'User'
               }
@@ -210,6 +323,16 @@ const styles = StyleSheet.create({
   },
   navIcon: {
     marginRight: 16,
+  },
+  signOutButton: {
+    marginTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#ffffff33',
+    paddingTop: 20,
+  },
+  signOutText: {
+    color: '#ff4444',
+    fontSize: 14,
   },
   centered: {
     justifyContent: 'center',

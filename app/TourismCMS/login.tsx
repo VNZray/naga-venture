@@ -2,44 +2,84 @@ import logo from '@/assets/images/logo.png';
 import PressableButton from '@/components/PressableButton';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/context/AuthContext';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { z } from 'zod';
+
+// Zod schema for login form validation
+const LoginSchema = z.object({
+  email: z.string().email({ message: 'Invalid email address' }),
+  password: z
+    .string()
+    .min(6, { message: 'Password must be at least 6 characters' }),
+});
+
+type LoginFormInputs = z.infer<typeof LoginSchema>;
 
 const LoginWeb = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { signInWithEmail, isLoading, error } = useAuth();
+  const {
+    signInWithEmail,
+    isLoading,
+    authError,
+    user,
+    userProfile,
+    isUserProfileLoading,
+  } = useAuth();
 
-  const handleLogin = async () => {
-    if (!email || !password) {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormInputs>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+  const handleLogin = async (data: LoginFormInputs) => {
+    if (!data.email || !data.password) {
       Alert.alert('Error', 'Email and password are required.');
       return;
     }
 
     try {
-      await signInWithEmail(email, password);
-
-      // If no error is thrown, the auth state change will handle navigation
-      // We can navigate immediately since signInWithEmail doesn't throw on auth errors
-      if (!error) {
-        router.replace('/TourismCMS/(admin)');
-      }
+      await signInWithEmail(data.email, data.password);
+      // Don't navigate here - let the useEffect handle navigation after successful auth
     } catch (err) {
       console.error('Unexpected login error:', err);
       Alert.alert('Login Failed', 'An unexpected error occurred.');
     }
-  };
-
-  // Show error alert when error state changes
+  }; // Show error alert when authError state changes
   React.useEffect(() => {
-    if (error) {
-      Alert.alert('Login Failed', error.message || 'Authentication failed.');
+    if (authError) {
+      Alert.alert(
+        'Login Failed',
+        authError.message || 'Authentication failed.'
+      );
     }
-  }, [error]);
+  }, [authError]);
+  // Navigate to admin panel when user is successfully authenticated
+  React.useEffect(() => {
+    if (
+      user &&
+      userProfile &&
+      !isLoading &&
+      !isUserProfileLoading &&
+      !authError
+    ) {
+      console.log(
+        '[Login] User authenticated with profile, navigating to admin panel'
+      );
+      router.replace('/TourismCMS/(admin)');
+    }
+  }, [user, userProfile, isLoading, isUserProfileLoading, authError]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -71,24 +111,64 @@ const LoginWeb = () => {
               </ThemedText>
             </View>
             <View style={{ gap: 16 }}>
-              <TextInput
-                mode="outlined"
-                label="Email"
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize="none"
-                keyboardType="email-address"
-              />
+              <View style={styles.inputContainer}>
+                <Controller
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                      mode="outlined"
+                      label="Email"
+                      placeholder="Email Address"
+                      placeholderTextColor="#999"
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      style={styles.input}
+                    />
+                  )}
+                  name="email"
+                />
+              </View>
+              {errors.email && (
+                <Text style={styles.errorText}>{errors.email.message}</Text>
+              )}
 
-              <TextInput
-                mode="outlined"
-                label="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-              />
+              <View style={styles.inputContainer}>
+                <Controller
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <TextInput
+                      mode="outlined"
+                      label="Password"
+                      placeholder="Password"
+                      placeholderTextColor="#999"
+                      secureTextEntry
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      value={value}
+                      style={styles.input}
+                    />
+                  )}
+                  name="password"
+                />
+              </View>
+              {errors.password && (
+                <Text style={styles.errorText}>{errors.password.message}</Text>
+              )}
+
               {/* TODO: Create forgot password page for Tourism CMS */}
-              <Text style={{ color: '#007AFF', fontSize: 14 }}>
+              <Text
+                style={{
+                  color: '#007AFF',
+                  fontSize: 14,
+                  alignSelf: 'flex-end',
+                  marginBottom: 20,
+                }}
+              >
                 Forgot Password?
               </Text>
             </View>
@@ -103,7 +183,7 @@ const LoginWeb = () => {
                 color={'#DEE3F2'}
                 direction="column"
                 Title={isLoading ? 'Signing In...' : 'Login'}
-                onPress={handleLogin}
+                onPress={handleSubmit(handleLogin)}
                 disabled={isLoading}
               />
             </View>
@@ -181,5 +261,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 20,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    marginBottom: 10,
+    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  input: {
+    flex: 1,
+    height: 50,
+    color: '#333',
+    fontSize: 16,
+  },
+  errorText: {
+    color: '#D32F2F',
+    fontSize: 13,
+    marginBottom: 10,
+    alignSelf: 'flex-start',
+    marginLeft: 5,
   },
 });
