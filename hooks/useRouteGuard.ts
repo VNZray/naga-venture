@@ -73,6 +73,19 @@ const ROUTE_PERMISSIONS: RoutePermission[] = [
     path: '/TourismCMS/(admin)/business-management/business-listings/featured-businesses',
     allowedRoles: ['tourism_admin', 'business_listing_manager'],
   },
+  // Business CRUD operations
+  {
+    path: '/TourismCMS/(admin)/business-management/business-listings/create',
+    allowedRoles: ['tourism_admin', 'business_listing_manager'],
+  },
+  {
+    path: '/TourismCMS/(admin)/business-management/business-listings/edit',
+    allowedRoles: ['tourism_admin', 'business_listing_manager'],
+  },
+  {
+    path: '/TourismCMS/(admin)/business-management/business-listings/view',
+    allowedRoles: ['tourism_admin', 'business_listing_manager'],
+  },
   // Business Registrations
   {
     path: '/TourismCMS/(admin)/business-management/business-registrations/pending-approvals',

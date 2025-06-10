@@ -31,6 +31,7 @@ npm install @react-navigation/stack react-native-screens react-native-safe-area-
 npm install @react-native-async-storage/async-storage
 npx supabase gen types typescript --project-id vqyjssvywyvpmvkcbtxg --schema public > naga-venture/types/database.ts (to update database type interface)
 npm install react-hook-form zod @hookform/resolvers
+npm install @react-native-picker/picker
 
 admin123
 

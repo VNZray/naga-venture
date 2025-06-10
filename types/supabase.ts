@@ -94,6 +94,15 @@ export type BusinessManagerRoles = Extract<
 // Business-related types with relationships
 export type BusinessWithImages = Business & {
   business_images?: Database['public']['Tables']['business_images']['Row'][];
+  business_categories?: {
+    sub_categories?: Database['public']['Tables']['sub_categories']['Row'] & {
+      main_categories?: Database['public']['Tables']['main_categories']['Row'];
+    };
+  }[];
+  business_amenities?: {
+    amenities?: Database['public']['Tables']['amenities']['Row'];
+  }[];
+  profiles?: Database['public']['Tables']['profiles']['Row']; // owner
 };
 
 export type BusinessWithReviews = Business & {
