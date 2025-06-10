@@ -1,5 +1,5 @@
 // filepath: components/TourismCMS/atoms/CMSText.tsx
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/hooks/useTheme';
 import React from 'react';
 import { StyleSheet, Text, TextProps } from 'react-native';
 
@@ -46,7 +46,10 @@ export interface CMSTextProps extends TextProps {
  */
 const CMSText: React.FC<CMSTextProps> = React.memo(
   ({ type = 'default', lightColor, darkColor, children, style, ...rest }) => {
-    const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+    const { theme } = useTheme();
+
+    // Use provided colors or fallback to theme colors
+    const color = lightColor || darkColor || theme.colors.text;
 
     const textStyle = [styles.base, styles[type], { color }, style];
 
