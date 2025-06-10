@@ -1,9 +1,11 @@
-import { specialOffersData as importedSpecialOffersData } from '@/Controller/ShopData';
+import { SkeletonCardList } from '@/components/shops/SkeletonCard';
 import SpecialOfferCard from '@/components/shops/SpecialOfferCard';
 import { ShopColors } from '@/constants/ShopColors';
+import { useAllSpecialOffers } from '@/hooks/useShops';
 import { ShopNavigator } from '@/navigation/ShopNavigator';
+import { SpecialOffer } from '@/types/shop';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   FlatList,
   StyleSheet,
@@ -12,41 +14,44 @@ import {
   View,
 } from 'react-native';
 
-interface SpecialOfferItem {
-  id: string;
-  promoImageUrl: string;
-  title?: string;
-  altText?: string;
-  targetPath?: string;
-}
-
 export const SpecialOffersSection = () => {
-  const specialOffersData: SpecialOfferItem[] = useMemo(
-    () => importedSpecialOffersData,
-    []
-  );
+  const { data: specialOffersData, isLoading, error } = useAllSpecialOffers();
+
   const handleSpecialOfferPress = (offerId: string) => {
-    const offer = specialOffersData.find((o) => o.id === offerId);
-    if (offer && offer.targetPath) {
-      ShopNavigator.goToSpecialOffer(offer.targetPath);
-    } else {
-      console.log(
-        'Pressed Special Offer:',
-        offerId,
-        '- No targetPath defined or offer not found.'
-      );
-    }
-  };
-  const handleViewAllSpecialOffers = () => {
-    ShopNavigator.goToAllSpecialOffers();
+    ShopNavigator.goToSpecialOfferDetails(offerId);
   };
 
-  const renderSpecialOfferCard = ({ item }: { item: SpecialOfferItem }) => (
+  const handleViewAllSpecialOffers = () => {
+    // Navigate to a new screen that shows a ShopGridScreen of all special offers.
+    // This navigation path needs to be defined in your navigator.
+    // Example: router.push('/TouristApp/(tabs)/(home)/(shops)/all-special-offers');
+    ShopNavigator.goToAllSpecialOffers(); // Assuming this function is updated or will be created
+    // to navigate to a screen listing all offers.
+  };
+  const renderSpecialOfferCard = ({ item }: { item: SpecialOffer }) => (
     <SpecialOfferCard offer={item} onPress={handleSpecialOfferPress} />
   );
 
+  // Use a skeleton loader for a better UX
+  if (isLoading) {
+    return (
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Special Offers</Text>
+        </View>
+        <SkeletonCardList count={3} horizontal={true} />
+      </View>
+    );
+  }
+
+  if (error) {
+    // In a section, it's often better to just show nothing than a large error block.
+    // Or show a smaller, inline error. For now, we'll return null.
+    return null;
+  }
+
   if (!specialOffersData || specialOffersData.length === 0) {
-    return null; // Don't render the section if there's no data
+    return null;
   }
 
   return (
@@ -54,7 +59,7 @@ export const SpecialOffersSection = () => {
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Special Offers</Text>
         <TouchableOpacity
-          style={styles.viewAllButton}
+          style={styles.viewAllButton} // Re-added View All button
           onPress={handleViewAllSpecialOffers}
           activeOpacity={0.7}
         >
@@ -82,15 +87,13 @@ export const SpecialOffersSection = () => {
 };
 
 const styles = StyleSheet.create({
-  section: {
-    marginBottom: 12,
-  },
+  section: { marginBottom: 24 },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    marginBottom: 8,
+    marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 18,
@@ -109,11 +112,6 @@ const styles = StyleSheet.create({
     color: ShopColors.accent,
     marginRight: 4,
   },
-  horizontalListContentContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 0,
-  },
-  horizontalListItemSeparator: {
-    width: 12,
-  },
+  horizontalListContentContainer: { paddingHorizontal: 16 },
+  horizontalListItemSeparator: { width: 12 },
 });

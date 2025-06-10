@@ -85,14 +85,14 @@ export interface ShopData {
   description?: string;
   tagline?: string; // Short catchy description
   story?: string; // Longer about section
-  
+
   // Images
   image: string; // Main cover image
   logo?: string;
   coverImage?: string; // Large banner image
   gallery?: ShopGallery[];
   additionalImages?: string[];
-  
+
   // Rating and Reviews
   rating: number;
   ratingCount: number;
@@ -104,32 +104,32 @@ export interface ShopData {
     2: number;
     1: number;
   };
-  
+
   // Location and Contact
   location?: string;
   mapLocation?: ShopLocation;
   contact?: string;
   email?: string;
   socialLinks?: ShopSocialLinks;
-  
+
   // Business Information
   businessHours?: ShopBusinessHours;
   openingHours?: string; // Fallback string format
   priceRange?: string;
   isOpen?: boolean;
   temporaryHours?: string; // For special announcements
-  
+
   // Products/Services/Menu
   menu?: ShopMenuItem[];
   featuredItems?: string[]; // Array of menu item IDs
   menuCategories?: string[];
-  
+
   // Business Features
   amenities?: ShopAmenity[];
   promotions?: ShopPromotion[];
   verification?: ShopVerification;
   stats?: ShopStats;
-  
+
   // Utility
   distance?: number;
   isFavorited?: boolean;
@@ -181,9 +181,26 @@ export interface ShopCategory {
 }
 
 export interface MainCategory {
+  // Ensuring MainCategory is exported
   id: string;
   name: string;
   icon: string;
   description: string;
   subcategories: ShopCategory[];
+}
+
+export interface SpecialOffer {
+  id: string;
+  title: string;
+  description: string;
+  termsAndConditions: string;
+  shopId?: string; // Optional: if the offer is tied to a specific shop
+  image?: string;
+  discountPercent?: number;
+  discountFixedAmount?: number;
+  validFrom: string; // ISO date string
+  validUntil: string; // ISO date string
+  isActive: boolean;
+  applicableToAllShops?: boolean; // If true, not tied to a specific shopId
+  applicableShopIds?: string[]; // List of shop IDs if applicable to multiple specific shops
 }

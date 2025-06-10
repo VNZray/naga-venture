@@ -4,6 +4,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { router } from 'expo-router';
 import { useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
+
 const Profile = () => {
   const colorScheme = useColorScheme();
   const color = colorScheme === 'dark' ? '#fff' : '#000';

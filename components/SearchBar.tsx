@@ -2,7 +2,15 @@ import { ThemedView } from '@/components/ThemedView';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleProp, StyleSheet, TextInput, TextStyle, TouchableOpacity, ViewStyle } from 'react-native';
+import {
+  Platform,
+  StyleProp,
+  StyleSheet,
+  TextInput,
+  TextStyle,
+  TouchableOpacity,
+  ViewStyle,
+} from 'react-native';
 
 type SearchBarProps = {
   value: string;
@@ -23,18 +31,40 @@ const SearchBar: React.FC<SearchBarProps> = ({
   inputStyle,
   iconContainerStyle,
 }) => {
-    const colorScheme = useColorScheme();
-    const color = colorScheme === 'dark'? '#fff' : '#000';
+  const colorScheme = useColorScheme();
+  const color =
+    Platform.OS === 'web' ? '#000' : colorScheme === 'dark' ? '#fff' : '#000';
+
   return (
-    <ThemedView style={[styles.container, containerStyle]}>
+    <ThemedView
+      style={[
+        styles.container,
+        containerStyle,
+        Platform.OS === 'web' && styles.webContainerBackground,
+      ]}
+    >
       <TextInput
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder || 'Search'}
         placeholderTextColor={color}
-        style={[styles.input, inputStyle, {color: color} ]}
+        style={[
+          styles.input,
+          inputStyle,
+          { color: color },
+          Platform.OS === 'web' && {
+            outlineWidth: 0,
+            outlineColor: 'transparent',
+            borderWidth: 1,
+            borderBottomStartRadius: 20,
+            borderTopLeftRadius: 20,
+          },
+        ]}
       />
-      <TouchableOpacity onPress={onSearch} style={[styles.iconContainer, iconContainerStyle]}>
+      <TouchableOpacity
+        onPress={onSearch}
+        style={[styles.iconContainer, iconContainerStyle]}
+      >
         <Ionicons name="search" size={20} color="#fff" />
       </TouchableOpacity>
     </ThemedView>
@@ -50,7 +80,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingVertical: 10,
+    paddingVertical: 16,
     paddingHorizontal: 16,
     fontSize: 16,
   },
@@ -63,6 +93,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  webContainerBackground: {
+    backgroundColor: '#fff',
   },
 });
 

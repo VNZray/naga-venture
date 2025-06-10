@@ -136,4 +136,4 @@ const FeaturedShopCard: React.FC<ShopCardProps> = ({
   );
 };
 
-export default FeaturedShopCard;
+export default React.memo(FeaturedShopCard);

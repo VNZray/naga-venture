@@ -19,8 +19,6 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "app/TouristApp/(tabs)/(home)/(shops)/(details)/[shopId].jsx",
-    "app/index.tsx",
-    ".vscode/_layout.web.tsx",
-    "app/BusinessApp/(admin)/feedback..webtsx"
+    "app/index.tsx"
   ]
 }

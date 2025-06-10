@@ -62,4 +62,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SearchResultsList;
+export default React.memo(SearchResultsList);

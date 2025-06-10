@@ -17,7 +17,10 @@ export default function AdminLayout() {
     <AuthProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="index"
+            options={{ headerShown: false, headerBackVisible: false }}
+          />
         </Stack>
       </ThemeProvider>
     </AuthProvider>
