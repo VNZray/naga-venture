@@ -1,9 +1,9 @@
 // filepath: components/TourismCMS/organisms/CMSSidebar.tsx
 import { tourismAdminNavigation } from '@/constants/NavigationConfig';
 import { useAuth } from '@/context/AuthContext';
-import { NavigationItem, SidebarState } from '@/types/navigation';
+import { useSidebarState } from '@/hooks/useSidebarState';
+import { NavigationItem } from '@/types/navigation';
 import { UserRole } from '@/types/supabase';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { usePathname, useRouter } from 'expo-router';
 import { SignOut } from 'phosphor-react-native';
 import React from 'react';
@@ -25,11 +25,10 @@ interface CMSSidebarProps {
   onNavigate?: (path: string) => void;
 }
 
-const STORAGE_KEY = '@TourismCMS:SidebarState';
 const { width: screenWidth } = Dimensions.get('window');
 const SIDEBAR_WIDTH = Platform.select({
-  web: 260, // Reduced from 280
-  default: Math.min(260, screenWidth * 0.8), // Reduced from 280
+  web: 270, // Increased from 260 for better text readability
+  default: Math.min(300, screenWidth * 0.85), // Increased from 260
 });
 
 /**
@@ -38,10 +37,12 @@ const SIDEBAR_WIDTH = Platform.select({
  * Main hierarchical sidebar navigation for Tourism CMS.
  * Features:
  * - Role-based navigation filtering
- * - Persistent expand/collapse state
+ * - Persistent expand/collapse state (via usePersistentState)
  * - Active route highlighting
  * - Smooth animations
  * - Responsive design
+ * - Centralized state management (via useReducer)
+ * - Clean custom hooks for state management and persistence
  *
  * @param userRole - Current user's role for permission filtering
  * @param isVisible - Whether sidebar is visible (mobile responsive)
@@ -55,12 +56,6 @@ export const CMSSidebar: React.FC<CMSSidebarProps> = ({
   const { signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-
-  const [sidebarState, setSidebarState] = React.useState<SidebarState>({
-    expandedSections: [],
-    activeSection: '',
-    userRole,
-  });
 
   // Filter navigation items based on user role
   const filteredNavigation = React.useMemo(() => {
@@ -79,106 +74,15 @@ export const CMSSidebar: React.FC<CMSSidebarProps> = ({
     };
 
     return filterByPermissions(tourismAdminNavigation);
-  }, [userRole]);
-
-  // Find active section and subsection based on current path
-  const findActiveSection = React.useCallback(
-    (
-      items: NavigationItem[],
-      path: string
-    ): { section: string; subsection?: string } => {
-      for (const item of items) {
-        if (item.path === path) {
-          return { section: item.id };
-        }
-
-        if (item.subsections) {
-          const found = findActiveSection(item.subsections, path);
-          if (found.section) {
-            return { section: item.id, subsection: found.section };
-          }
-        }
-      }
-      return { section: '' };
-    },
-    []
-  );
-
-  // Load persisted sidebar state
-  React.useEffect(() => {
-    const loadSidebarState = async () => {
-      try {
-        const stored = await AsyncStorage.getItem(STORAGE_KEY);
-        if (stored) {
-          const parsedState: SidebarState = JSON.parse(stored);
-          setSidebarState((prev) => ({
-            ...prev,
-            expandedSections: parsedState.expandedSections || [],
-          }));
-        }
-      } catch (error) {
-        console.warn('Failed to load sidebar state:', error);
-      }
-    };
-
-    loadSidebarState();
-  }, []);
-
-  // Update active section based on current route
-  React.useEffect(() => {
-    const { section, subsection } = findActiveSection(
-      filteredNavigation,
-      pathname
-    );
-    setSidebarState((prev) => ({
-      ...prev,
-      activeSection: subsection || section,
-    }));
-
-    // Auto-expand section containing active route
-    if (section && !sidebarState.expandedSections.includes(section)) {
-      setSidebarState((prev) => ({
-        ...prev,
-        expandedSections: [...prev.expandedSections, section],
-      }));
-    }
-  }, [
+  }, [userRole]); // === REPLACED STATE LOGIC ===
+  // All the complex useState, useEffect, and useCallback logic for state
+  // is now replaced by a single, clean call to your custom hook.
+  const { sidebarState, handleToggleExpand } = useSidebarState(
+    userRole,
     pathname,
-    filteredNavigation,
-    findActiveSection,
-    sidebarState.expandedSections,
-  ]);
-
-  // Persist sidebar state
-  const persistSidebarState = React.useCallback(async (state: SidebarState) => {
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (error) {
-      console.warn('Failed to persist sidebar state:', error);
-    }
-  }, []);
-
-  // Handle section expand/collapse
-  const handleToggleExpand = React.useCallback(
-    (sectionId: string) => {
-      setSidebarState((prev) => {
-        const isExpanded = prev.expandedSections.includes(sectionId);
-        const newExpandedSections = isExpanded
-          ? prev.expandedSections.filter((id) => id !== sectionId)
-          : [...prev.expandedSections, sectionId];
-
-        const newState = {
-          ...prev,
-          expandedSections: newExpandedSections,
-        };
-
-        persistSidebarState(newState);
-        return newState;
-      });
-    },
-    [persistSidebarState]
+    filteredNavigation
   );
-  // Handle navigation
+  // ============================// Handle navigation
   const handleNavigate = React.useCallback(
     (path: string) => {
       if (onNavigate) {
@@ -188,7 +92,9 @@ export const CMSSidebar: React.FC<CMSSidebarProps> = ({
       }
     },
     [router, onNavigate]
-  ); // Handle sign out
+  );
+
+  // Handle sign out
   const handleSignOut = React.useCallback(async () => {
     try {
       await signOut();
@@ -220,7 +126,6 @@ export const CMSSidebar: React.FC<CMSSidebarProps> = ({
       showsVerticalScrollIndicator={false}
       bounces={false}
     >
-      {' '}
       {filteredNavigation.map((section, index) => {
         const isExpanded = sidebarState.expandedSections.includes(section.id);
         const isActive =
@@ -233,13 +138,13 @@ export const CMSSidebar: React.FC<CMSSidebarProps> = ({
         return (
           <React.Fragment key={section.id}>
             {/* Add separator line before each section (except the first one) */}
-            {index > 0 && <View style={styles.sectionSeparator} />}
-
+            {index > 0 && <View style={styles.sectionSeparator} />}{' '}
             <CMSNavigationSection
               section={section}
               isExpanded={isExpanded}
               isActive={isActive}
               activeSubsection={sidebarState.activeSection}
+              expandedSections={sidebarState.expandedSections}
               onToggleExpand={handleToggleExpand}
               onNavigate={handleNavigate}
             />
@@ -258,7 +163,6 @@ export const CMSSidebar: React.FC<CMSSidebarProps> = ({
         onPress={handleSignOut}
         activeOpacity={0.7}
       >
-        {' '}
         <SignOut
           size={18} // Reduced size
           color="#FF6B6B" // Red color for sign out

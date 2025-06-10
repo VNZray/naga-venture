@@ -24,6 +24,7 @@ interface CMSNavigationSectionProps {
   isExpanded?: boolean;
   isActive?: boolean;
   activeSubsection?: string;
+  expandedSections?: string[]; // Add expanded sections array
   level?: number;
   onToggleExpand?: (sectionId: string) => void;
   onNavigate?: (path: string) => void;
@@ -48,6 +49,7 @@ export const CMSNavigationSection: React.FC<CMSNavigationSectionProps> = ({
   isExpanded = false,
   isActive = false,
   activeSubsection,
+  expandedSections = [],
   level = 0,
   onToggleExpand,
   onNavigate,
@@ -123,17 +125,23 @@ export const CMSNavigationSection: React.FC<CMSNavigationSectionProps> = ({
         ]}
         pointerEvents={isExpanded ? 'auto' : 'none'}
       >
+        {' '}
         {section.subsections.map((subsection) => {
           const isSubsectionActive = activeSubsection === subsection.id;
 
           if (subsection.type === 'dropdown' && subsection.subsections) {
-            // Nested dropdown section
+            // Nested dropdown section - check if this specific subsection is expanded
+            const isSubsectionExpanded = expandedSections.includes(
+              subsection.id
+            );
+
             return (
               <CMSNavigationSection
                 key={subsection.id}
                 section={subsection}
-                isExpanded={isExpanded} // Keep expanded if parent is expanded
+                isExpanded={isSubsectionExpanded}
                 isActive={isSubsectionActive}
+                expandedSections={expandedSections}
                 level={level + 1}
                 onToggleExpand={onToggleExpand}
                 onNavigate={onNavigate}
