@@ -1,6 +1,5 @@
 import logo from '@/assets/images/logo.png';
-import PressableButton from '@/components/PressableButton';
-import { ThemedText } from '@/components/ThemedText';
+import { CMSButton, CMSText } from '@/components/TourismCMS';
 import { useAuth } from '@/context/AuthContext';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Image } from 'expo-image';
@@ -101,14 +100,14 @@ const LoginWeb = () => {
             <View style={styles.logoContainer}>
               <Image source={logo} style={styles.logo} />
               <Text style={styles.logoText}>Naga Venture</Text>
-            </View>
+            </View>{' '}
             <View style={{ marginBottom: 20 }}>
-              <ThemedText darkColor="#000" type="title">
+              <CMSText type="title" darkColor="#000">
                 Sign In
-              </ThemedText>
-              <ThemedText darkColor="#000" type="default">
+              </CMSText>
+              <CMSText type="default" darkColor="#000">
                 Navigate with Ease - Your Ultimate City Directory
-              </ThemedText>
+              </CMSText>
             </View>
             <View style={{ gap: 16 }}>
               <View style={styles.inputContainer}>
@@ -171,27 +170,22 @@ const LoginWeb = () => {
               >
                 Forgot Password?
               </Text>
-            </View>
-
+            </View>{' '}
             <View style={{ marginTop: 20 }}>
-              <PressableButton
-                TextSize={16}
-                width={'100%'}
-                height={60}
-                type="primary"
-                IconSize={24}
-                color={'#DEE3F2'}
-                direction="column"
-                Title={isLoading ? 'Signing In...' : 'Login'}
+              <CMSButton
+                title={isLoading ? 'Signing In...' : 'Login'}
+                variant="primary"
+                size="large"
                 onPress={handleSubmit(handleLogin)}
                 disabled={isLoading}
+                loading={isLoading}
+                fullWidth
               />
-            </View>
-
+            </View>{' '}
             <View style={styles.signupRow}>
-              <ThemedText darkColor="#666" type="default2">
+              <CMSText type="body" darkColor="#666">
                 Tourism CMS - Admin Access Only
-              </ThemedText>
+              </CMSText>
               {/* Temporary link to create admin user */}
               <Text
                 style={{ color: '#007AFF', fontSize: 14, marginLeft: 10 }}

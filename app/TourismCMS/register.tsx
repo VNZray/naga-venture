@@ -1,6 +1,5 @@
 import logo from '@/assets/images/logo.png';
-import PressableButton from '@/components/PressableButton';
-import { ThemedText } from '@/components/ThemedText';
+import { CMSButton, CMSText } from '@/components/TourismCMS';
 import { useAuth } from '@/context/AuthContext';
 import { Image } from 'expo-image';
 import { Link, router } from 'expo-router';
@@ -87,17 +86,15 @@ const RegisterWeb = () => {
             <View style={styles.logoContainer}>
               <Image source={logo} style={styles.logo} />
               <Text style={styles.logoText}>Tourism CMS</Text>
-            </View>
-
+            </View>{' '}
             <View style={{ marginBottom: 20 }}>
-              <ThemedText darkColor="#000" type="title">
+              <CMSText type="title" darkColor="#000">
                 Create Account
-              </ThemedText>
-              <ThemedText darkColor="#000" type="default">
+              </CMSText>
+              <CMSText type="default" darkColor="#000">
                 Join the Tourism Management System
-              </ThemedText>
+              </CMSText>
             </View>
-
             <View style={{ gap: 16 }}>
               <View style={{ flexDirection: 'row', gap: 16 }}>
                 <TextInput
@@ -140,28 +137,26 @@ const RegisterWeb = () => {
                 onChangeText={setConfirmPassword}
                 secureTextEntry
               />
-            </View>
-
+            </View>{' '}
             <View style={{ marginTop: 20 }}>
-              <PressableButton
-                TextSize={16}
-                width={'100%'}
-                height={60}
-                type="primary"
-                color={'#DEE3F2'}
-                direction="column"
-                Title={isLoading ? 'Creating Account...' : 'Create Account'}
+              <CMSButton
+                title={isLoading ? 'Creating Account...' : 'Create Account'}
+                variant="primary"
+                size="large"
                 onPress={handleRegister}
                 disabled={isLoading}
+                loading={isLoading}
+                fullWidth
               />
             </View>
-
             <View style={styles.loginRow}>
-              <ThemedText darkColor="#000" type="default2">
+              <CMSText type="body" darkColor="#000">
                 Already have an account?
-              </ThemedText>
+              </CMSText>
               <Link href="/TourismCMS/login">
-                <ThemedText type="link">Sign In</ThemedText>
+                <CMSText type="label" darkColor="#007AFF">
+                  Sign In
+                </CMSText>
               </Link>
             </View>
           </View>

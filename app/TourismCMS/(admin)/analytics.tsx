@@ -1,15 +1,19 @@
+import { CMSRouteGuard, CMSText } from '@/components/TourismCMS';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import RouteGuard from '../../../components/ui/RouteGuard';
+import { StyleSheet, View } from 'react-native';
 
 export default function AnalyticsScreen() {
   return (
-    <RouteGuard routePath="/TourismCMS/(admin)/analytics">
+    <CMSRouteGuard routePath="/TourismCMS/(admin)/analytics">
       <View style={styles.container}>
-        <Text style={styles.title}>Analytics Screen</Text>
-        <Text>This is a placeholder for the Analytics content.</Text>
+        <CMSText type="title" style={styles.title}>
+          Analytics Screen
+        </CMSText>
+        <CMSText type="body">
+          This is a placeholder for the Analytics content.
+        </CMSText>
       </View>
-    </RouteGuard>
+    </CMSRouteGuard>
   );
 }
 

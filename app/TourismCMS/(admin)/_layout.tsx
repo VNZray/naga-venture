@@ -1,5 +1,5 @@
-import AdminHeader from '@/components/AdminHeader';
 import { ThemedText } from '@/components/ThemedText';
+import { CMSHeader } from '@/components/TourismCMS';
 import { AccommodationProvider } from '@/context/AccommodationContext';
 import { useAuth } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -279,16 +279,16 @@ export default function AdminLayout() {
           </View>
           <View style={styles.content}>
             {' '}
-            <AdminHeader
-              headerTitle={headerTitle}
-              headerUserName={
+            <CMSHeader
+              title={headerTitle}
+              userName={
                 userProfile
                   ? `${userProfile.first_name || ''} ${
                       userProfile.last_name || ''
                     }`.trim() || 'User'
                   : 'User'
               }
-              headerUserEmail={user?.email ?? ''}
+              userEmail={user?.email ?? ''}
             />
             <Stack
               screenOptions={{ headerShown: false, headerBackVisible: false }}

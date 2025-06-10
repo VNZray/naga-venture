@@ -1,18 +1,22 @@
-import RouteGuard from '@/components/ui/RouteGuard';
+import { CMSRouteGuard, CMSText } from '@/components/TourismCMS';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export default function UserManagementScreen() {
   return (
-    <RouteGuard routePath="/TourismCMS/(admin)/user-management">
+    <CMSRouteGuard routePath="/TourismCMS/(admin)/user-management">
       <View style={styles.container}>
-        <Text style={styles.title}>User Management Screen</Text>
-        <Text>This is a placeholder for the User Management content.</Text>
-        <Text style={styles.subtitle}>
+        <CMSText type="title" style={styles.title}>
+          User Management Screen
+        </CMSText>
+        <CMSText type="body">
+          This is a placeholder for the User Management content.
+        </CMSText>
+        <CMSText type="caption" style={styles.subtitle}>
           Only Tourism Admins can access this section.
-        </Text>
+        </CMSText>
       </View>
-    </RouteGuard>
+    </CMSRouteGuard>
   );
 }
 

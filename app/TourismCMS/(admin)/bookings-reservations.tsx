@@ -1,20 +1,20 @@
-import RouteGuard from '@/components/ui/RouteGuard';
+import { CMSRouteGuard, CMSText } from '@/components/TourismCMS';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export default function BookingsReservationsScreen() {
   return (
-    <RouteGuard routePath="/TourismCMS/(admin)/bookings-reservations">
+    <CMSRouteGuard routePath="/TourismCMS/(admin)/bookings-reservations">
       <View style={styles.container}>
-        <Text style={styles.title}>Bookings & Reservations Screen</Text>
-        <Text>
+        <CMSText type="title" style={styles.title}>Bookings & Reservations Screen</CMSText>
+        <CMSText type="body">
           This is a placeholder for the Bookings & Reservations content.
-        </Text>
-        <Text style={styles.subtitle}>
+        </CMSText>
+        <CMSText type="body" style={styles.subtitle}>
           Only Tourism Admins can access this section.
-        </Text>
+        </CMSText>
       </View>
-    </RouteGuard>
+    </CMSRouteGuard>
   );
 }
 

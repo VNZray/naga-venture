@@ -1,5 +1,5 @@
 import { ThemedText } from '@/components/ThemedText';
-import RouteGuard from '@/components/ui/RouteGuard';
+import { CMSRouteGuard, CMSText } from '@/components/TourismCMS';
 import { useAuth } from '@/context/AuthContext';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -8,7 +8,7 @@ const Events = () => {
   const { userProfile } = useAuth();
 
   return (
-    <RouteGuard routePath="/TourismCMS/(admin)/events">
+    <CMSRouteGuard routePath="/TourismCMS/(admin)/events">
       <View style={styles.container}>
         <ThemedText darkColor="#000" type="title">
           Events Management
@@ -40,7 +40,7 @@ const Events = () => {
           )}
         </View>
       </View>
-    </RouteGuard>
+    </CMSRouteGuard>
   );
 };
 

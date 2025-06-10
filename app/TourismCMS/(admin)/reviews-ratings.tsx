@@ -1,15 +1,15 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import RouteGuard from '../../../components/ui/RouteGuard';
+import { StyleSheet, View } from 'react-native';
+import { CMSRouteGuard, CMSText } from '@/components/TourismCMS';
 
 export default function ReviewsRatingsScreen() {
   return (
-    <RouteGuard routePath="/TourismCMS/(admin)/reviews-ratings">
+    <CMSRouteGuard routePath="/TourismCMS/(admin)/reviews-ratings">
       <View style={styles.container}>
-        <Text style={styles.title}>Reviews & Ratings Screen</Text>
-        <Text>This is a placeholder for the Reviews & Ratings content.</Text>
+        <CMSText type="title" style={styles.title}>Reviews & Ratings Screen</CMSText>
+        <CMSText type="body">This is a placeholder for the Reviews & Ratings content.</CMSText>
       </View>
-    </RouteGuard>
+    </CMSRouteGuard>
   );
 }
 

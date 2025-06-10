@@ -1,18 +1,18 @@
-import RouteGuard from '@/components/ui/RouteGuard';
+import { CMSRouteGuard, CMSText } from '@/components/TourismCMS';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export default function SystemSettingsScreen() {
   return (
-    <RouteGuard routePath="/TourismCMS/(admin)/system-settings">
+    <CMSRouteGuard routePath="/TourismCMS/(admin)/system-settings">
       <View style={styles.container}>
-        <Text style={styles.title}>System Settings Screen</Text>
-        <Text>This is a placeholder for the System Settings content.</Text>
-        <Text style={styles.subtitle}>
+        <CMSText type="title" style={styles.title}>System Settings Screen</CMSText>
+        <CMSText type="body">This is a placeholder for the System Settings content.</CMSText>
+        <CMSText type="body" style={styles.subtitle}>
           Only Tourism Admins can access this section.
-        </Text>
+        </CMSText>
       </View>
-    </RouteGuard>
+    </CMSRouteGuard>
   );
 }
 

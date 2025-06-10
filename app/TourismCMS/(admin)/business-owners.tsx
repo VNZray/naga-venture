@@ -1,15 +1,15 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import RouteGuard from '../../../components/ui/RouteGuard';
+import { StyleSheet, View } from 'react-native';
+import { CMSRouteGuard, CMSText } from '@/components/TourismCMS';
 
 export default function BusinessOwnersScreen() {
   return (
-    <RouteGuard routePath="/TourismCMS/(admin)/business-owners">
+    <CMSRouteGuard routePath="/TourismCMS/(admin)/business-owners">
       <View style={styles.container}>
-        <Text style={styles.title}>Business Owners Screen</Text>
-        <Text>This is a placeholder for the Business Owners content.</Text>
+        <CMSText type="title" style={styles.title}>Business Owners Screen</CMSText>
+        <CMSText type="body">This is a placeholder for the Business Owners content.</CMSText>
       </View>
-    </RouteGuard>
+    </CMSRouteGuard>
   );
 }
 

@@ -1,19 +1,19 @@
-import RouteGuard from '@/components/ui/RouteGuard';
+import { CMSRouteGuard, CMSText } from '@/components/TourismCMS';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export default function CategoriesScreen() {
   return (
-    <RouteGuard routePath="/TourismCMS/(admin)/categories">
+    <CMSRouteGuard routePath="/TourismCMS/(admin)/categories">
       <View style={styles.container}>
-        <Text style={styles.title}>Categories Screen</Text>
-        <Text>This is a placeholder for the Categories content.</Text>
-        <Text style={styles.subtitle}>
+        <CMSText type="title" style={styles.title}>Categories Screen</CMSText>
+        <CMSText type="body">This is a placeholder for the Categories content.</CMSText>
+        <CMSText type="body" style={styles.subtitle}>
           Accessible by Tourism Admins, Business Listing Managers, and Tourism
           Content Managers.
-        </Text>
+        </CMSText>
       </View>
-    </RouteGuard>
+    </CMSRouteGuard>
   );
 }
 
