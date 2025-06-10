@@ -1,12 +1,17 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import RouteGuard from '../../../components/ui/RouteGuard';
 
 export default function BusinessRegistrationsScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Business Registrations Screen</Text>
-      <Text>This is a placeholder for the Business Registrations content.</Text>
-    </View>
+    <RouteGuard routePath="/TourismCMS/(admin)/business-registrations">
+      <View style={styles.container}>
+        <Text style={styles.title}>Business Registrations Screen</Text>
+        <Text>
+          This is a placeholder for the Business Registrations content.
+        </Text>
+      </View>
+    </RouteGuard>
   );
 }
 

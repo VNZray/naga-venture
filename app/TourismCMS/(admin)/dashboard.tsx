@@ -1,55 +1,58 @@
 import { ThemedText } from '@/components/ThemedText';
+import RouteGuard from '@/components/ui/RouteGuard';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 const Dashboard = () => {
   return (
-    <View style={styles.container}>
-      <ThemedText darkColor="#000" type="title">
-        Tourism CMS Dashboard
-      </ThemedText>
-      <ThemedText darkColor="#666" type="default">
-        Welcome to the Tourism Content Management System
-      </ThemedText>
+    <RouteGuard routePath="/TourismCMS/(admin)/dashboard">
+      <View style={styles.container}>
+        <ThemedText darkColor="#000" type="title">
+          Tourism CMS Dashboard
+        </ThemedText>
+        <ThemedText darkColor="#666" type="default">
+          Welcome to the Tourism Content Management System
+        </ThemedText>
 
-      <View style={styles.statsContainer}>
-        <View style={styles.statCard}>
-          <ThemedText type="subtitle" darkColor="#000">
-            Total Accommodations
-          </ThemedText>
-          <ThemedText type="title" darkColor="#007AFF">
-            12
-          </ThemedText>
-        </View>
+        <View style={styles.statsContainer}>
+          <View style={styles.statCard}>
+            <ThemedText type="subtitle" darkColor="#000">
+              Total Accommodations
+            </ThemedText>
+            <ThemedText type="title" darkColor="#007AFF">
+              12
+            </ThemedText>
+          </View>
 
-        <View style={styles.statCard}>
-          <ThemedText type="subtitle" darkColor="#000">
-            Tourist Spots
-          </ThemedText>
-          <ThemedText type="title" darkColor="#007AFF">
-            25
-          </ThemedText>
-        </View>
+          <View style={styles.statCard}>
+            <ThemedText type="subtitle" darkColor="#000">
+              Tourist Spots
+            </ThemedText>
+            <ThemedText type="title" darkColor="#007AFF">
+              25
+            </ThemedText>
+          </View>
 
-        <View style={styles.statCard}>
-          <ThemedText type="subtitle" darkColor="#000">
-            Events
-          </ThemedText>
-          <ThemedText type="title" darkColor="#007AFF">
-            8
-          </ThemedText>
-        </View>
+          <View style={styles.statCard}>
+            <ThemedText type="subtitle" darkColor="#000">
+              Events
+            </ThemedText>
+            <ThemedText type="title" darkColor="#007AFF">
+              8
+            </ThemedText>
+          </View>
 
-        <View style={styles.statCard}>
-          <ThemedText type="subtitle" darkColor="#000">
-            Shops
-          </ThemedText>
-          <ThemedText type="title" darkColor="#007AFF">
-            45
-          </ThemedText>
+          <View style={styles.statCard}>
+            <ThemedText type="subtitle" darkColor="#000">
+              Shops
+            </ThemedText>
+            <ThemedText type="title" darkColor="#007AFF">
+              45
+            </ThemedText>{' '}
+          </View>
         </View>
       </View>
-    </View>
+    </RouteGuard>
   );
 };
 

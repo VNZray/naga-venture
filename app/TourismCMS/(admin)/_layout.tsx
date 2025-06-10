@@ -39,8 +39,9 @@ interface NavItem {
   roles: string[]; // Allowed roles for this nav item
 }
 
-// Define navigation items with role-based access
+// Define navigation items with role-based access following NAGA VENTURE RBAC Documentation
 const allNavItems: NavItem[] = [
+  // COMMON TO ALL ROLES
   {
     name: 'Dashboard',
     path: '/TourismCMS/(admin)/dashboard',
@@ -52,6 +53,8 @@ const allNavItems: NavItem[] = [
       'business_registration_manager',
     ],
   },
+
+  // TOURISM ADMIN EXCLUSIVE SECTIONS
   {
     name: 'User Management',
     path: '/TourismCMS/(admin)/user-management',
@@ -59,11 +62,35 @@ const allNavItems: NavItem[] = [
     roles: ['tourism_admin'],
   },
   {
+    name: 'Bookings & Reservations',
+    path: '/TourismCMS/(admin)/bookings-reservations',
+    icon: 'exchange',
+    roles: ['tourism_admin'],
+  },
+  {
+    name: 'System Settings',
+    path: '/TourismCMS/(admin)/system-settings',
+    icon: 'cog',
+    roles: ['tourism_admin'],
+  },
+
+  // BUSINESS LISTING MANAGER SECTIONS
+  {
     name: 'Business Listings',
     path: '/TourismCMS/(admin)/business-listings',
     icon: 'briefcase',
     roles: ['tourism_admin', 'business_listing_manager'],
   },
+
+  // Content Approval - Tourism Admin + Business Listing Manager only (per RBAC doc)
+  {
+    name: 'Content Approval',
+    path: '/TourismCMS/(admin)/content-approval',
+    icon: 'user-plus',
+    roles: ['tourism_admin', 'business_listing_manager'],
+  },
+
+  // TOURISM CONTENT MANAGER SECTIONS
   {
     name: 'Tourism Content',
     path: '/TourismCMS/(admin)/tourism-content',
@@ -76,6 +103,22 @@ const allNavItems: NavItem[] = [
     icon: 'calendar',
     roles: ['tourism_admin', 'tourism_content_manager'],
   },
+
+  // BUSINESS REGISTRATION MANAGER SECTIONS
+  {
+    name: 'Business Registrations',
+    path: '/TourismCMS/(admin)/business-registrations',
+    icon: 'user-plus',
+    roles: ['tourism_admin', 'business_registration_manager'],
+  },
+  {
+    name: 'Business Owners',
+    path: '/TourismCMS/(admin)/business-owners',
+    icon: 'users',
+    roles: ['tourism_admin', 'business_registration_manager'],
+  },
+
+  // SHARED SECTIONS (multiple roles)
   {
     name: 'Categories',
     path: '/TourismCMS/(admin)/categories',
@@ -87,12 +130,6 @@ const allNavItems: NavItem[] = [
     ],
   },
   {
-    name: 'Bookings & Reservations',
-    path: '/TourismCMS/(admin)/bookings-reservations',
-    icon: 'exchange',
-    roles: ['tourism_admin'],
-  },
-  {
     name: 'Reviews & Ratings',
     path: '/TourismCMS/(admin)/reviews-ratings',
     icon: 'comments',
@@ -102,44 +139,18 @@ const allNavItems: NavItem[] = [
       'tourism_content_manager',
     ],
   },
-  {
-    name: 'Content Approval',
-    path: '/TourismCMS/(admin)/content-approval',
-    icon: 'user-plus', // Reusing user-plus; relates to approving new items/users
-    roles: [
-      'tourism_admin',
-      'business_listing_manager',
-      'tourism_content_manager',
-    ],
-  },
+
+  // Analytics - All roles (content filtered by backend based on role)
   {
     name: 'Analytics',
     path: '/TourismCMS/(admin)/analytics',
-    icon: 'tree', // Using tree to represent data growth/branching
+    icon: 'tree',
     roles: [
       'tourism_admin',
       'business_listing_manager',
       'tourism_content_manager',
       'business_registration_manager',
     ],
-  },
-  {
-    name: 'System Settings',
-    path: '/TourismCMS/(admin)/system-settings',
-    icon: 'cog',
-    roles: ['tourism_admin'],
-  },
-  {
-    name: 'Business Registrations',
-    path: '/TourismCMS/(admin)/business-registrations',
-    icon: 'user-plus', // Reusing user-plus; highly relevant
-    roles: ['tourism_admin', 'business_registration_manager'],
-  },
-  {
-    name: 'Business Owners',
-    path: '/TourismCMS/(admin)/business-owners',
-    icon: 'users', // Reusing users; relevant to managing a type of user
-    roles: ['tourism_admin', 'business_registration_manager'],
   },
 ];
 

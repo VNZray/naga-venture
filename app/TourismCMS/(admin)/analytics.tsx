@@ -1,12 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import RouteGuard from '../../../components/ui/RouteGuard';
 
 export default function AnalyticsScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Analytics Screen</Text>
-      <Text>This is a placeholder for the Analytics content.</Text>
-    </View>
+    <RouteGuard routePath="/TourismCMS/(admin)/analytics">
+      <View style={styles.container}>
+        <Text style={styles.title}>Analytics Screen</Text>
+        <Text>This is a placeholder for the Analytics content.</Text>
+      </View>
+    </RouteGuard>
   );
 }
 

@@ -1,12 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import RouteGuard from '../../../components/ui/RouteGuard';
 
 export default function ContentApprovalScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Content Approval Screen</Text>
-      <Text>This is a placeholder for the Content Approval content.</Text>
-    </View>
+    <RouteGuard routePath="/TourismCMS/(admin)/content-approval">
+      <View style={styles.container}>
+        <Text style={styles.title}>Content Approval Screen</Text>
+        <Text>This is a placeholder for the Content Approval content.</Text>
+      </View>
+    </RouteGuard>
   );
 }
 

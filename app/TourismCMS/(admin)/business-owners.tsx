@@ -1,12 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import RouteGuard from '../../../components/ui/RouteGuard';
 
 export default function BusinessOwnersScreen() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Business Owners Screen</Text>
-      <Text>This is a placeholder for the Business Owners content.</Text>
-    </View>
+    <RouteGuard routePath="/TourismCMS/(admin)/business-owners">
+      <View style={styles.container}>
+        <Text style={styles.title}>Business Owners Screen</Text>
+        <Text>This is a placeholder for the Business Owners content.</Text>
+      </View>
+    </RouteGuard>
   );
 }
 
