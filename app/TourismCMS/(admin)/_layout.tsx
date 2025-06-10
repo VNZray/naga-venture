@@ -1,14 +1,26 @@
-import { CMSHeader, CMSSidebar } from '@/components/TourismCMS';
+import { CMSSidebar } from '@/components/TourismCMS';
 import { AccommodationProvider } from '@/context/AccommodationContext';
 import { useAuth } from '@/context/AuthContext';
 import { NavigationProvider } from '@/context/NavigationContext';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, router } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { useEffect } from 'react';
+import {
+  ActivityIndicator,
+  Dimensions,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+
+const { width: screenWidth } = Dimensions.get('window');
+const SIDEBAR_WIDTH = Platform.select({
+  web: 270, // Same as in CMSSidebar
+  default: Math.min(300, screenWidth * 0.85),
+});
 
 export default function AdminLayout() {
-  const [headerTitle, setHeaderTitle] = useState('Dashboard');
   const { user, userProfile, isLoading, isUserProfileLoading } = useAuth();
 
   useEffect(() => {
@@ -52,42 +64,16 @@ export default function AdminLayout() {
       </View>
     );
   }
-
-  // Handle navigation updates from sidebar
-  const handleNavigate = (path: string) => {
-    // Extract page name from path for header title
-    const pathSegments = path.split('/');
-    const pageName = pathSegments[pathSegments.length - 1];
-    const formattedTitle = pageName
-      .split('-')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-    setHeaderTitle(formattedTitle);
-  };
   return (
     <AccommodationProvider>
       <NavigationProvider userRole={userProfile?.role}>
         <ThemeProvider value={DefaultTheme}>
           <View style={styles.container}>
+            {' '}
             {/* New Hierarchical Sidebar */}
-            <CMSSidebar
-              userRole={userProfile?.role}
-              onNavigate={handleNavigate}
-            />
-
+            <CMSSidebar userRole={userProfile?.role} />
             {/* Main Content Area */}
             <View style={styles.content}>
-              <CMSHeader
-                title={headerTitle}
-                userName={
-                  userProfile
-                    ? `${userProfile.first_name || ''} ${
-                        userProfile.last_name || ''
-                      }`.trim() || 'User'
-                    : 'User'
-                }
-                userEmail={user?.email ?? ''}
-              />
               <Stack
                 screenOptions={{ headerShown: false, headerBackVisible: false }}
               />
@@ -107,6 +93,11 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+    ...Platform.select({
+      web: {
+        marginLeft: SIDEBAR_WIDTH, // Push content to the right of the fixed sidebar
+      },
+    }),
   },
   centered: {
     justifyContent: 'center',

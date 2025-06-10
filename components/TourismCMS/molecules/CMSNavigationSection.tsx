@@ -70,11 +70,11 @@ export const CMSNavigationSection: React.FC<CMSNavigationSectionProps> = ({
       }).start();
     }
   }, [isExpanded, hasSubsections, subsectionHeight]);
-
   const handleSectionPress = () => {
     if (hasSubsections && onToggleExpand) {
       onToggleExpand(section.id);
     } else if (section.path && onNavigate) {
+      // ✅ CORRECT: Call the onNavigate prop directly
       onNavigate(section.path);
     }
   };
@@ -156,9 +156,13 @@ export const CMSNavigationSection: React.FC<CMSNavigationSectionProps> = ({
                 isActive={isSubsectionActive}
                 isSubsection={true}
                 level={level + 1}
-                onPress={() =>
-                  subsection.path && onNavigate && onNavigate(subsection.path)
-                }
+                onPress={() => {
+                  // ✅ CORRECT: Call the onNavigate prop directly inside the press handler.
+                  // Do not rely on a stale closure from a memoized function.
+                  if (subsection.path && onNavigate) {
+                    onNavigate(subsection.path);
+                  }
+                }}
               />
             );
           }

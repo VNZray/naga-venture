@@ -5,7 +5,7 @@ import { useSidebarState } from '@/hooks/useSidebarState';
 import { NavigationItem } from '@/types/navigation';
 import { UserRole } from '@/types/supabase';
 import { usePathname, useRouter } from 'expo-router';
-import { SignOut } from 'phosphor-react-native';
+import { Bell, SignOut, User } from 'phosphor-react-native';
 import React from 'react';
 import {
   Dimensions,
@@ -53,7 +53,7 @@ export const CMSSidebar: React.FC<CMSSidebarProps> = ({
   isVisible = true,
   onNavigate,
 }) => {
-  const { signOut } = useAuth();
+  const { signOut, user, userProfile } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -82,16 +82,17 @@ export const CMSSidebar: React.FC<CMSSidebarProps> = ({
     pathname,
     filteredNavigation
   );
-  // ============================// Handle navigation
+  // ============================  // Handle navigation
   const handleNavigate = React.useCallback(
     (path: string) => {
       if (onNavigate) {
         onNavigate(path);
       } else {
+        // Use router.push directly - router is stable from the hook
         router.push(path as any);
       }
     },
-    [router, onNavigate]
+    [router, onNavigate] // This dependency array is correct
   );
 
   // Handle sign out
@@ -153,6 +154,51 @@ export const CMSSidebar: React.FC<CMSSidebarProps> = ({
       })}
     </ScrollView>
   );
+  const renderProfileSection = () => {
+    // Get user display information
+    const displayName = userProfile
+      ? `${userProfile.first_name || ''} ${
+          userProfile.last_name || ''
+        }`.trim() || 'Admin User'
+      : user?.email?.split('@')[0] || 'Admin User';
+
+    const displayRole = userRole
+      ? userRole.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+      : 'Admin';
+
+    return (
+      <View style={styles.profileContainer}>
+        {/* Profile Info */}
+        <View style={styles.profileInfo}>
+          <View style={styles.profileAvatarContainer}>
+            <User size={20} color="rgba(255, 255, 255, 0.9)" weight="bold" />
+          </View>
+          <View style={styles.profileDetails}>
+            <CMSText type="body" style={styles.profileName}>
+              {displayName}
+            </CMSText>
+            <CMSText type="caption" style={styles.profileRole}>
+              {displayRole}
+            </CMSText>
+          </View>
+          <TouchableOpacity
+            style={styles.notificationButton}
+            onPress={() => console.log('Notification pressed')}
+            activeOpacity={0.7}
+          >
+            <Bell size={18} color="rgba(255, 255, 255, 0.7)" weight="bold" />
+            {/* Optional notification badge */}
+            <View style={styles.notificationBadge}>
+              <CMSText type="caption" style={styles.notificationBadgeText}>
+                3
+              </CMSText>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   const renderSignOutButton = () => (
     <View style={styles.signOutContainer}>
       <TouchableOpacity
@@ -192,6 +238,7 @@ export const CMSSidebar: React.FC<CMSSidebarProps> = ({
     >
       {renderHeader()}
       {renderNavigation()}
+      {renderProfileSection()}
       {renderSignOutButton()}
     </SafeAreaView>
   );
@@ -253,5 +300,62 @@ const styles = StyleSheet.create({
   signOutText: {
     fontSize: 13, // Reduced from 15
     fontWeight: '500',
+  },
+  // Profile section styles
+  profileContainer: {
+    padding: 12,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  profileInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  profileAvatarContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  profileDetails: {
+    flex: 1,
+  },
+  profileName: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  profileRole: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 11,
+    fontWeight: '500',
+    textTransform: 'capitalize',
+  },
+  notificationButton: {
+    position: 'relative',
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: '#FF6B6B',
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notificationBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: 'bold',
   },
 });

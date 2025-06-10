@@ -75,11 +75,12 @@ export const CMSNavigationItem: React.FC<CMSNavigationItemProps> = ({
   onPress,
 }) => {
   const { theme } = useTheme();
-
   const handlePress = () => {
     if (onPress) {
+      // ✅ CORRECT: Call the onPress prop directly
       onPress();
     } else if (item.path) {
+      // Fallback to router.push only if no onPress is provided
       router.push(item.path as any);
     }
   };
