@@ -1,4 +1,5 @@
 // hooks/useSidebarState.ts
+import { useAuth } from '@/context/AuthContext'; // Import useAuth for user context
 import { NavigationItem, SidebarState } from '@/types/navigation';
 import { UserRole } from '@/types/supabase';
 import { useCallback, useEffect, useReducer } from 'react';
@@ -60,7 +61,13 @@ function sidebarReducer(
 }
 
 /**
- * Custom hook for managing sidebar state with persistence
+ * Custom hook for managing sidebar state with user-specific persistence
+ *
+ * This hook now properly isolates sidebar state per user, ensuring that:
+ * - Each user's expanded sections are saved separately
+ * - When a user logs out, their state is preserved for their next login
+ * - When a different user logs in, they get their own clean/saved state
+ * - No shared state contamination between different admin users
  *
  * @param userRole - Current user role
  * @param pathname - Current pathname for active section detection
@@ -72,9 +79,16 @@ export function useSidebarState(
   pathname: string,
   filteredNavigation: NavigationItem[]
 ) {
-  // Persistent storage for expanded sections
+  // Get the current user from the AuthContext
+  const { user } = useAuth();
+
+  // Call the updated hook with the base key and the user's ID
   const [persistedExpandedSections, setPersistedExpandedSections] =
-    usePersistentState<string[]>('@TourismCMS:ExpandedSections', []);
+    usePersistentState<string[]>(
+      '@TourismCMS:ExpandedSections', // Base key
+      user?.id, // User-specific part of the key
+      [] // Initial state
+    );
 
   // Initialize reducer with persisted state
   const [state, dispatch] = useReducer(sidebarReducer, {
