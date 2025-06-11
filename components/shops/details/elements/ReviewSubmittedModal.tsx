@@ -29,7 +29,7 @@ const ReviewSubmittedModal: React.FC<ReviewSubmittedModalProps> = ({
 
           <Text style={styles.titleText}>Review Submitted!</Text>
           <Text style={styles.messageText}>
-            Thank you for sharing your experience about{' '}
+            Thank you for sharing your experience about
             <Text style={styles.shopNameText}>{shopName}</Text>. Your feedback helps others make great choices!
           </Text>
 

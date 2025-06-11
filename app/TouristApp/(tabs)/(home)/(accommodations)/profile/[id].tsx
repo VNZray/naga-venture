@@ -91,7 +91,7 @@ const AccommodationProfile = () => {
       <View style={styles.content}>
         <View style={styles.header}>
           <View>
-            <ThemedText type="profileTitle">{accommodation.name}</ThemedText>
+            <ThemedText type="profileTitle">{accommodation.name}</ThemedText>{' '}
             <ThemedText type="default2">
               <MaterialCommunityIcons
                 name="map-marker"

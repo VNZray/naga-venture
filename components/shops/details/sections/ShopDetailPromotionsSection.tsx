@@ -67,7 +67,7 @@ const ShopDetailPromotionsSection: React.FC<
               Check back later for exciting deals and offers!
             </Text>
             <Text style={styles.lastUpdatedText}>
-              Last checked:{' '}
+              Last checked:
               {currentDate.toLocaleDateString('en-US', {
                 month: 'short',
                 day: 'numeric',

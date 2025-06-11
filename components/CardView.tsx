@@ -89,7 +89,7 @@ const CardView: React.FC<CardViewProps> = ({
           darkColor={Platform.OS === 'web' ? '#000' : '#000'}
           type="cardSubTitle"
         >
-          <MaterialCommunityIcons name="map-marker" size={14} color="#FFB007" />{' '}
+          <MaterialCommunityIcons name="map-marker" size={14} color="#FFB007" />
           {subtitle}
         </ThemedText>
         <ThemedText type="cardBoldSubTitle" style={styles.price}>
@@ -152,3 +152,4 @@ const styles = StyleSheet.create({
 });
 
 export default CardView;
+

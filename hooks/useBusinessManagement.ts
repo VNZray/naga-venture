@@ -199,9 +199,10 @@ export function useBusiness(businessId: string | undefined) {
 }
 
 /**
- * Hook: useCreateBusiness
+ * Hook: useCreateBusiness (Simplified)
  *
  * Mutation for creating a new business with automatic cache invalidation.
+ * Uses the KISS principle - just invalidate queries instead of complex cache manipulation.
  */
 export function useCreateBusiness() {
   const queryClient = useQueryClient();
@@ -221,19 +222,18 @@ export function useCreateBusiness() {
 
       return data;
     },
+    // BEST PRACTICE: Simplify the success handler.
     onSuccess: (newBusiness) => {
-      // Invalidate all business list queries to refresh the data
+      console.log('[useCreateBusiness] Success:', newBusiness.id);
+      // Just tell TanStack Query that any query including the 'lists' key is now stale.
+      // It will automatically refetch the data, ensuring the UI is 100% consistent with the server.
       queryClient.invalidateQueries({ queryKey: businessQueryKeys.lists() });
 
-      // Optionally pre-populate the cache for the new business
+      // You can still optimistically set the detail cache if you want faster
+      // navigation to the new item's detail page.
       queryClient.setQueryData(
-        businessQueryKeys.detail(newBusiness.id),
+        businessQueryKeys.detail(newBusiness.id as string),
         newBusiness
-      );
-
-      console.log(
-        '[useCreateBusiness] Business created successfully:',
-        newBusiness.id
       );
     },
     onError: (error) => {
@@ -243,7 +243,7 @@ export function useCreateBusiness() {
 }
 
 /**
- * Hook: useUpdateBusiness
+ * Hook: useUpdateBusiness (Simplified)
  *
  * Mutation for updating an existing business with selective cache invalidation.
  */
@@ -273,16 +273,13 @@ export function useUpdateBusiness() {
       return data;
     },
     onSuccess: (updatedBusiness, { businessId }) => {
-      // Invalidate both list and detail queries
+      console.log('[useUpdateBusiness] Success:', businessId);
+      // Invalidate both the list and the specific detail view.
+      // This is simpler and less error-prone than manually updating the cache item.
       queryClient.invalidateQueries({ queryKey: businessQueryKeys.lists() });
       queryClient.invalidateQueries({
         queryKey: businessQueryKeys.detail(businessId),
       });
-
-      console.log(
-        '[useUpdateBusiness] Business updated successfully:',
-        businessId
-      );
     },
     onError: (error) => {
       console.error('[useUpdateBusiness] Mutation error:', error);
@@ -291,7 +288,7 @@ export function useUpdateBusiness() {
 }
 
 /**
- * Hook: useDeleteBusiness
+ * Hook: useDeleteBusiness (Simplified)
  *
  * Mutation for deleting a business with confirmation dialog and cache cleanup.
  */
@@ -312,18 +309,14 @@ export function useDeleteBusiness() {
       }
     },
     onSuccess: (_, businessId) => {
-      // Remove from all list caches
+      console.log('[useDeleteBusiness] Success:', businessId);
+      // After deleting, just invalidate the list.
       queryClient.invalidateQueries({ queryKey: businessQueryKeys.lists() });
 
-      // Remove specific detail cache
+      // You can also immediately remove the detail query from the cache.
       queryClient.removeQueries({
         queryKey: businessQueryKeys.detail(businessId),
       });
-
-      console.log(
-        '[useDeleteBusiness] Business deleted successfully:',
-        businessId
-      );
     },
     onError: (error) => {
       console.error('[useDeleteBusiness] Mutation error:', error);

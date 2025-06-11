@@ -120,7 +120,7 @@ const AllCategoriesPage = () => {
                 { color: ShopColors.textSecondary },
               ]}
             >
-              {subcategoryCount}{' '}
+              {subcategoryCount}
               {subcategoryCount === 1 ? 'category' : 'categories'}
             </Text>
           </TouchableOpacity>
@@ -289,3 +289,4 @@ const styles = StyleSheet.create({
 });
 
 export default AllCategoriesPage;
+

@@ -165,7 +165,7 @@ export const CMSNavigationItem: React.FC<CMSNavigationItemProps> = ({
       onPress={handlePress}
       activeOpacity={0.8}
     >
-      {' '}
+      
       <View style={styles.content}>
         {/* Only show icons for main navigation items, not subsections */}
         {!isSubsection &&
@@ -234,3 +234,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+

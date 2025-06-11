@@ -17,7 +17,7 @@ const AdminHeader: React.FC<headerProps> = ({
   return (
     <View style={styles.headerContainer}>
       <View style={styles.headerLeft}>
-        {' '}
+        
         <ThemedText type="headerTitle" darkColor="#000">
           {headerTitle}
         </ThemedText>
@@ -30,7 +30,7 @@ const AdminHeader: React.FC<headerProps> = ({
             onPress={() => console.log('Notification pressed')}
           >
             <FontAwesome name="bell" size={20} color="#000" />
-          </Pressable>{' '}
+          </Pressable>
           <View style={styles.userDetails}>
             <ThemedText
               type="default2"
@@ -50,7 +50,7 @@ const AdminHeader: React.FC<headerProps> = ({
           <View style={styles.userIcon}>
             {/* Replace with actual Image if available */}
             <FontAwesome name="user" size={20} color="#fff" />
-          </View>{' '}
+          </View>
         </View>
       </View>
     </View>
@@ -89,3 +89,4 @@ const styles = StyleSheet.create({
   headerMiddle: {},
   headerRight: {},
 });
+

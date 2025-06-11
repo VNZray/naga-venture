@@ -121,15 +121,22 @@ export const DataTable = <T extends Record<string, any>>({
             ]}
           >
             {column.render ? (
-              column.render(item[column.key], item, rowIndex)
+              <View style={styles.cellContent}>
+                {column.render(item[column.key], item, rowIndex)}
+              </View>
             ) : (
-              <Text
-                style={[styles.cellText, { textAlign: column.align || 'left' }]}
-                numberOfLines={2}
-                ellipsizeMode="tail"
-              >
-                {item[column.key]?.toString() || '-'}
-              </Text>
+              <View style={styles.cellContent}>
+                <Text
+                  style={[
+                    styles.cellText,
+                    { textAlign: column.align || 'left' },
+                  ]}
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                >
+                  {item[column.key]?.toString() || '-'}
+                </Text>
+              </View>
             )}
           </View>
         ))}
@@ -244,6 +251,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRightWidth: 1,
     borderRightColor: '#F3F4F6',
+  },
+  cellContent: {
+    flex: 1,
   },
   cellText: {
     fontSize: 14,

@@ -1,5 +1,5 @@
 // filepath: app/TourismCMS/(admin)/business-management/business-listings/view/[id]/index.tsx
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import {
   ArrowLeft,
   At,
@@ -25,6 +25,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 // Hooks and types
 import { useBusiness } from '@/hooks/useBusinessManagement';
 
+// Services
+import { NavigationService } from '@/services/NavigationService';
+
 // Components
 import { CMSButton } from '@/components/TourismCMS/atoms';
 import { StatusBadge } from '@/components/TourismCMS/molecules';
@@ -41,13 +44,11 @@ export default function ViewBusinessScreen() {
   // Fetch business data
   const { data: business, isLoading, isError, error } = useBusiness(id);
   const handleEditBusiness = () => {
-    router.push(
-      `/TourismCMS/(admin)/business-management/business-listings/edit/${id}` as any
-    );
+    NavigationService.toEditBusiness(id);
   };
 
   const handleGoBack = () => {
-    router.back();
+    NavigationService.toAllBusinesses();
   };
 
   const handleOpenLink = (url: string) => {
@@ -106,8 +107,8 @@ export default function ViewBusinessScreen() {
             <Text style={styles.headerTitle}>Business Details</Text>
             <Text style={styles.headerSubtitle}>
               View and manage business information
-            </Text>
-          </View>{' '}
+            </Text>{' '}
+          </View>
           <CMSButton
             title="Edit"
             onPress={handleEditBusiness}
@@ -147,7 +148,7 @@ export default function ViewBusinessScreen() {
               <View style={styles.metaInfo}>
                 <Text style={styles.metaText}>
                   Created: {new Date(business.created_at).toLocaleDateString()}
-                </Text>
+                </Text>{' '}
                 {business.review_count > 0 && (
                   <Text style={styles.metaText}>
                     Reviews: {business.review_count} • Rating:{' '}
@@ -202,7 +203,6 @@ export default function ViewBusinessScreen() {
                   style={styles.contactItem}
                   onPress={() => handleOpenLink(`mailto:${business.email}`)}
                 >
-                  {' '}
                   <View style={styles.infoLabelRow}>
                     <At size={16} color="#6B7280" />
                     <Text style={styles.infoLabel}>Email</Text>
@@ -243,7 +243,6 @@ export default function ViewBusinessScreen() {
                     style={styles.contactItem}
                     onPress={() => handleOpenLink(business.facebook_url!)}
                   >
-                    {' '}
                     <View style={styles.infoLabelRow}>
                       <FacebookLogo size={16} color="#1877F2" />
                       <Text style={styles.infoLabel}>Facebook</Text>

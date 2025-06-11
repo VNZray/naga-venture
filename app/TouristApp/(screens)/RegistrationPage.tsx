@@ -162,11 +162,11 @@ const RegistrationPage = () => {
               textAlign: 'center',
             }}
           >
-            By signing up, you accept Naga Ventures{' '}
+            By signing up, you accept Naga Ventures
             <ThemedText type="link" style={{ fontSize: 12 }}>
               Terms of Service
-            </ThemedText>{' '}
-            and{' '}
+            </ThemedText>
+            and
             <ThemedText type="link" style={{ fontSize: 12 }}>
               Privacy Policy
             </ThemedText>
@@ -192,7 +192,7 @@ const RegistrationPage = () => {
               fontSize: 14,
             }}
           >
-            Already have an account?{' '}
+            Already have an account?
             <ThemedText
               type="link"
               onPress={() => router.push('/TouristApp/(screens)/LoginPage')}
@@ -224,3 +224,4 @@ const styles = {
     fontFamily: 'Poppins-Bold',
   },
 };
+

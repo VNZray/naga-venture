@@ -86,7 +86,7 @@ const RegisterWeb = () => {
             <View style={styles.logoContainer}>
               <Image source={logo} style={styles.logo} />
               <Text style={styles.logoText}>Tourism CMS</Text>
-            </View>{' '}
+            </View>
             <View style={{ marginBottom: 20 }}>
               <CMSText type="title" darkColor="#000">
                 Create Account
@@ -137,7 +137,7 @@ const RegisterWeb = () => {
                 onChangeText={setConfirmPassword}
                 secureTextEntry
               />
-            </View>{' '}
+            </View>
             <View style={{ marginTop: 20 }}>
               <CMSButton
                 title={isLoading ? 'Creating Account...' : 'Create Account'}
@@ -222,3 +222,4 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
 });
+

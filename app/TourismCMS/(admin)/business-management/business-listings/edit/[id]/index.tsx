@@ -1,15 +1,19 @@
 // filepath: app/TourismCMS/(admin)/business-management/business-listings/edit/[id]/index.tsx
-import { router, useLocalSearchParams } from 'expo-router';
-import React from 'react';
-import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Hooks and types
 import { useBusiness, useUpdateBusiness } from '@/hooks/useBusinessManagement';
 import { BusinessUpdate } from '@/types/supabase';
 
+// Services
+import { NavigationService } from '@/services/NavigationService';
+
 // Components
 import { CMSButton } from '@/components/TourismCMS/atoms';
+import { ConfirmationModal } from '@/components/TourismCMS/molecules/ConfirmationModal';
 import { BusinessForm, CMSRouteGuard } from '@/components/TourismCMS/organisms';
 
 /**
@@ -20,6 +24,11 @@ import { BusinessForm, CMSRouteGuard } from '@/components/TourismCMS/organisms';
  */
 export default function EditBusinessScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Fetch business data
   const {
@@ -37,49 +46,50 @@ export default function EditBusinessScreen() {
       { businessId: id, updateData: data },
       {
         onSuccess: (updatedBusiness) => {
-          Alert.alert(
-            'Success',
-            'Business listing has been updated successfully!',
-            [
-              {
-                text: 'OK',
-                onPress: () => {
-                  // Navigate back to business listings
-                  router.replace(
-                    '/TourismCMS/(admin)/business-management/business-listings/all-businesses'
-                  );
-                },
-              },
-            ]
-          );
+          setSuccessMessage('Business listing has been updated successfully!');
+          setSuccessModalVisible(true);
         },
         onError: (error) => {
-          Alert.alert(
-            'Error',
-            'Failed to update business listing. Please try again.',
-            [{ text: 'OK' }]
-          );
           console.error('Update business error:', error);
+          setErrorMessage(
+            `Failed to update business listing. Please try again.\n\nError Details: ${error.message}`
+          );
+          setErrorModalVisible(true);
         },
       }
     );
   };
-
   const handleCancel = () => {
-    Alert.alert(
-      'Cancel Changes',
-      'Are you sure you want to cancel? All unsaved changes will be lost.',
-      [
-        { text: 'Continue Editing', style: 'cancel' },
-        {
-          text: 'Cancel',
-          style: 'destructive',
-          onPress: () => {
-            router.back();
-          },
-        },
-      ]
+    console.log('🔴 [EditBusinessScreen] Cancel button clicked');
+    console.log('🔴 [EditBusinessScreen] Business ID:', id);
+    console.log('🔴 [EditBusinessScreen] About to show confirmation modal');
+    setCancelModalVisible(true);
+  };
+
+  const confirmCancel = () => {
+    console.log(
+      '✅ [EditBusinessScreen] User confirmed cancel - navigating back'
     );
+    setCancelModalVisible(false);
+    try {
+      NavigationService.toAllBusinesses();
+      console.log('✅ [EditBusinessScreen] Navigation successful');
+    } catch (error) {
+      console.error('❌ [EditBusinessScreen] Navigation error:', error);
+    }
+  };
+  const cancelCancel = () => {
+    console.log('⏸️ [EditBusinessScreen] User chose to continue editing');
+    setCancelModalVisible(false);
+  };
+
+  const handleSuccessOk = () => {
+    setSuccessModalVisible(false);
+    NavigationService.toAllBusinesses();
+  };
+
+  const handleErrorOk = () => {
+    setErrorModalVisible(false);
   };
 
   // Loading state
@@ -108,7 +118,7 @@ export default function EditBusinessScreen() {
             </Text>
             <CMSButton
               title="Go Back"
-              onPress={() => router.back()}
+              onPress={() => NavigationService.toAllBusinesses()}
               variant="primary"
               style={styles.backButton}
             />
@@ -121,12 +131,48 @@ export default function EditBusinessScreen() {
   return (
     <CMSRouteGuard routePath="/TourismCMS/(admin)/business-management/business-listings/edit">
       <SafeAreaView style={styles.container}>
+        {' '}
+        {/*
+          FIX: Add a dynamic key based on the business ID.
+          If you navigate from editing business '123' to editing business '456',
+          the key will change, and the form will be completely reset with the new data.
+          This also separates its state from the 'create' screen.
+        */}
         <BusinessForm
+          key={`edit-business-form-${id}`} // <-- THE FIX
           initialData={business}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
           isLoading={updateBusinessMutation.isPending}
           isEdit={true}
+        />
+        <ConfirmationModal
+          visible={cancelModalVisible}
+          title="Cancel Action"
+          message="Are you sure you want to cancel? Any unsaved changes will be lost."
+          confirmText="Cancel"
+          cancelText="Continue Editing"
+          confirmStyle="destructive"
+          onConfirm={confirmCancel}
+          onCancel={cancelCancel}
+        />
+        <ConfirmationModal
+          visible={successModalVisible}
+          title="Success"
+          message={successMessage}
+          confirmText="OK"
+          cancelText=""
+          onConfirm={handleSuccessOk}
+          onCancel={handleSuccessOk}
+        />
+        <ConfirmationModal
+          visible={errorModalVisible}
+          title="Error"
+          message={errorMessage}
+          confirmText="OK"
+          cancelText=""
+          onConfirm={handleErrorOk}
+          onCancel={handleErrorOk}
         />
       </SafeAreaView>
     </CMSRouteGuard>

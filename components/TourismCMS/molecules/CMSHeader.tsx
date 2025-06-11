@@ -29,7 +29,7 @@ const CMSHeader: React.FC<CMSHeaderProps> = React.memo(
   ({ title, userName, userEmail, onNotificationPress, onUserPress }) => {
     return (
       <View style={styles.headerContainer}>
-        {' '}
+        
         <View style={styles.headerLeft}>
           <CMSText type="headerTitle" darkColor="#000">
             {title}
@@ -125,3 +125,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+

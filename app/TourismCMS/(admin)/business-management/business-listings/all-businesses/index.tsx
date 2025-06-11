@@ -1,6 +1,6 @@
 // filepath: app/TourismCMS/(admin)/business-management/business-listings/all-businesses/index.tsx
 import { Picker } from '@react-native-picker/picker';
-import { router } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Eye,
   Funnel,
@@ -10,7 +10,6 @@ import {
 } from 'phosphor-react-native';
 import React, { useMemo, useState } from 'react';
 import {
-  Alert,
   Dimensions,
   Platform,
   StyleSheet,
@@ -23,11 +22,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Hooks and types
 import {
+  businessQueryKeys,
   useBusinessListings,
   useDeleteBusiness,
   type BusinessFilters,
 } from '@/hooks/useBusinessManagement';
+import { supabase } from '@/lib/supabase';
 import { Business } from '@/types/supabase';
+
+// Services
+import { NavigationService } from '@/services/NavigationService';
 
 // Components
 import { CMSButton } from '@/components/TourismCMS/atoms';
@@ -36,6 +40,7 @@ import {
   StatusBadge,
   type DataTableColumn,
 } from '@/components/TourismCMS/molecules';
+import { ConfirmationModal } from '@/components/TourismCMS/molecules/ConfirmationModal';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -53,6 +58,12 @@ export default function AllBusinessesScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
+  // State for delete confirmation modal
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [businessToDelete, setBusinessToDelete] = useState<Business | null>(
+    null
+  );
+
   // Data fetching
   const {
     data: businessData,
@@ -60,8 +71,36 @@ export default function AllBusinessesScreen() {
     isError,
     refetch,
   } = useBusinessListings(filters);
-
   const deleteBusinessMutation = useDeleteBusiness();
+  const queryClient = useQueryClient();
+
+  // BEST PRACTICE: Use a stable channel name and a robust cleanup function.
+  React.useEffect(() => {
+    // 1. Use a single, stable channel name.
+    const channel = supabase.channel('public:businesses');
+
+    // 2. Check the channel's state to prevent redundant subscriptions.
+    if (channel.state !== 'joined') {
+      channel
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'businesses' },
+          () => {
+            // When a change happens, simply tell TanStack Query the data is stale.
+            // It will handle the refetching automatically.
+            queryClient.invalidateQueries({
+              queryKey: businessQueryKeys.lists(),
+            });
+          }
+        )
+        .subscribe();
+    }
+
+    // 3. The cleanup function is critical. It runs when the screen is left.
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]); // Dependency array is correct.
 
   // Handle search with debouncing
   React.useEffect(() => {
@@ -83,33 +122,42 @@ export default function AllBusinessesScreen() {
       [key]: value,
       page: 1, // Reset to first page on filter change
     }));
-  };
-
-  // Handle delete business
-  const handleDeleteBusiness = (business: Business) => {
-    Alert.alert(
-      'Delete Business',
-      `Are you sure you want to delete "${business.business_name}"? This action cannot be undone.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            deleteBusinessMutation.mutate(business.id, {
-              onSuccess: () => {
-                Alert.alert('Success', 'Business deleted successfully');
-              },
-              onError: (error) => {
-                Alert.alert('Error', 'Failed to delete business');
-                console.error('Delete error:', error);
-              },
-            });
-          },
-        },
-      ]
+  }; // Handle delete business
+  const handleDeleteBusiness = React.useCallback((business: Business) => {
+    console.log(
+      '🗑️ [AllBusinesses] Delete button clicked for:',
+      business.business_name
     );
-  };
+    setBusinessToDelete(business);
+    setDeleteModalVisible(true);
+  }, []);
+
+  // Confirm delete business
+  const confirmDeleteBusiness = React.useCallback(async () => {
+    if (!businessToDelete) return;
+
+    console.log(
+      '🗑️ [AllBusinesses] Confirming delete for:',
+      businessToDelete.business_name
+    );
+    setDeleteModalVisible(false);
+
+    try {
+      await deleteBusinessMutation.mutateAsync(businessToDelete.id);
+      console.log('✅ [AllBusinesses] Business deleted successfully');
+    } catch (error) {
+      console.error('❌ [AllBusinesses] Delete error:', error);
+    } finally {
+      setBusinessToDelete(null);
+    }
+  }, [businessToDelete, deleteBusinessMutation]);
+
+  // Cancel delete business
+  const cancelDeleteBusiness = React.useCallback(() => {
+    console.log('🚫 [AllBusinesses] Delete cancelled');
+    setDeleteModalVisible(false);
+    setBusinessToDelete(null);
+  }, []);
 
   // Define table columns
   const columns: DataTableColumn<Business>[] = useMemo(
@@ -117,14 +165,22 @@ export default function AllBusinessesScreen() {
       {
         key: 'business_name',
         title: 'Business Name',
-        width: 200,
-        minWidth: 150,
+        width: 180,
+        minWidth: 180,
         render: (value, business) => (
-          <View>
-            <Text style={styles.businessName} numberOfLines={1}>
+          <View style={styles.businessNameContainer}>
+            <Text
+              style={styles.businessName}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
               {business.business_name}
             </Text>
-            <Text style={styles.businessType} numberOfLines={1}>
+            <Text
+              style={styles.businessType}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
               {business.business_type?.replace('_', ' ').toUpperCase()}
             </Text>
           </View>
@@ -133,10 +189,10 @@ export default function AllBusinessesScreen() {
       {
         key: 'description',
         title: 'Description',
-        width: 250,
+        width: 220,
         minWidth: 200,
         render: (value) => (
-          <Text style={styles.description} numberOfLines={2}>
+          <Text style={styles.description} numberOfLines={3}>
             {value || 'No description'}
           </Text>
         ),
@@ -195,9 +251,7 @@ export default function AllBusinessesScreen() {
             <TouchableOpacity
               style={styles.actionButton}
               onPress={() => {
-                router.push(
-                  `/TourismCMS/(admin)/business-management/business-listings/view/${business.id}` as any
-                );
+                NavigationService.toViewBusiness(business.id);
               }}
             >
               <Eye size={16} color="#0A1B47" weight="bold" />
@@ -205,9 +259,7 @@ export default function AllBusinessesScreen() {
             <TouchableOpacity
               style={styles.actionButton}
               onPress={() => {
-                router.push(
-                  `/TourismCMS/(admin)/business-management/business-listings/edit/${business.id}` as any
-                );
+                NavigationService.toEditBusiness(business.id);
               }}
             >
               <PencilSimple size={16} color="#0A1B47" weight="bold" />
@@ -231,17 +283,13 @@ export default function AllBusinessesScreen() {
       <View style={styles.titleSection}>
         <Text style={styles.pageTitle}>All Business Listings</Text>
         <Text style={styles.pageSubtitle}>
-          Manage and monitor all business listings in the platform
+          Manage and monitor all business listings in the platform{' '}
         </Text>
-      </View>{' '}
+      </View>
       <CMSButton
         title="Create New Business"
         icon="plus"
-        onPress={() =>
-          router.push(
-            '/TourismCMS/(admin)/business-management/business-listings/create' as any
-          )
-        }
+        onPress={() => NavigationService.toCreateBusiness()}
         variant="primary"
       />
     </View>
@@ -249,7 +297,7 @@ export default function AllBusinessesScreen() {
 
   const renderFilters = () => (
     <View style={styles.filtersContainer}>
-      {/* Search Bar */}{' '}
+      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <MagnifyingGlass size={20} color="#6B7280" />
         <TextInput
@@ -343,19 +391,34 @@ export default function AllBusinessesScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      {' '}
       {renderHeader()}
       {renderFilters()}
       {renderDataTable()}
-
       {/* Statistics Summary */}
       {businessData && (
         <View style={styles.statsContainer}>
           <Text style={styles.statsText}>
-            Showing {businessData.data.length} of {businessData.count || 0}{' '}
+            Showing {businessData.data.length} of {businessData.count || 0}
             businesses
           </Text>
         </View>
       )}
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        visible={deleteModalVisible}
+        title="Delete Business"
+        message={
+          businessToDelete
+            ? `Are you sure you want to delete "${businessToDelete.business_name}"? This action cannot be undone.`
+            : ''
+        }
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmStyle="destructive"
+        onConfirm={confirmDeleteBusiness}
+        onCancel={cancelDeleteBusiness}
+      />
     </SafeAreaView>
   );
 }
@@ -476,19 +539,23 @@ const styles = StyleSheet.create({
   dataTable: {
     flex: 1,
     marginBottom: 16,
+  }, // Table cell content styles
+  businessNameContainer: {
+    flex: 1,
+    paddingRight: 8, // Ensure padding for text
   },
-
-  // Table cell content styles
   businessName: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     color: '#111827',
-    marginBottom: 2,
+    marginBottom: 3,
+    lineHeight: 16,
   },
   businessType: {
-    fontSize: 11,
+    fontSize: 10,
     color: '#6B7280',
     fontWeight: '500',
+    textTransform: 'uppercase',
   },
   description: {
     fontSize: 13,

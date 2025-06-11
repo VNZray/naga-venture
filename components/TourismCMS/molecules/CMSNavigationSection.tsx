@@ -125,7 +125,7 @@ export const CMSNavigationSection: React.FC<CMSNavigationSectionProps> = ({
         ]}
         pointerEvents={isExpanded ? 'auto' : 'none'}
       >
-        {' '}
+        
         {section.subsections.map((subsection) => {
           const isSubsectionActive = activeSubsection === subsection.id;
 
@@ -194,3 +194,4 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
 });
+

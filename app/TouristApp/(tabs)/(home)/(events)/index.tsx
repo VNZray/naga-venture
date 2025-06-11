@@ -249,7 +249,7 @@ const EventsDirectory = () => {
             <FontAwesome5 name="chevron-left" size={20} color={color} />
           </Pressable>
           <ThemedText type="title" style={styles.monthText}>
-            {selectedDate.toLocaleString('default', { month: 'long' })}{' '}
+            {selectedDate.toLocaleString('default', { month: 'long' })}
             {selectedDate.getFullYear()}
           </ThemedText>
           <Pressable onPress={() => navigateWeek(1)} style={styles.navButton}>
@@ -339,7 +339,7 @@ const EventsDirectory = () => {
                         name="map-marker-alt"
                         size={12}
                         color={color}
-                      />{' '}
+                      />
                       {event.location}
                     </ThemedText>
                   </View>
@@ -398,7 +398,7 @@ const EventsDirectory = () => {
                           name="calendar-alt"
                           size={12}
                           color={color}
-                        />{' '}
+                        />
                         {event.date}
                       </ThemedText>
                       <ThemedText type="cardSubTitle">
@@ -406,7 +406,7 @@ const EventsDirectory = () => {
                           name="map-marker-alt"
                           size={12}
                           color={color}
-                        />{' '}
+                        />
                         {event.location}
                       </ThemedText>
                     </View>
@@ -593,3 +593,4 @@ const styles = StyleSheet.create({
 });
 
 export default EventsDirectory;
+

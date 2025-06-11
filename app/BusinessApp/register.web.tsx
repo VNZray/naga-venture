@@ -150,8 +150,8 @@ const RegistrationPageWeb = () => {
             />
 
             <ThemedText style={styles.termsText}>
-              By signing up, you accept Naga Ventures{' '}
-              <ThemedText type="link">Terms of Service</ThemedText> and{' '}
+              By signing up, you accept Naga Ventures
+              <ThemedText type="link">Terms of Service</ThemedText> and
               <ThemedText type="link">Privacy Policy</ThemedText>.
             </ThemedText>
 
@@ -316,3 +316,4 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
 });
+

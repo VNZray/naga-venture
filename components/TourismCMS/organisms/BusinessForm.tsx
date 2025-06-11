@@ -1,65 +1,31 @@
 // filepath: components/TourismCMS/organisms/BusinessForm.tsx
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Picker } from '@react-native-picker/picker';
-import React, { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import React from 'react';
+import { Controller } from 'react-hook-form';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { z } from 'zod';
 
-// Types and hooks
+// Smart hook
+import { useBusinessForm } from '@/hooks/useBusinessForm';
+
+// Types
 import { Business } from '@/types/supabase';
 
 // Components
 import { CMSButton, CMSInput } from '@/components/TourismCMS/atoms';
 
-// Validation schema
-const businessFormSchema = z.object({
-  business_name: z
-    .string()
-    .min(2, 'Business name must be at least 2 characters'),
-  business_type: z.enum(['accommodation', 'shop', 'service'], {
-    required_error: 'Please select a business type',
-  }),
-  description: z.string().min(10, 'Description must be at least 10 characters'),
-  address: z.string().min(5, 'Address must be at least 5 characters'),
-  city: z.string().min(2, 'City is required'),
-  province: z.string().min(2, 'Province is required'),
-  postal_code: z.string().optional(),
-  phone: z.string().optional(),
-  email: z.string().email('Invalid email format').optional().or(z.literal('')),
-  website: z.string().url('Invalid website URL').optional().or(z.literal('')),
-  facebook_url: z
-    .string()
-    .url('Invalid Facebook URL')
-    .optional()
-    .or(z.literal('')),
-  instagram_url: z
-    .string()
-    .url('Invalid Instagram URL')
-    .optional()
-    .or(z.literal('')),
-  twitter_url: z
-    .string()
-    .url('Invalid Twitter URL')
-    .optional()
-    .or(z.literal('')),
-});
-
-type BusinessFormData = z.infer<typeof businessFormSchema>;
-
 interface BusinessFormProps {
   initialData?: Business;
-  onSubmit: (data: any) => void; // Generic to accept both BusinessInsert and BusinessUpdate
+  onSubmit: (data: any) => void;
   onCancel: () => void;
   isLoading?: boolean;
   isEdit?: boolean;
 }
 
 /**
- * BusinessForm Organism
+ * BusinessForm Organism (Dumb Component)
  *
- * Comprehensive form component for creating and editing business listings.
- * Supports validation, multi-step flow, and all business data fields.
+ * Pure presentation component for business forms.
+ * All logic is handled by the useBusinessForm hook (Smart Hook pattern).
  */
 export default function BusinessForm({
   initialData,
@@ -68,121 +34,57 @@ export default function BusinessForm({
   isLoading = false,
   isEdit = false,
 }: BusinessFormProps) {
-  const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 3;
-
-  // Form setup
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isValid },
-    trigger,
-  } = useForm<BusinessFormData>({
-    resolver: zodResolver(businessFormSchema),
-    defaultValues: initialData
-      ? {
-          business_name: initialData.business_name,
-          business_type: initialData.business_type,
-          description: initialData.description,
-          address: initialData.address,
-          city: initialData.city,
-          province: initialData.province,
-          postal_code: initialData.postal_code || '',
-          phone: initialData.phone || '',
-          email: initialData.email || '',
-          website: initialData.website || '',
-          facebook_url: initialData.facebook_url || '',
-          instagram_url: initialData.instagram_url || '',
-          twitter_url: initialData.twitter_url || '',
-        }
-      : {
-          business_name: '',
-          business_type: 'shop',
-          description: '',
-          address: '',
-          city: '',
-          province: '',
-          postal_code: '',
-          phone: '',
-          email: '',
-          website: '',
-          facebook_url: '',
-          instagram_url: '',
-          twitter_url: '',
-        },
-    mode: 'onChange',
+  console.log('🏗️ [BusinessForm] Component rendered');
+  console.log('🏗️ [BusinessForm] Props:', {
+    hasInitialData: !!initialData,
+    hasOnSubmit: typeof onSubmit === 'function',
+    hasOnCancel: typeof onCancel === 'function',
+    isLoading,
+    isEdit,
   });
 
-  // Handle form submission
-  const onFormSubmit = (data: BusinessFormData) => {
-    // Transform form data to match database structure
-    const businessData = {
-      ...data,
-      // Set empty strings to null for optional fields
-      postal_code: data.postal_code || null,
-      phone: data.phone || null,
-      email: data.email || null,
-      website: data.website || null,
-      facebook_url: data.facebook_url || null,
-      instagram_url: data.instagram_url || null,
-      twitter_url: data.twitter_url || null,
-      // Default values for required fields not in form
-      status: 'pending' as const,
-      is_claimed: true,
-      is_featured: false,
-      review_count: 0,
-      average_rating: null,
-    };
+  const {
+    control,
+    errors,
+    currentStep,
+    totalSteps,
+    nextStep,
+    prevStep,
+    handleSubmit,
+    handleCancel,
+    canGoNext,
+    canGoPrev,
+    isLastStep,
+    isCurrentStepValid,
+    isNavigating,
+  } = useBusinessForm({
+    initialData,
+    onSubmit,
+    onCancel,
+    isEdit,
+  });
+  console.log('🏗️ [BusinessForm] Hook state:', {
+    currentStep,
+    totalSteps,
+    canGoNext,
+    canGoPrev,
+    isLastStep,
+    isCurrentStepValid,
+    isNavigating,
+    hasHandleCancel: typeof handleCancel === 'function',
+  });
 
-    onSubmit(businessData);
-  };
+  // Debug wrapper for cancel button
+  const handleCancelClick = () => {
+    console.log('🔴 [BusinessForm] Cancel button clicked');
+    console.log('🔴 [BusinessForm] handleCancel type:', typeof handleCancel);
+    console.log('🔴 [BusinessForm] isLoading:', isLoading);
 
-  // Handle step navigation
-  const nextStep = async () => {
-    const isStepValid = await validateCurrentStep();
-    if (isStepValid && currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  // Validate current step fields
-  const validateCurrentStep = async (): Promise<boolean> => {
-    switch (currentStep) {
-      case 1:
-        return await trigger(['business_name', 'business_type', 'description']);
-      case 2:
-        return await trigger(['address', 'city', 'province']);
-      case 3:
-        return await trigger([
-          'phone',
-          'email',
-          'website',
-          'facebook_url',
-          'instagram_url',
-          'twitter_url',
-        ]);
-      default:
-        return true;
-    }
-  };
-
-  // Render step content
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return renderBasicInfoStep();
-      case 2:
-        return renderLocationStep();
-      case 3:
-        return renderContactStep();
-      default:
-        return null;
+    try {
+      handleCancel();
+      console.log('✅ [BusinessForm] handleCancel executed');
+    } catch (error) {
+      console.error('❌ [BusinessForm] Error in handleCancel:', error);
     }
   };
 
@@ -206,6 +108,7 @@ export default function BusinessForm({
             onBlur={onBlur}
             error={errors.business_name?.message}
             required
+            editable={!isLoading}
           />
         )}
       />
@@ -223,6 +126,7 @@ export default function BusinessForm({
                 selectedValue={value}
                 onValueChange={onChange}
                 style={styles.picker}
+                enabled={!isLoading}
               >
                 <Picker.Item label="Shop" value="shop" />
                 <Picker.Item label="Accommodation" value="accommodation" />
@@ -242,7 +146,7 @@ export default function BusinessForm({
         render={({ field: { onChange, onBlur, value } }) => (
           <CMSInput
             label="Description"
-            placeholder="Describe your business..."
+            placeholder="Describe your business (minimum 200 characters)..."
             value={value}
             onChangeText={onChange}
             onBlur={onBlur}
@@ -250,6 +154,7 @@ export default function BusinessForm({
             multiline
             numberOfLines={4}
             required
+            editable={!isLoading}
           />
         )}
       />
@@ -276,6 +181,7 @@ export default function BusinessForm({
             onBlur={onBlur}
             error={errors.address?.message}
             required
+            editable={!isLoading}
           />
         )}
       />
@@ -294,6 +200,7 @@ export default function BusinessForm({
                 onBlur={onBlur}
                 error={errors.city?.message}
                 required
+                editable={!isLoading}
               />
             )}
           />
@@ -312,6 +219,7 @@ export default function BusinessForm({
                 onBlur={onBlur}
                 error={errors.province?.message}
                 required
+                editable={!isLoading}
               />
             )}
           />
@@ -329,9 +237,57 @@ export default function BusinessForm({
             onChangeText={onChange}
             onBlur={onBlur}
             error={errors.postal_code?.message}
+            editable={!isLoading}
           />
         )}
       />
+
+      <Text style={styles.sectionTitle}>Location Coordinates</Text>
+      <Text style={styles.helpText}>
+        Provide exact coordinates for map display. Default is Naga City center.
+      </Text>
+
+      <View style={styles.row}>
+        <View style={styles.halfWidth}>
+          <Controller
+            control={control}
+            name="latitude"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CMSInput
+                label="Latitude"
+                placeholder="13.6218"
+                value={value?.toString() || ''}
+                onChangeText={(text) => onChange(parseFloat(text) || 13.6218)}
+                onBlur={onBlur}
+                error={errors.latitude?.message}
+                keyboardType="decimal-pad"
+                required
+                editable={!isLoading}
+              />
+            )}
+          />
+        </View>
+
+        <View style={styles.halfWidth}>
+          <Controller
+            control={control}
+            name="longitude"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <CMSInput
+                label="Longitude"
+                placeholder="123.1948"
+                value={value?.toString() || ''}
+                onChangeText={(text) => onChange(parseFloat(text) || 123.1948)}
+                onBlur={onBlur}
+                error={errors.longitude?.message}
+                keyboardType="decimal-pad"
+                required
+                editable={!isLoading}
+              />
+            )}
+          />
+        </View>
+      </View>
     </View>
   );
 
@@ -342,6 +298,7 @@ export default function BusinessForm({
       <Text style={styles.stepDescription}>
         Add contact details and social media links (all optional)
       </Text>
+
       <Controller
         control={control}
         name="phone"
@@ -354,9 +311,11 @@ export default function BusinessForm({
             onBlur={onBlur}
             error={errors.phone?.message}
             keyboardType="phone-pad"
+            editable={!isLoading}
           />
         )}
       />
+
       <Controller
         control={control}
         name="email"
@@ -370,9 +329,11 @@ export default function BusinessForm({
             error={errors.email?.message}
             keyboardType="email-address"
             autoCapitalize="none"
+            editable={!isLoading}
           />
         )}
       />
+
       <Controller
         control={control}
         name="website"
@@ -386,10 +347,13 @@ export default function BusinessForm({
             error={errors.website?.message}
             keyboardType="url"
             autoCapitalize="none"
+            editable={!isLoading}
           />
         )}
       />
-      <Text style={styles.sectionTitle}>Social Media Links</Text>{' '}
+
+      <Text style={styles.sectionTitle}>Social Media Links</Text>
+
       <Controller
         control={control}
         name="facebook_url"
@@ -403,9 +367,11 @@ export default function BusinessForm({
             error={errors.facebook_url?.message}
             keyboardType="url"
             autoCapitalize="none"
+            editable={!isLoading}
           />
         )}
       />
+
       <Controller
         control={control}
         name="instagram_url"
@@ -419,9 +385,11 @@ export default function BusinessForm({
             error={errors.instagram_url?.message}
             keyboardType="url"
             autoCapitalize="none"
+            editable={!isLoading}
           />
         )}
       />
+
       <Controller
         control={control}
         name="twitter_url"
@@ -435,11 +403,26 @@ export default function BusinessForm({
             error={errors.twitter_url?.message}
             keyboardType="url"
             autoCapitalize="none"
+            editable={!isLoading}
           />
         )}
       />
     </View>
   );
+
+  // Render step content based on current step
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return renderBasicInfoStep();
+      case 2:
+        return renderLocationStep();
+      case 3:
+        return renderContactStep();
+      default:
+        return null;
+    }
+  };
 
   // Render step indicator
   const renderStepIndicator = () => (
@@ -488,6 +471,8 @@ export default function BusinessForm({
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        keyboardShouldPersistTaps="handled"
       >
         {renderStepContent()}
       </ScrollView>
@@ -495,36 +480,37 @@ export default function BusinessForm({
       {/* Navigation Buttons */}
       <View style={styles.navigationButtons}>
         <View style={styles.buttonRow}>
-          {currentStep > 1 && (
+          {canGoPrev && (
             <CMSButton
               title="Previous"
               onPress={prevStep}
               variant="secondary"
               style={styles.navButton}
+              disabled={isLoading || isNavigating}
             />
-          )}
-
+          )}{' '}
           <CMSButton
             title="Cancel"
-            onPress={onCancel}
+            onPress={handleCancelClick}
             variant="tertiary"
             style={styles.navButton}
+            disabled={isLoading}
           />
-
-          {currentStep < totalSteps ? (
+          {canGoNext ? (
             <CMSButton
               title="Next"
               onPress={nextStep}
               variant="primary"
               style={styles.navButton}
+              disabled={isLoading || isNavigating || !isCurrentStepValid}
             />
           ) : (
             <CMSButton
               title={isEdit ? 'Update Business' : 'Create Business'}
-              onPress={handleSubmit(onFormSubmit)}
+              onPress={handleSubmit}
               variant="primary"
               loading={isLoading}
-              disabled={!isValid}
+              disabled={isLoading || !isCurrentStepValid}
               style={styles.navButton}
             />
           )}
@@ -654,6 +640,12 @@ const styles = StyleSheet.create({
     color: '#374151',
     marginTop: 20,
     marginBottom: 12,
+  },
+  helpText: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginBottom: 16,
+    lineHeight: 16,
   },
   navigationButtons: {
     padding: 20,

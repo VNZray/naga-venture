@@ -100,7 +100,7 @@ const LoginWeb = () => {
             <View style={styles.logoContainer}>
               <Image source={logo} style={styles.logo} />
               <Text style={styles.logoText}>Naga Venture</Text>
-            </View>{' '}
+            </View>
             <View style={{ marginBottom: 20 }}>
               <CMSText type="title" darkColor="#000">
                 Sign In
@@ -170,7 +170,7 @@ const LoginWeb = () => {
               >
                 Forgot Password?
               </Text>
-            </View>{' '}
+            </View>
             <View style={{ marginTop: 20 }}>
               <CMSButton
                 title={isLoading ? 'Signing In...' : 'Login'}
@@ -181,7 +181,7 @@ const LoginWeb = () => {
                 loading={isLoading}
                 fullWidth
               />
-            </View>{' '}
+            </View>
             <View style={styles.signupRow}>
               <CMSText type="body" darkColor="#666">
                 Tourism CMS - Admin Access Only
@@ -280,3 +280,4 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
 });
+

@@ -139,7 +139,7 @@ export const CMSSidebar: React.FC<CMSSidebarProps> = ({
         return (
           <React.Fragment key={section.id}>
             {/* Add separator line before each section (except the first one) */}
-            {index > 0 && <View style={styles.sectionSeparator} />}{' '}
+            {index > 0 && <View style={styles.sectionSeparator} />}
             <CMSNavigationSection
               section={section}
               isExpanded={isExpanded}
@@ -359,3 +359,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+

@@ -69,7 +69,7 @@ export default function AdminLayout() {
       <NavigationProvider userRole={userProfile?.role}>
         <ThemeProvider value={DefaultTheme}>
           <View style={styles.container}>
-            {' '}
+            
             {/* New Hierarchical Sidebar */}
             <CMSSidebar userRole={userProfile?.role} />
             {/* Main Content Area */}
@@ -111,3 +111,4 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+

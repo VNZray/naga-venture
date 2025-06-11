@@ -120,7 +120,7 @@ const RoomProfile = () => {
                 <View>
                   <ThemedText type="profileTitle">
                     Room {foundRoom.roomNumber}
-                  </ThemedText>
+                  </ThemedText>{' '}
                   <ThemedText type="default2">
                     <MaterialCommunityIcons
                       name="star"
