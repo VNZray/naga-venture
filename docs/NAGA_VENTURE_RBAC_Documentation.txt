@@ -315,49 +315,6 @@ Analytics
 • View registration trends
 • Monitor approval/rejection rates
 Implementation Guidelines
-Frontend Implementation
-When implementing the sidebar and permissions in the frontend:
-
-1. Dynamic Sidebar Generation
-function generateSidebar(userRole) {
-const sidebarItems = [];
-// Common items for all users
-sidebarItems.push({ label: 'Dashboard', icon: 'dashboard', route: '/dashboard' });
-// Role-specific items
-switch(userRole) {
-case 'tourism_admin':
-sidebarItems.push({ label: 'User Management', icon: 'users', route: '/
-users' });
-sidebarItems.push({ label: 'Business Listings', icon: 'business', route: '/
-businesses' });
-// Add other admin-specific items
-break;
-case 'business_owner':
-sidebarItems.push({ label: 'My Businesses', icon: 'store', route: '/mybusinesses' });
-sidebarItems.push({ label: 'Bookings', icon: 'calendar', route: '/bookings' });
-// Add other business owner-specific items
-break;
-// Handle other roles
-}
-return sidebarItems;
-}
-
-2. Permission Checking
-function hasPermission(user, permission) {
-// For admin, grant all permissions
-if (user.role === 'tourism_admin') return true;
-// For staff roles, check specific permissions
-if (['business_listing_manager', 'tourism_content_manager',
-'business_registration_manager'].includes(user.role)) {
-return user.permissions[permission] === true;
-}
-// For business owners, check if they own the resource
-if (user.role === 'business_owner' && permission.startsWith('manage_own_')) {const resourceId = permission.split('_').pop();
-return user.ownedBusinessIds.includes(resourceId);
-}
-// Default deny
-return false;
-}
 
 Security Considerations
 1. Server-Side Validation: Always validate permissions on the server side, not just in the UI
