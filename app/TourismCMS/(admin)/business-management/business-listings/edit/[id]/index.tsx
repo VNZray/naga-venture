@@ -1,4 +1,4 @@
-// filepath: app/TourismCMS/(admin)/business-management/business-listings/edit/[id]/index.tsx
+// app/TourismCMS/(admin)/business-management/business-listings/edit/[id]/index.tsx
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
@@ -23,7 +23,8 @@ import { BusinessForm, CMSRouteGuard } from '@/components/TourismCMS/organisms';
  * Loads business data and provides pre-filled form.
  */
 export default function EditBusinessScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id } = useLocalSearchParams<{ id?: string }>();
+
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
   const [errorModalVisible, setErrorModalVisible] = useState(false);
@@ -39,6 +40,30 @@ export default function EditBusinessScreen() {
   } = useBusiness(id);
 
   const updateBusinessMutation = useUpdateBusiness();
+
+  // Early guard - check if id exists
+  if (!id) {
+    return (
+      <CMSRouteGuard routePath="/TourismCMS/(admin)/business-management/business-listings/edit">
+        <SafeAreaView style={styles.container}>
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorTitle}>Invalid Business ID</Text>
+            <Text style={styles.errorMessage}>
+              No business ID was provided. Please select a valid business to
+              edit.
+            </Text>
+            <CMSButton
+              title="Go Back"
+              onPress={() => NavigationService.toAllBusinesses()}
+              variant="primary"
+              style={styles.backButton}
+            />
+          </View>
+        </SafeAreaView>
+      </CMSRouteGuard>
+    );
+  }
+
   const handleSubmit = (data: BusinessUpdate) => {
     if (!id) return;
 

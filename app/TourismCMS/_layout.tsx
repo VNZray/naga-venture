@@ -2,7 +2,6 @@ import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import 'react-native-reanimated';
 
-import LoadingScreen from '@/app/TouristApp/(screens)/LoadingScreen';
 import { AuthProvider } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import React, { useEffect, useState } from 'react';
@@ -18,13 +17,13 @@ export default function RootLayout() {
     }, 2000);
   }, []);
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1 }}>
-        <LoadingScreen />
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View style={{ flex: 1 }}>
+  //       <LoadingScreen />
+  //     </View>
+  //   );
+  // }
 
   return (
     <AuthProvider>

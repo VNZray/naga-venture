@@ -1,4 +1,4 @@
-// filepath: c:\Users\Hans Candor\Documents\capstone-NV\naga-venture\hooks\useRouteGuard.ts
+// hooks/useRouteGuard.ts
 import { useAuth } from '@/context/AuthContext';
 import type { Database } from '@/types/database';
 import { router } from 'expo-router';

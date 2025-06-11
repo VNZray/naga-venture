@@ -20,9 +20,11 @@ export function usePersistentState<T>(
 
   const [state, setState] = useState<T>(initialState);
   const [isLoaded, setIsLoaded] = useState(false);
-
   // This effect now re-runs whenever the user changes (i.e., dynamicKey changes)
   useEffect(() => {
+    // Prevent premature writes while loading the next user's state
+    setIsLoaded(false);
+
     let isMounted = true;
     const loadPersistedState = async () => {
       try {

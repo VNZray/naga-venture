@@ -96,15 +96,12 @@ export function useSidebarState(
     activeSection: '',
     userRole,
   });
-
   // Sync persisted expanded sections with reducer state
   useEffect(() => {
-    if (persistedExpandedSections.length > 0) {
-      dispatch({
-        type: 'SET_EXPANDED_SECTIONS',
-        payload: persistedExpandedSections,
-      });
-    }
+    dispatch({
+      type: 'SET_EXPANDED_SECTIONS',
+      payload: persistedExpandedSections,
+    });
   }, [persistedExpandedSections]);
 
   // Update user role when it changes

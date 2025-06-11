@@ -1,6 +1,5 @@
 // filepath: app/TourismCMS/(admin)/business-management/business-listings/all-businesses/index.tsx
 import { Picker } from '@react-native-picker/picker';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   Eye,
   Funnel,
@@ -22,12 +21,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Hooks and types
 import {
-  businessQueryKeys,
   useBusinessListings,
   useDeleteBusiness,
   type BusinessFilters,
 } from '@/hooks/useBusinessManagement';
-import { supabase } from '@/lib/supabase';
+import { useBusinessSubscription } from '@/hooks/useSupabaseSubscription';
 import { Business } from '@/types/supabase';
 
 // Services
@@ -72,35 +70,9 @@ export default function AllBusinessesScreen() {
     refetch,
   } = useBusinessListings(filters);
   const deleteBusinessMutation = useDeleteBusiness();
-  const queryClient = useQueryClient();
 
-  // BEST PRACTICE: Use a stable channel name and a robust cleanup function.
-  React.useEffect(() => {
-    // 1. Use a single, stable channel name.
-    const channel = supabase.channel('public:businesses');
-
-    // 2. Check the channel's state to prevent redundant subscriptions.
-    if (channel.state !== 'joined') {
-      channel
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: 'businesses' },
-          () => {
-            // When a change happens, simply tell TanStack Query the data is stale.
-            // It will handle the refetching automatically.
-            queryClient.invalidateQueries({
-              queryKey: businessQueryKeys.lists(),
-            });
-          }
-        )
-        .subscribe();
-    }
-
-    // 3. The cleanup function is critical. It runs when the screen is left.
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [queryClient]); // Dependency array is correct.
+  // Real-time subscription using production-grade hook
+  useBusinessSubscription(true);
 
   // Handle search with debouncing
   React.useEffect(() => {
@@ -175,13 +147,13 @@ export default function AllBusinessesScreen() {
               ellipsizeMode="tail"
             >
               {business.business_name}
-            </Text>
+            </Text>{' '}
             <Text
               style={styles.businessType}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {business.business_type?.replace('_', ' ').toUpperCase()}
+              {business.business_type?.replaceAll('_', ' ').toUpperCase()}
             </Text>
           </View>
         ),

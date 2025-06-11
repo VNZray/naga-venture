@@ -39,11 +39,13 @@ import { CMSRouteGuard } from '@/components/TourismCMS/organisms';
  * Read-only detailed view of a business listing with edit action.
  */
 export default function ViewBusinessScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id } = useLocalSearchParams<{ id?: string }>();
 
   // Fetch business data
   const { data: business, isLoading, isError, error } = useBusiness(id);
+
   const handleEditBusiness = () => {
+    if (!id) return;
     NavigationService.toEditBusiness(id);
   };
 
@@ -58,6 +60,27 @@ export default function ViewBusinessScreen() {
       });
     }
   };
+
+  if (!id) {
+    return (
+      <CMSRouteGuard routePath="/TourismCMS/(admin)/business-management/business-listings/view">
+        <SafeAreaView style={styles.container}>
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorTitle}>Invalid Business ID</Text>
+            <Text style={styles.errorMessage}>
+              No business ID provided. Please select a valid business to view.
+            </Text>
+            <CMSButton
+              title="Go Back"
+              onPress={handleGoBack}
+              variant="primary"
+              style={styles.backButton}
+            />
+          </View>
+        </SafeAreaView>
+      </CMSRouteGuard>
+    );
+  }
 
   // Loading state
   if (isLoading) {
@@ -130,9 +153,9 @@ export default function ViewBusinessScreen() {
                 <View style={styles.businessInfo}>
                   <Text style={styles.businessName}>
                     {business.business_name}
-                  </Text>
+                  </Text>{' '}
                   <Text style={styles.businessType}>
-                    {business.business_type?.replace('_', ' ').toUpperCase()}
+                    {business.business_type?.replaceAll('_', ' ').toUpperCase()}
                   </Text>
                 </View>
                 <StatusBadge status={business.status} size="medium" />
