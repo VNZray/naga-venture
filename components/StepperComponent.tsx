@@ -4,13 +4,13 @@ import { StyleSheet, Text, View } from 'react-native';
 
 const steps = [
   'Basics',
+  'Contact',
   'Location',
   'Description',
-  'Amenities',
+  'Links',
   'Pricing',
-  'Photos',
-  'Profile',
-  'Publish',
+  'Review',
+  'Submit',
 ];
 
 const Stepper = ({ currentStep }: { currentStep: number }) => {
@@ -39,9 +39,9 @@ const Stepper = ({ currentStep }: { currentStep: number }) => {
                   styles.circle,
                   {
                     backgroundColor: isCompleted
-                      ? '#1976d2'
+                      ? '#0A1B47'
                       : isActive
-                      ? '#1976d2'
+                      ? '#0A1B47'
                       : '#e0e0e0',
                   },
                 ]}
@@ -66,7 +66,7 @@ const Stepper = ({ currentStep }: { currentStep: number }) => {
               style={[
                 styles.label,
                 {
-                  color: isCompleted || isActive ? '#1976d2' : '#888',
+                  color: isCompleted || isActive ? '#0A1B47' : '#888',
                   fontWeight: isActive ? 'bold' : 'normal',
                 },
               ]}
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   stepContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 6,
+    marginVertical: 12,
   },
   circleContainer: {
     width: 30,
@@ -96,9 +96,9 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   circle: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 32,
+    height: 32,
+    borderRadius: '50%',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1,

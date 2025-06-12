@@ -2,11 +2,10 @@ import logo from '@/assets/images/logo.png';
 import PressableButton from '@/components/PressableButton';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/context/AuthContext';
-import { users } from '@/Controller/User';
 import { Image } from 'expo-image';
 import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -14,22 +13,25 @@ const LoginWeb = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
+  const [loginError, setLoginError] = useState('');
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Email and password are required.');
+      setLoginError('Email and password are required.');
       return;
     }
 
-    const matchedUser = users.find(
-      (u) => u.email === email && u.password === password
-    );
-
-    if (matchedUser) {
-      login(matchedUser);
+    try {
+      setLoginError(''); // clear any previous error
+      await login(email, password);
       router.replace('/BusinessApp/(admin)/dashboard');
-    } else {
-      Alert.alert('Login Failed', 'Incorrect email or password.');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      setLoginError(
+        error?.message ||
+          error?.error_description ||
+          'Incorrect email or password.'
+      );
     }
   };
 
@@ -99,6 +101,9 @@ const LoginWeb = () => {
                 Title="Login"
                 onPress={handleLogin}
               />
+              {loginError ? (
+                <Text style={styles.errorText}>{loginError}</Text>
+              ) : null}
             </View>
 
             <View style={styles.signupRow}>
@@ -170,5 +175,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 20,
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 10,
+    fontSize: 14,
+    textAlign: 'center',
   },
 });

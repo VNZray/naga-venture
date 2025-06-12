@@ -16,12 +16,21 @@ export function useColorScheme() {
 
 type PressableButtonProps = {
   direction?: 'row' | 'column';
-  type?: 'primary' | 'secondary' | 'tertiary' | 'quartary' | 'default';
+  type?:
+    | 'primary'
+    | 'secondary'
+    | 'tertiary'
+    | 'quartary'
+    | 'default'
+    | 'yellow'
+    | 'orange'
+    | 'cancel';
   gap?: number;
   color?: string;
   width?: string | number;
   height?: string | number;
-  Title?: string | React.ReactNode; Icon?: keyof typeof FontAwesome5.glyphMap;
+  Title?: string | React.ReactNode;
+  Icon?: keyof typeof FontAwesome5.glyphMap;
   IconSize?: number;
   TextSize?: number | string;
   onPress?: () => void;
@@ -76,7 +85,12 @@ const PressableButton = ({
       ]}
     >
       {Icon && (
-        <FontAwesome5 name={Icon} size={IconSize} color={color} style={styles.icon} />
+        <FontAwesome5
+          name={Icon}
+          size={IconSize}
+          color={color}
+          style={styles.icon}
+        />
       )}
       {Title && (
         <Text
@@ -84,7 +98,8 @@ const PressableButton = ({
             styles.text,
             {
               color: disabled ? '#ccc' : color,
-              fontSize: typeof TextSize === 'string' ? parseFloat(TextSize) : TextSize,
+              fontSize:
+                typeof TextSize === 'string' ? parseFloat(TextSize) : TextSize,
             },
           ]}
         >
@@ -129,6 +144,15 @@ const stylesByType = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: '#ccc',
+  },
+  cancel: {
+    backgroundColor: '#AE2438',
+  },
+  yellow: {
+    backgroundColor: '#FFB007',
+  },
+  orange: {
+    backgroundColor: '#FF5310',
   },
   default: {},
 });

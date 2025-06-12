@@ -1,11 +1,12 @@
 import logo from '@/assets/images/logo.png';
 import PressableButton from '@/components/PressableButton';
 import { ThemedText } from '@/components/ThemedText';
+import { supabase } from '@/utils/supabase';
 import { useFonts } from 'expo-font';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -16,9 +17,9 @@ const RegistrationPageWeb = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [birthdate, setBirthdate] = useState('');
   const [userType, setUserType] = useState<string[]>([]);
   const businessTypes = ['Accommodation', 'shop'];
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [fontsLoaded] = useFonts({
     'Poppins-Black': require('@/assets/fonts/Poppins/Poppins-Black.ttf'),
@@ -30,6 +31,71 @@ const RegistrationPageWeb = () => {
   });
 
   if (!fontsLoaded) return null;
+
+  const registerBusinessOwner = async () => {
+    if (!email || !password || password !== confirmPassword) {
+      setErrorMessage('Please check your credentials.');
+      return;
+    }
+
+    if (!email.includes('@')) {
+      setErrorMessage('Please enter a valid email address.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage('Password must be at least 6 characters.');
+      return;
+    }
+
+    // 1. Sign up with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          display_name: `${firstName} ${lastName}`,
+          phone: phoneNumber,
+        },
+      },
+    });
+
+    if (authError) {
+      setErrorMessage(authError.message);
+      return;
+    }
+
+    // 2. Insert into Owner table
+    const userId = authData?.user?.id;
+    if (!userId) {
+      Alert.alert('Error', 'User ID not returned from signup.');
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('Owner')
+      .insert([
+        {
+          first_name: firstName,
+          middle_name: '',
+          last_name: lastName,
+          email: email,
+          phone_number: phoneNumber,
+          business_type: userType,
+          user_id: userId,
+        },
+      ])
+      .select();
+
+    if (error) {
+      setErrorMessage(error.message);
+      return;
+    }
+
+    setErrorMessage('');
+    Alert.alert('Success', 'Account created!');
+    router.replace('/BusinessApp/(admin)/dashboard');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -81,14 +147,6 @@ const RegistrationPageWeb = () => {
               />
             </View>
 
-            <TextInput
-              mode="outlined"
-              label="Birthday (YYYY-MM-DD)"
-              value={birthdate}
-              onChangeText={setBirthdate}
-              style={styles.input}
-            />
-
             <ThemedText style={styles.subtext}>Business type</ThemedText>
             <View style={styles.radioRow}>
               {businessTypes.map((type) => (
@@ -128,7 +186,7 @@ const RegistrationPageWeb = () => {
               value={phoneNumber}
               onChangeText={setPhoneNumber}
               style={styles.input}
-              keyboardType="name-phone-pad"
+              keyboardType="default"
             />
 
             <TextInput
@@ -155,6 +213,18 @@ const RegistrationPageWeb = () => {
               <ThemedText type="link">Privacy Policy</ThemedText>.
             </ThemedText>
 
+            {errorMessage !== '' && (
+              <Text
+                style={{
+                  color: 'red',
+                  fontFamily: 'Poppins-Regular',
+                  marginTop: 10,
+                }}
+              >
+                {errorMessage}
+              </Text>
+            )}
+
             <View style={{ marginTop: 20 }}>
               <PressableButton
                 TextSize={16}
@@ -165,7 +235,7 @@ const RegistrationPageWeb = () => {
                 color={'#DEE3F2'}
                 direction="column"
                 Title="Sign Up"
-                onPress={() => router.replace('/TouristApp/(screens)/')}
+                onPress={registerBusinessOwner}
               />
             </View>
 

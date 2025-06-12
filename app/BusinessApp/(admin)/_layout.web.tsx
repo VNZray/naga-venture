@@ -1,3 +1,4 @@
+import LoadingScreen from '@/app/TouristApp/(screens)/LoadingScreen';
 import AdminHeader from '@/components/AdminHeader';
 import { ThemedText } from '@/components/ThemedText';
 import { AccommodationProvider } from '@/context/AccommodationContext';
@@ -11,7 +12,7 @@ import {
 } from '@react-navigation/native';
 import { Stack, router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 type FontAwesomeIconName =
   | 'dashboard'
@@ -19,7 +20,8 @@ type FontAwesomeIconName =
   | 'exchange'
   | 'briefcase'
   | 'comments'
-  | 'map';
+  | 'map'
+  | 'user-circle-o';
 
 const navItems: { name: string; path: string; icon: FontAwesomeIconName }[] = [
   {
@@ -40,54 +42,96 @@ const navItems: { name: string; path: string; icon: FontAwesomeIconName }[] = [
   },
   { name: 'Feedback', path: '/BusinessApp/(admin)/feedback', icon: 'comments' },
   { name: 'Map', path: '/BusinessApp/(admin)/maps', icon: 'map' },
+  {
+    name: 'Profile',
+    path: '/BusinessApp/(admin)/profile',
+    icon: 'user-circle-o',
+  },
 ];
+
 export default function AdminLayout() {
   const [headerTitle, setHeaderTitle] = useState('Dashboard');
-  const { user } = useAuth();
-  useEffect(() => {
-    if (!user) {
-      router.replace('/BusinessApp');
-    }
-  }, [user]);
+  const { user, logout, loading } = useAuth(); // ✅ include loading
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/BusinessApp/login');
+    }
+  }, [loading, user]);
+
+  // ✅ Wait for session to load before rendering
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <AccommodationProvider>
       <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
         <View style={styles.container}>
           {/* Sidebar */}
           <View style={styles.sidebar}>
-            <Text style={styles.logo}>Naga Venture</Text>
-            {navItems.map((item) => (
+            <ThemedText style={styles.logo}>Naga Venture</ThemedText>
+
+            <View style={styles.sidebarContent}>
+              <View>
+                {navItems.map((item) => (
+                  <Pressable
+                    key={item.name}
+                    style={styles.navItem}
+                    onPress={() => {
+                      setHeaderTitle(item.name);
+                      router.push(item.path as any);
+                    }}
+                  >
+                    <View style={styles.navRow}>
+                      <FontAwesome
+                        name={item.icon}
+                        size={20}
+                        color="#fff"
+                        style={styles.navIcon}
+                      />
+                      <ThemedText style={styles.navText}>
+                        {item.name}
+                      </ThemedText>
+                    </View>
+                  </Pressable>
+                ))}
+              </View>
+
               <Pressable
-                key={item.name}
                 style={styles.navItem}
-                onPress={() => {
-                  setHeaderTitle(item.name);
-                  router.push(item.path as any);
+                onPress={async () => {
+                  try {
+                    await logout();
+                    router.replace('/BusinessApp/login');
+                  } catch (err) {
+                    console.error('Logout failed:', err);
+                  }
                 }}
               >
                 <View style={styles.navRow}>
                   <FontAwesome
-                    name={item.icon}
+                    name="sign-out"
                     size={20}
                     color="#fff"
                     style={styles.navIcon}
                   />
-                  <ThemedText style={styles.navText}>{item.name}</ThemedText>
+                  <ThemedText style={styles.navText}>Logout</ThemedText>
                 </View>
               </Pressable>
-            ))}
+            </View>
           </View>
 
           <View style={styles.content}>
             <AdminHeader
               headerTitle={headerTitle}
-              headerUserName={user?.name ?? ''}
+              headerUserName={user?.display_name ?? ''}
               headerUserEmail={user?.email ?? ''}
             />
             <Stack
               screenOptions={{ headerShown: false, headerBackVisible: false }}
-            ></Stack>
+            />
           </View>
         </View>
       </ThemeProvider>
@@ -129,5 +173,14 @@ const styles = StyleSheet.create({
   },
   navIcon: {
     marginRight: 16,
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sidebarContent: {
+    flex: 1,
+    justifyContent: 'space-between',
   },
 });

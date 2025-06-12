@@ -16,7 +16,7 @@ const ManageBusiness = () => {
   const { search, setSearch, handleSearch, filteredAccommodations, loading } =
     useAccommodation();
 
-  const handleLogin = () => {
+  const businesslisting = () => {
     router.replace('/BusinessApp/(admin)/business-listing');
   };
   return (
@@ -27,7 +27,7 @@ const ManageBusiness = () => {
         color="#fff"
         width={200}
         TextSize={14}
-        onPress={handleLogin}
+        onPress={businesslisting}
       ></PressableButton>
       <View style={styles.cardWrapper}>
         {loading ? (
