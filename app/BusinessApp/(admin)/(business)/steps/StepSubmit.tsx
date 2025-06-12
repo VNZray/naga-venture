@@ -21,7 +21,7 @@ const StepSubmit: React.FC<StepBasicsProps> = ({ data, setData, onPrev }) => {
       return;
     }
 
-    // Step 1: Fetch the Owner using the logged-in user's UID
+    // Fetch the Owner using the logged-in user's UID
     const { data: ownerData, error } = await supabase
       .from('Owner')
       .select('id')
@@ -45,7 +45,7 @@ const StepSubmit: React.FC<StepBasicsProps> = ({ data, setData, onPrev }) => {
     console.log(ownerId);
     console.log(ownerId);
 
-    // Step 2: Insert into Business (NOT Owner)
+    // Insert into Business
     const { data: newBusiness, error: businessError } = await supabase
       .from('Business')
       .insert({
