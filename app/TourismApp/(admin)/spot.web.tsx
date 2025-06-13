@@ -24,34 +24,47 @@ const TouristSpots = () => {
   const [spots, setSpots] = useState<TouristSpot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<string[]>(['All']); // State for dynamic categories
   const spotsPerPage = 10;
 
   useEffect(() => {
-    const fetchSpots = async () => {
+    const fetchSpotsAndCategories = async () => {
       setLoading(true);
-      const { data, error } = await supabase.from('tourist_spots').select('*');
+      setError(null);
 
-      if (error) {
-        setError(error.message);
-        console.error('Error fetching spots:', error.message);
+      // Fetch categories
+      const { data: categoryData, error: categoryError } = await supabase
+        .from('tourist_spots')
+        .select('spot_type')
+        .order('spot_type', { ascending: true });
+
+      if (categoryError) {
+        setError(categoryError.message);
+        console.error('Error fetching categories:', categoryError.message);
+      } else if (categoryData) {
+        const uniqueCategories = [
+          'All',
+          ...Array.from(new Set(categoryData.map((item) => item.spot_type))),
+        ];
+        setCategories(uniqueCategories);
+      }
+
+      // Fetch spots
+      const { data: spotsData, error: spotsError } = await supabase
+        .from('tourist_spots')
+        .select('*');
+
+      if (spotsError) {
+        setError(spotsError.message);
+        console.error('Error fetching spots:', spotsError.message);
       } else {
-        setSpots(data as TouristSpot[]);
+        setSpots(spotsData as TouristSpot[]);
       }
       setLoading(false);
     };
 
-    fetchSpots();
+    fetchSpotsAndCategories();
   }, []);
-
-  const categories = [
-    'All',
-    'Historical',
-    'Natural',
-    'Religious Sites',
-    'Museum',
-    'Urban Attractions',
-    'Sports and Recreation',
-  ];
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
