@@ -20,9 +20,11 @@ const steps = ['Basics', 'Location', 'Contact', 'Description', 'Submit'];
 const AddSpotForm = ({
   isVisible,
   onClose,
+  onSpotAdded,
 }: {
   isVisible: boolean;
   onClose: () => void;
+  onSpotAdded: () => void;
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<TouristSpotFormData>({
@@ -89,6 +91,7 @@ const AddSpotForm = ({
     } else {
       Alert.alert('Success', 'Tourist spot added successfully!');
       console.log('Spot added:', data);
+      onSpotAdded();
       onClose();
       setCurrentStep(0);
     }

@@ -6,7 +6,7 @@ import TouristSpotTable from '@/components/touristSpot/webComponents/TouristSpot
 import { TouristSpot } from '@/types/TouristSpot'; // Import from centralized file
 import { supabase } from '@/utils/supabase';
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   StyleSheet,
@@ -27,44 +27,44 @@ const TouristSpots = () => {
   const [categories, setCategories] = useState<string[]>(['All']); // State for dynamic categories
   const spotsPerPage = 10;
 
-  useEffect(() => {
-    const fetchSpotsAndCategories = async () => {
-      setLoading(true);
-      setError(null);
+  const fetchSpotsAndCategories = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-      // Fetch categories
-      const { data: categoryData, error: categoryError } = await supabase
-        .from('tourist_spots')
-        .select('spot_type')
-        .order('spot_type', { ascending: true });
+    // Fetch categories
+    const { data: categoryData, error: categoryError } = await supabase
+      .from('tourist_spots')
+      .select('spot_type')
+      .order('spot_type', { ascending: true });
 
-      if (categoryError) {
-        setError(categoryError.message);
-        console.error('Error fetching categories:', categoryError.message);
-      } else if (categoryData) {
-        const uniqueCategories = [
-          'All',
-          ...Array.from(new Set(categoryData.map((item) => item.spot_type))),
-        ];
-        setCategories(uniqueCategories);
-      }
+    if (categoryError) {
+      setError(categoryError.message);
+      console.error('Error fetching categories:', categoryError.message);
+    } else if (categoryData) {
+      const uniqueCategories = [
+        'All',
+        ...Array.from(new Set(categoryData.map((item) => item.spot_type))),
+      ];
+      setCategories(uniqueCategories);
+    }
 
-      // Fetch spots
-      const { data: spotsData, error: spotsError } = await supabase
-        .from('tourist_spots')
-        .select('*');
+    // Fetch spots
+    const { data: spotsData, error: spotsError } = await supabase
+      .from('tourist_spots')
+      .select('*');
 
-      if (spotsError) {
-        setError(spotsError.message);
-        console.error('Error fetching spots:', spotsError.message);
-      } else {
-        setSpots(spotsData as TouristSpot[]);
-      }
-      setLoading(false);
-    };
-
-    fetchSpotsAndCategories();
+    if (spotsError) {
+      setError(spotsError.message);
+      console.error('Error fetching spots:', spotsError.message);
+    } else {
+      setSpots(spotsData as TouristSpot[]);
+    }
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    fetchSpotsAndCategories();
+  }, [fetchSpotsAndCategories]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -154,6 +154,7 @@ const TouristSpots = () => {
       <AddSpotForm
         isVisible={isAddSpotModalVisible}
         onClose={() => setAddSpotModalVisible(false)}
+        onSpotAdded={fetchSpotsAndCategories}
       />
     </View>
   );
