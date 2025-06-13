@@ -33,8 +33,8 @@ const AddSpotForm = ({
     description: '',
     spot_type: 'Historical' as TouristSpotType,
     address: '',
-    city: '',
-    province: '',
+    city: 'Naga City',
+    province: 'Camarines Sur',
     latitude: '',
     longitude: '',
     contact_phone: '',
@@ -150,20 +150,19 @@ const AddSpotForm = ({
       // Reset form data
       setFormData({
         name: '',
-        spot_type: 'natural',
+        description: '',
+        spot_type: 'Historical' as TouristSpotType,
+        address: '',
+        city: 'Naga City',
+        province: 'Camarines Sur',
         latitude: '',
         longitude: '',
-        address: '',
         contact_phone: '',
         contact_email: '',
         website: '',
-        description: '',
-        highlights: '',
-        how_to_get_there: '',
-        best_time_to_visit: '',
-        entry_fee: '',
         opening_time: '',
         closing_time: '',
+        entry_fee: '',
       });
 
       // Reset validation state
