@@ -4,7 +4,6 @@ import TouristApp from './TouristApp';
 
 const CURRENT_APP: 'business' | 'tourism' | 'tourist' = 'business';
 
-
 export default function App() {
   switch (CURRENT_APP) {
     case 'business':

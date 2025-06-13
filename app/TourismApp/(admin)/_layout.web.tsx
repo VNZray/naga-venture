@@ -16,7 +16,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 type FontAwesomeIconName =
   | 'dashboard'
   | 'users'
-  | 'check'
   | 'exchange'
   | 'briefcase'
   | 'comments'
@@ -28,11 +27,6 @@ const navItems: { name: string; path: string; icon: FontAwesomeIconName }[] = [
     name: 'Dashboard',
     path: '/TourismApp/(admin)/dashboard',
     icon: 'dashboard',
-  },
-  {
-    name: 'Approval',
-    path: '/TourismApp/(admin)/approval',
-    icon: 'check',
   },
   {
     name: 'Registration',
