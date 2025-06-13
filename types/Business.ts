@@ -1,5 +1,5 @@
 // types/BusinessFormData.ts
-export type BusinessFormData = {
+export type Business = {
   business_name: string;
   business_type: string;
   category: string;
@@ -16,4 +16,7 @@ export type BusinessFormData = {
   latitude: string;
   longitude: string;
   price_range: string;
+  owner_id: number;
+  status: string;
+  image_url: string;
 };

@@ -20,8 +20,14 @@ const AccommodationDirectory = () => {
   const backgroundColor = colorScheme === 'dark' ? '#151718' : '#FFFFFF';
   const isDarkMode = colorScheme === 'dark';
 
-  const { search, setSearch, handleSearch, filteredAccommodations, loading } =
-    useAccommodation();
+  const {
+    search,
+    setSearch,
+    handleSearch,
+    filteredAccommodations,
+    loading,
+    showActiveForTourist,
+  } = useAccommodation();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>

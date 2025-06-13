@@ -1,91 +1,73 @@
 import PressableButton from '@/components/PressableButton';
-import { useAuth } from '@/context/AuthContext';
-import { BusinessFormData } from '@/types/BusinessFormData';
-import { supabase } from '@/utils/supabase'; // adjust based on your project structure
-import React from 'react';
-import { Alert, StyleSheet, Text, View } from 'react-native';
+import ErrorModal from '@/components/web-components/ErrorModal';
+import SuccessModal from '@/components/web-components/SuccessModal';
+import WarningModal from '@/components/web-components/WarningModal';
+import { Business } from '@/types/Business';
+import { supabase } from '@/utils/supabase';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 type StepBasicsProps = {
-  data: BusinessFormData;
-  setData: React.Dispatch<React.SetStateAction<BusinessFormData>>;
+  data: Business;
+  setData: React.Dispatch<React.SetStateAction<Business>>;
   onNext: () => void;
   onPrev: () => void;
 };
 
 const StepSubmit: React.FC<StepBasicsProps> = ({ data, setData, onPrev }) => {
-  const { user } = useAuth();
+  const [successVisible, setSuccessVisible] = useState(false);
+  const [errorVisible, setErrorVisible] = useState(false);
+  const [warningVisible, setWarningVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(''); // 🆕 error message state
 
   const handleSubmit = async () => {
-    if (!user) {
-      Alert.alert('Error', 'User not authenticated.');
-      return;
-    }
+    console.log('Submitting data:', data);
 
-    // Fetch the Owner using the logged-in user's UID
-    const { data: ownerData, error } = await supabase
-      .from('Owner')
+    const { data: existing, error: existingError } = await supabase
+      .from('Business')
       .select('id')
-      .eq('user_id', user.id)
-      .single();
+      .eq('business_email', data.business_email);
 
-    if (error || !ownerData) {
-      Alert.alert('Error', 'Owner not found.');
-      console.error('Supabase error:', error);
+    if (existingError) {
+      console.error('Email check error:', existingError);
+      setErrorMessage(
+        existingError.message || 'Error checking existing email.'
+      );
+      setErrorVisible(true);
       return;
     }
 
-    const ownerId = ownerData.id;
-    console.log(ownerId);
-    console.log(ownerId);
-    console.log(ownerId);
-    console.log(ownerId);
-    console.log(ownerId);
-    console.log(ownerId);
-    console.log(ownerId);
-    console.log(ownerId);
-    console.log(ownerId);
+    if (existing && existing.length > 0) {
+      setWarningVisible(true);
+      return;
+    }
 
-    // Insert into Business
     const { data: newBusiness, error: businessError } = await supabase
       .from('Business')
       .insert({
-        owner_id: ownerId,
-        business_name: data.business_name,
-        business_type: data.business_type,
-        category: data.category,
-        phone_number: data.phone_number,
-        business_email: data.business_email,
-        barangay: data.barangay,
-        city: data.city,
-        province: data.province,
-        postal_code: data.postal_code,
-        description: data.description,
-        instagram_url: data.instagram_url,
-        twitter_url: data.twitter_url,
-        facebook_url: data.facebook_url,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        price_range: data.price_range,
-        status: 'pending',
+        ...data,
+        status: 'Pending',
       })
       .select('id')
       .single();
 
-    console.log(newBusiness);
-    console.log(newBusiness);
-    console.log(newBusiness);
-    console.log(newBusiness);
-
     if (businessError) {
-      Alert.alert('Error', 'Failed to register business.');
       console.error('Business insert error:', businessError);
+      setErrorMessage(
+        businessError.message || 'Error inserting business data.'
+      );
+      setErrorVisible(true);
       return;
     }
 
-    Alert.alert(
-      'Submitted',
-      'Your business registration has been submitted for review.'
-    );
+    console.log('Business registered:', newBusiness);
+    setSuccessVisible(true);
+  };
+
+  const handleSuccessClose = () => {
+    setSuccessVisible(false);
+    router.replace('/BusinessApp/(admin)/manage-business');
   };
 
   return (
@@ -112,6 +94,28 @@ const StepSubmit: React.FC<StepBasicsProps> = ({ data, setData, onPrev }) => {
           width={200}
         />
       </View>
+
+      {/* Modals */}
+      <SuccessModal
+        title="Success"
+        visible={successVisible}
+        message="Your business registration has been submitted for review."
+        onClose={handleSuccessClose}
+      />
+
+      <WarningModal
+        title="Already Registered"
+        visible={warningVisible}
+        message="A business with this email already exists."
+        onClose={() => setWarningVisible(false)}
+      />
+
+      <ErrorModal
+        title="Submission Failed"
+        visible={errorVisible}
+        message={errorMessage} // 🆕 show actual error message
+        onClose={() => setErrorVisible(false)}
+      />
     </View>
   );
 };

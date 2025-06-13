@@ -2,20 +2,20 @@ import logo from '@/assets/images/logo.png';
 import PressableButton from '@/components/PressableButton';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/context/AuthContext';
-import { users } from '@/Controller/User';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useFonts } from 'expo-font';
 import { Image } from 'expo-image';
 import { Link, router } from 'expo-router';
-import * as React from 'react';
-import { Alert, Platform, SafeAreaView, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Platform, SafeAreaView, Text, View } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const LoginPage = () => {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const { login } = useAuth();
+  const [loginError, setLoginError] = useState('');
 
   const colorScheme = useColorScheme();
   const color = colorScheme === 'dark' ? '#fff' : '#000';
@@ -29,21 +29,23 @@ const LoginPage = () => {
     'Poppins-SemiBold': require('@/assets/fonts/Poppins/Poppins-SemiBold.ttf'),
   });
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Email and password are required.');
+      setLoginError('Email and password are required.');
       return;
     }
 
-    const matchedUser = users.find(
-      (u) => u.email === email && u.password === password
-    );
-
-    if (matchedUser) {
-      login(matchedUser);
-      router.replace('/TouristApp/(tabs)/(home)/');
-    } else {
-      Alert.alert('Login Failed', 'Incorrect email or password.');
+    try {
+      setLoginError(''); // clear any previous error
+      await login(email, password);
+      router.replace('/TouristApp/(tabs)/(home)');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      setLoginError(
+        error?.message ||
+          error?.error_description ||
+          'Incorrect email or password.'
+      );
     }
   };
 

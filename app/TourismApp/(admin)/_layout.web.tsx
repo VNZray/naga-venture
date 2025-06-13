@@ -1,5 +1,5 @@
-import AdminHeader from '@/components/AdminHeader';
 import { ThemedText } from '@/components/ThemedText';
+import AdminHeader from '@/components/web-components/AdminHeader';
 import { AccommodationProvider } from '@/context/AccommodationContext';
 import { useAuth } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -92,7 +92,7 @@ export default function AdminLayout() {
           <View style={styles.content}>
             <AdminHeader
               headerTitle={headerTitle}
-              headerUserName={user?.name ?? ''}
+              headerUserName={user?.display_name ?? ''}
               headerUserEmail={user?.email ?? ''}
             />
             <Stack

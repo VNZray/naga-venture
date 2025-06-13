@@ -29,7 +29,7 @@ const Stepper = ({ currentStep }: { currentStep: number }) => {
                   style={[
                     styles.verticalLine,
                     {
-                      backgroundColor: isCompleted ? '#1976d2' : '#e0e0e0',
+                      backgroundColor: isCompleted ? '#0A1B47' : '#e0e0e0',
                     },
                   ]}
                 />
@@ -88,16 +88,16 @@ const styles = StyleSheet.create({
   stepContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 12,
+    marginVertical: 16,
   },
   circleContainer: {
-    width: 30,
+    width: 40,
     alignItems: 'center',
     position: 'relative',
   },
   circle: {
-    width: 32,
-    height: 32,
+    width: 40,
+    height: 40,
     borderRadius: '50%',
     alignItems: 'center',
     justifyContent: 'center',
@@ -105,9 +105,9 @@ const styles = StyleSheet.create({
   },
   verticalLine: {
     position: 'absolute',
-    top: -20,
+    top: -32,
     width: 2,
-    height: 20,
+    height: 50,
     backgroundColor: '#ccc',
     zIndex: 0,
   },

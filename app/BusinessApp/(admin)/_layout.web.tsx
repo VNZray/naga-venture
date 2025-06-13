@@ -1,8 +1,8 @@
 import LoadingScreen from '@/app/TouristApp/(screens)/LoadingScreen';
-import AdminHeader from '@/components/AdminHeader';
 import { ThemedText } from '@/components/ThemedText';
-import { AccommodationProvider } from '@/context/AccommodationContext';
+import AdminHeader from '@/components/web-components/AdminHeader';
 import { useAuth } from '@/context/AuthContext';
+import { BusinessProvider } from '@/context/BusinessContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FontAwesome } from '@expo/vector-icons';
 import {
@@ -66,7 +66,7 @@ export default function AdminLayout() {
   }
 
   return (
-    <AccommodationProvider>
+    <BusinessProvider>
       <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
         <View style={styles.container}>
           {/* Sidebar */}
@@ -135,7 +135,7 @@ export default function AdminLayout() {
           </View>
         </View>
       </ThemeProvider>
-    </AccommodationProvider>
+    </BusinessProvider>
   );
 }
 

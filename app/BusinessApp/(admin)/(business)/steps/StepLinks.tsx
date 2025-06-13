@@ -1,11 +1,11 @@
 import PressableButton from '@/components/PressableButton';
-import { BusinessFormData } from '@/types/BusinessFormData';
+import { Business } from '@/types/Business';
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 type StepBasicsProps = {
-  data: BusinessFormData;
-  setData: React.Dispatch<React.SetStateAction<BusinessFormData>>;
+  data: Business;
+  setData: React.Dispatch<React.SetStateAction<Business>>;
   onNext: () => void;
   onPrev: () => void;
 };

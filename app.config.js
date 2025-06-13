@@ -4,8 +4,9 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: 'naga-venture',
-    slug: 'naga-venture',
+    name: 'naga-ventures',
+    slug: 'naga-ventures',
+    owner: 'vnzray',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
@@ -21,7 +22,7 @@ export default {
         backgroundColor: '#ffffff',
       },
       edgeToEdgeEnabled: true,
-      package: "com.malzafre.nagaventure",
+      package: 'com.vnzray.nagaventure',
     },
     web: {
       bundler: 'metro',
@@ -54,7 +55,7 @@ export default {
       REACT_NATIVE_SUPABASE_URL: process.env.REACT_NATIVE_SUPABASE_URL,
       REACT_NATIVE_ANON_KEY: process.env.REACT_NATIVE_ANON_KEY,
       eas: {
-        projectId: '45b699ab-0984-470b-8638-3b5caa0c0e57',
+        projectId: '2b787753-e274-43d5-a63f-46e1e0f30e91',
       },
     },
   },

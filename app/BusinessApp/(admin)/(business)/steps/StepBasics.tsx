@@ -1,11 +1,12 @@
 import PressableButton from '@/components/PressableButton';
-import { BusinessFormData } from '@/types/BusinessFormData';
+import { Business } from '@/types/Business';
+import { router } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 type StepBasicsProps = {
-  data: BusinessFormData;
-  setData: React.Dispatch<React.SetStateAction<BusinessFormData>>;
+  data: Business;
+  setData: React.Dispatch<React.SetStateAction<Business>>;
   onNext: () => void;
   onPrev: () => void;
 };
@@ -16,6 +17,10 @@ const StepBasics: React.FC<StepBasicsProps> = ({
   onNext,
   onPrev,
 }) => {
+  const cancel = () => {
+    router.replace('/BusinessApp/(admin)/manage-business');
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Basic Information</Text>
@@ -51,7 +56,24 @@ const StepBasics: React.FC<StepBasicsProps> = ({
         placeholder="e.g. Restaurant, Hotel"
       />
 
+      <Text style={styles.label}>Business Profile</Text>
+      <TextInput
+        style={styles.input}
+        value={data.image_url}
+        onChangeText={(text) =>
+          setData((prev) => ({ ...prev, image_url: text }))
+        }
+        placeholder="Image Link"
+      />
+
       <View style={styles.buttonContainer}>
+        <PressableButton
+          type="cancel"
+          color="#fff"
+          Title="Cancel"
+          onPress={cancel}
+          width={200}
+        />
         <PressableButton
           type="primary"
           color="#fff"
@@ -84,7 +106,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 24,
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     flexDirection: 'row',
     gap: 24,
   },

@@ -13,6 +13,8 @@ export const accommodations = [
     ratings: 4.5,
     latitude: 13.632351385740419,
     longitude: 123.1954792734106,
+    status: 'Active',
+    owner_id: 1,
   },
   {
     id: 2,
@@ -28,6 +30,8 @@ export const accommodations = [
     ratings: 4.5,
     latitude: 13.629483143257575,
     longitude: 123.19852472895504,
+    status: 'Active',
+    owner_id: 2,
   },
 ];
 
