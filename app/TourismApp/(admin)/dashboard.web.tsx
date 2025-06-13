@@ -1,3 +1,4 @@
+import { TestSupabase } from '@/components/TestSupabase';
 import { ThemedText } from '@/components/ThemedText';
 import React from 'react';
 import { View } from 'react-native';
@@ -11,11 +12,13 @@ const Dashboard = () => {
         alignItems: 'center',
         height: '100%',
         width: '100%',
+        padding: 20,
       }}
     >
       <ThemedText darkColor="#000" type="title">
         Web Dashboard
       </ThemedText>
+      <TestSupabase />
     </View>
   );
 };

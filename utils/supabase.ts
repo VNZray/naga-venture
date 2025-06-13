@@ -25,3 +25,26 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: false, // Required for Expo/React Native
   },
 });
+
+// Test function to check Supabase connection
+export const testSupabaseConnection = async () => {
+  try {
+    // Try to fetch the current user session
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
+
+    if (error) {
+      console.error('Supabase connection error:', error.message);
+      return false;
+    }
+
+    console.log('Supabase connection successful!');
+    console.log('Session:', session ? 'Active' : 'No active session');
+    return true;
+  } catch (error) {
+    console.error('Error testing Supabase connection:', error);
+    return false;
+  }
+};

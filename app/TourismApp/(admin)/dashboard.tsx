@@ -1,10 +1,24 @@
+import { TestSupabase } from '@/components/TestSupabase';
+import { ThemedText } from '@/components/ThemedText';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 const Dashboard = () => {
   return (
-    <View>
-      <Text>Dashboard</Text>
+    <View
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        width: '100%',
+        padding: 20,
+      }}
+    >
+      <ThemedText darkColor="#000" type="title">
+        Dashboard
+      </ThemedText>
+      <TestSupabase />
     </View>
   );
 };

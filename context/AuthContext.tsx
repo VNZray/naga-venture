@@ -1,4 +1,4 @@
-import { supabase } from '@/utils/supabase';
+import { users } from '@/Controller/User';
 import React, {
   createContext,
   ReactNode,
@@ -36,64 +36,45 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      const currentUser = data.session?.user;
-
-      if (currentUser) {
-        setUser({
-          id: currentUser.id,
-          email: currentUser.email ?? '',
-          display_name: currentUser.user_metadata?.display_name ?? '',
-        });
-      }
-
-      setLoading(false); // ✅ Session check complete
-    };
-
-    fetchSession();
-
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (session?.user) {
-          setUser({
-            id: session.user.id,
-            email: session.user.email ?? '',
-            display_name: session.user.user_metadata?.display_name ?? '',
-          });
-        } else {
-          setUser(null);
+    // Check if there's a stored user in localStorage or AsyncStorage
+    const checkStoredUser = async () => {
+      try {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
         }
+      } catch (error) {
+        console.error('Error checking stored user:', error);
       }
-    );
-
-    return () => {
-      listener.subscription.unsubscribe();
+      setLoading(false);
     };
+
+    checkStoredUser();
   }, []);
 
   const login = async (email: string, password: string) => {
-    const { error, data } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const matchedUser = users.find(
+      (u) => u.email === email && u.password === password
+    );
 
-    if (error) {
-      console.error('Supabase login error:', error);
-      throw error;
+    if (!matchedUser) {
+      throw new Error('Invalid email or password');
     }
 
-    if (data.user) {
-      setUser({
-        id: data.user.id,
-        email: data.user.email ?? '',
-        display_name: data.user.user_metadata?.display_name ?? '',
-      });
-    }
+    // Create a user object that matches our User interface
+    const user: User = {
+      id: matchedUser.id.toString(),
+      email: matchedUser.email,
+      display_name: matchedUser.name,
+    };
+
+    // Store the user in localStorage
+    localStorage.setItem('user', JSON.stringify(user));
+    setUser(user);
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    localStorage.removeItem('user');
     setUser(null);
   };
 

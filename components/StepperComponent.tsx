@@ -2,18 +2,12 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-const steps = [
-  'Basics',
-  'Contact',
-  'Location',
-  'Description',
-  'Links',
-  'Pricing',
-  'Review',
-  'Submit',
-];
+interface StepperProps {
+  currentStep: number;
+  steps: string[];
+}
 
-const Stepper = ({ currentStep }: { currentStep: number }) => {
+const Stepper = ({ currentStep, steps }: StepperProps) => {
   return (
     <View style={styles.container}>
       {steps.map((step, index) => {

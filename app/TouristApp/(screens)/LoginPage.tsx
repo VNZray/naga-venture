@@ -40,7 +40,7 @@ const LoginPage = () => {
     );
 
     if (matchedUser) {
-      login(matchedUser);
+      login(matchedUser.email, matchedUser.password);
       router.replace('/TouristApp/(tabs)/(home)/');
     } else {
       Alert.alert('Login Failed', 'Incorrect email or password.');
