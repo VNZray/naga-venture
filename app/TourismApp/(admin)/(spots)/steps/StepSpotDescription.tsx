@@ -1,66 +1,109 @@
+import { ThemedText } from '@/components/ThemedText';
 import { TouristSpotFormData } from '@/types/TouristSpotFormData';
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 
-type StepDescriptionProps = {
+interface StepDescriptionProps {
   data: TouristSpotFormData;
   setData: React.Dispatch<React.SetStateAction<TouristSpotFormData>>;
-};
+  errors: string[];
+}
 
 const StepSpotDescription: React.FC<StepDescriptionProps> = ({
   data,
   setData,
+  errors,
 }) => {
+  const isFieldError = (fieldName: string) => errors.includes(fieldName);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Description</Text>
-
-      <Text style={styles.label}>Tourist Spot Description</Text>
-      <TextInput
-        style={[styles.input, styles.textarea]}
-        value={data.description}
-        onChangeText={(text) =>
-          setData((prev) => ({ ...prev, description: text }))
-        }
-        placeholder="Enter a brief description of the tourist spot"
-        multiline
-        numberOfLines={6}
-        textAlignVertical="top"
-      />
+      <View style={styles.formGroup}>
+        <ThemedText type="subtitle" darkColor="#000">
+          Description <ThemedText style={{ color: 'red' }}>*</ThemedText>
+        </ThemedText>
+        <TextInput
+          style={[
+            styles.input,
+            styles.textArea,
+            isFieldError('description') && styles.inputError,
+          ]}
+          value={data.description}
+          onChangeText={(text) => setData({ ...data, description: text })}
+          placeholder="Enter description"
+          multiline
+          numberOfLines={4}
+          textAlignVertical="top"
+        />
+        {isFieldError('description') && (
+          <ThemedText style={styles.errorText}>
+            Description is required
+          </ThemedText>
+        )}
+      </View>
 
       <View style={styles.detailsContainer}>
         <View style={styles.detailColumn}>
-          <Text style={styles.label}>Opening Time</Text>
+          <ThemedText type="subtitle" darkColor="#000">
+            Opening Time
+          </ThemedText>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              isFieldError('opening_time') && styles.inputError,
+            ]}
             value={data.opening_time}
-            onChangeText={(text) =>
-              setData((prev) => ({ ...prev, opening_time: text }))
-            }
+            onChangeText={(text) => setData({ ...data, opening_time: text })}
             placeholder="e.g., 08:00 AM"
           />
+          {isFieldError('opening_time') && (
+            <ThemedText style={styles.errorText}>
+              Please enter a valid time
+            </ThemedText>
+          )}
 
-          <Text style={styles.label}>Closing Time</Text>
+          <ThemedText
+            type="subtitle"
+            darkColor="#000"
+            style={styles.fieldSpacing}
+          >
+            Closing Time
+          </ThemedText>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              isFieldError('closing_time') && styles.inputError,
+            ]}
             value={data.closing_time}
-            onChangeText={(text) =>
-              setData((prev) => ({ ...prev, closing_time: text }))
-            }
+            onChangeText={(text) => setData({ ...data, closing_time: text })}
             placeholder="e.g., 05:00 PM"
           />
+          {isFieldError('closing_time') && (
+            <ThemedText style={styles.errorText}>
+              Please enter a valid time
+            </ThemedText>
+          )}
         </View>
+
         <View style={styles.detailColumn}>
-          <Text style={styles.label}>Entry Fee</Text>
+          <ThemedText type="subtitle" darkColor="#000">
+            Entry Fee
+          </ThemedText>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              isFieldError('entry_fee') && styles.inputError,
+            ]}
             value={data.entry_fee}
-            onChangeText={(text) =>
-              setData((prev) => ({ ...prev, entry_fee: text }))
-            }
+            onChangeText={(text) => setData({ ...data, entry_fee: text })}
             placeholder="e.g., 100.00 (PHP)"
             keyboardType="numeric"
           />
+          {isFieldError('entry_fee') && (
+            <ThemedText style={styles.errorText}>
+              Please enter a valid amount
+            </ThemedText>
+          )}
         </View>
       </View>
     </View>
@@ -69,37 +112,40 @@ const StepSpotDescription: React.FC<StepDescriptionProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    flex: 1,
+    padding: 20,
   },
-  label: {
-    marginTop: 12,
-    fontWeight: 'bold',
-    fontSize: 14,
-    marginBottom: 4,
+  formGroup: {
+    marginBottom: 20,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
+    borderRadius: 5,
     padding: 10,
-    borderRadius: 6,
-    backgroundColor: '#fff',
+    marginTop: 5,
+    color: '#000',
   },
-  textarea: {
+  textArea: {
     height: 100,
-    textAlignVertical: 'top',
+  },
+  inputError: {
+    borderColor: 'red',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 5,
   },
   detailsContainer: {
     flexDirection: 'row',
     gap: 20,
-    marginTop: 16,
   },
   detailColumn: {
     flex: 1,
   },
-  header: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
+  fieldSpacing: {
+    marginTop: 20,
   },
 });
 

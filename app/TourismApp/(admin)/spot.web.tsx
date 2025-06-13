@@ -51,7 +51,9 @@ const TouristSpots = () => {
     // Fetch spots
     const { data: spotsData, error: spotsError } = await supabase
       .from('tourist_spots')
-      .select('*');
+      .select('*')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false });
 
     if (spotsError) {
       setError(spotsError.message);

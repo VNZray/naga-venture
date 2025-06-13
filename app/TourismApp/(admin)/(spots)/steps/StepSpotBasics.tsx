@@ -1,53 +1,80 @@
+import { ThemedText } from '@/components/ThemedText';
 import { TouristSpotType } from '@/types/TouristSpot';
 import { TouristSpotFormData } from '@/types/TouristSpotFormData';
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 
-type StepBasicsProps = {
+interface StepBasicsProps {
   data: TouristSpotFormData;
   setData: React.Dispatch<React.SetStateAction<TouristSpotFormData>>;
-};
+  errors: string[];
+}
 
-const categories: TouristSpotType[] = [
+const categories = [
+  'natural',
   'cultural',
   'historical',
-  'natural',
-  'other',
-  'recreational',
   'religious',
-];
+  'recreational',
+  'other',
+] as const;
 
-const StepSpotBasics: React.FC<StepBasicsProps> = ({ data, setData }) => {
+const StepSpotBasics: React.FC<StepBasicsProps> = ({
+  data,
+  setData,
+  errors,
+}) => {
+  const isFieldError = (fieldName: string) => errors.includes(fieldName);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Basic Information</Text>
+      <View style={styles.formGroup}>
+        <ThemedText type="subtitle" darkColor="#000">
+          Tourist Spot Name <ThemedText style={{ color: 'red' }}>*</ThemedText>
+        </ThemedText>
+        <TextInput
+          style={[styles.input, isFieldError('name') && styles.inputError]}
+          value={data.name}
+          onChangeText={(text) => setData({ ...data, name: text })}
+          placeholder="Enter tourist spot name"
+        />
+        {isFieldError('name') && (
+          <ThemedText style={styles.errorText}>Name is required</ThemedText>
+        )}
+      </View>
 
-      <Text style={styles.label}>Tourist Spot Name</Text>
-      <TextInput
-        style={styles.input}
-        value={data.name}
-        onChangeText={(text) => setData((prev) => ({ ...prev, name: text }))}
-        placeholder="Enter tourist spot name"
-      />
-
-      <Text style={styles.label}>Tourist Spot Type</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={data.spot_type}
-          onValueChange={(itemValue: string) =>
-            setData((prev) => ({
-              ...prev,
-              spot_type: itemValue as TouristSpotType,
-            }))
-          }
-          style={styles.picker}
+      <View style={styles.formGroup}>
+        <ThemedText type="subtitle" darkColor="#000">
+          Tourist Spot Type <ThemedText style={{ color: 'red' }}>*</ThemedText>
+        </ThemedText>
+        <View
+          style={[
+            styles.pickerContainer,
+            isFieldError('spot_type') && styles.inputError,
+          ]}
         >
-          <Picker.Item label="Select a category" value="" />
-          {categories.map((category) => (
-            <Picker.Item key={category} label={category} value={category} />
-          ))}
-        </Picker>
+          <Picker
+            selectedValue={data.spot_type}
+            onValueChange={(itemValue: string) =>
+              setData({ ...data, spot_type: itemValue as TouristSpotType })
+            }
+            style={styles.picker}
+          >
+            {categories.map((category) => (
+              <Picker.Item
+                key={category}
+                label={category.charAt(0).toUpperCase() + category.slice(1)}
+                value={category}
+              />
+            ))}
+          </Picker>
+        </View>
+        {isFieldError('spot_type') && (
+          <ThemedText style={styles.errorText}>
+            Spot type is required
+          </ThemedText>
+        )}
       </View>
     </View>
   );
@@ -55,38 +82,38 @@ const StepSpotBasics: React.FC<StepBasicsProps> = ({ data, setData }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    flex: 1,
+    padding: 20,
   },
-  label: {
-    marginTop: 12,
-    fontWeight: 'bold',
-    fontSize: 14,
-    marginBottom: 4,
+  formGroup: {
+    marginBottom: 20,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
+    borderRadius: 5,
     padding: 10,
-    borderRadius: 6,
-    backgroundColor: '#fff',
-    color: 'black',
+    marginTop: 5,
+    color: '#000',
+  },
+  inputError: {
+    borderColor: 'red',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginTop: 5,
   },
   pickerContainer: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 6,
-    backgroundColor: '#fff',
-    marginBottom: 10,
+    borderRadius: 5,
+    marginTop: 5,
+    overflow: 'hidden',
   },
   picker: {
     height: 50,
-    width: '100%',
-    color: 'black',
-  },
-  header: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
+    color: '#000',
   },
 });
 

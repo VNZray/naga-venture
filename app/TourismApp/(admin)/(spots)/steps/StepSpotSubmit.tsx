@@ -1,80 +1,108 @@
+import { ThemedText } from '@/components/ThemedText';
 import { TouristSpotFormData } from '@/types/TouristSpotFormData';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
-type StepSubmitProps = {
+interface StepSubmitProps {
   data: TouristSpotFormData;
   setData: React.Dispatch<React.SetStateAction<TouristSpotFormData>>;
-};
+  errors: string[];
+}
 
-const StepSpotSubmit: React.FC<StepSubmitProps> = ({ data }) => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Review and Submit</Text>
-      <View style={styles.reviewContent}>
-        <Text style={styles.label}>
-          Name: <Text style={styles.value}>{data.name}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Type: <Text style={styles.value}>{data.spot_type}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Address:{' '}
-          <Text style={styles.value}>
-            {data.address}, {data.city}, {data.province}
-          </Text>
-        </Text>
-        <Text style={styles.label}>
-          Latitude: <Text style={styles.value}>{data.latitude}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Longitude: <Text style={styles.value}>{data.longitude}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Phone: <Text style={styles.value}>{data.contact_phone}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Email: <Text style={styles.value}>{data.contact_email}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Website: <Text style={styles.value}>{data.website}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Opening: <Text style={styles.value}>{data.opening_time}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Closing: <Text style={styles.value}>{data.closing_time}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Entry Fee: <Text style={styles.value}>{data.entry_fee}</Text>
-        </Text>
-        <Text style={styles.label}>
-          Description: <Text style={styles.value}>{data.description}</Text>
-        </Text>
-      </View>
+const StepSpotSubmit: React.FC<StepSubmitProps> = ({ data, errors }) => {
+  const isFieldError = (fieldName: string) => errors.includes(fieldName);
+
+  const renderField = (label: string, value: string, fieldName: string) => (
+    <View style={styles.fieldContainer}>
+      <ThemedText type="subtitle" darkColor="#000">
+        {label}{' '}
+        {isFieldError(fieldName) && (
+          <ThemedText style={{ color: 'red' }}>*</ThemedText>
+        )}
+      </ThemedText>
+      <ThemedText
+        style={[
+          styles.fieldValue,
+          isFieldError(fieldName) && styles.fieldError,
+        ]}
+      >
+        {value || 'Not provided'}
+      </ThemedText>
     </View>
+  );
+
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.section}>
+        <ThemedText type="title" darkColor="#000" style={styles.sectionTitle}>
+          Basic Information
+        </ThemedText>
+        {renderField('Name', data.name, 'name')}
+        {renderField('Type', data.spot_type, 'spot_type')}
+      </View>
+
+      <View style={styles.section}>
+        <ThemedText type="title" darkColor="#000" style={styles.sectionTitle}>
+          Location
+        </ThemedText>
+        {renderField('Address', data.address, 'address')}
+        {renderField('City', data.city, 'city')}
+        {renderField('Province', data.province, 'province')}
+        {renderField('Latitude', data.latitude, 'latitude')}
+        {renderField('Longitude', data.longitude, 'longitude')}
+      </View>
+
+      <View style={styles.section}>
+        <ThemedText type="title" darkColor="#000" style={styles.sectionTitle}>
+          Contact Information
+        </ThemedText>
+        {renderField('Phone', data.contact_phone, 'contact_phone')}
+        {renderField('Email', data.contact_email, 'contact_email')}
+        {renderField('Website', data.website, 'website')}
+      </View>
+
+      <View style={styles.section}>
+        <ThemedText type="title" darkColor="#000" style={styles.sectionTitle}>
+          Description
+        </ThemedText>
+        {renderField('Description', data.description, 'description')}
+      </View>
+
+      <View style={styles.section}>
+        <ThemedText type="title" darkColor="#000" style={styles.sectionTitle}>
+          Additional Details
+        </ThemedText>
+        {renderField('Opening Time', data.opening_time, 'opening_time')}
+        {renderField('Closing Time', data.closing_time, 'closing_time')}
+        {renderField('Entry Fee', data.entry_fee, 'entry_fee')}
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    flex: 1,
+    padding: 20,
   },
-  header: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 16,
+  section: {
+    marginBottom: 30,
   },
-  reviewContent: {
-    marginBottom: 20,
-    gap: 10,
+  sectionTitle: {
+    marginBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    paddingBottom: 5,
   },
-  label: {
-    fontWeight: 'bold',
-    fontSize: 14,
+  fieldContainer: {
+    marginBottom: 15,
   },
-  value: {
-    fontWeight: 'normal',
+  fieldValue: {
+    marginTop: 5,
+    color: '#000',
+  },
+  fieldError: {
+    color: 'red',
   },
 });
 

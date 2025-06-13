@@ -3,7 +3,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { TouristSpotFormData } from '@/types/TouristSpotFormData';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Alert, Modal, Pressable, StyleSheet, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, View } from 'react-native';
 
 // Import step components
 import PressableButton from '@/components/PressableButton';
@@ -27,10 +27,11 @@ const AddSpotForm = ({
   onSpotAdded: () => void;
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [validationAttempted, setValidationAttempted] = useState(false);
   const [formData, setFormData] = useState<TouristSpotFormData>({
     name: '',
     description: '',
-    spot_type: '' as TouristSpotType,
+    spot_type: 'Historical' as TouristSpotType,
     address: '',
     city: '',
     province: '',
@@ -44,120 +45,185 @@ const AddSpotForm = ({
     entry_fee: '',
   });
 
+  // Define required fields for each step
+  const stepRequiredFields = {
+    0: ['name', 'spot_type'], // Basic Information
+    1: ['address', 'city', 'province', 'latitude', 'longitude'], // Location
+    2: [], // Contact (all optional)
+    3: ['description'], // Description
+  };
+
+  const validateStep = (
+    step: number
+  ): { isValid: boolean; errors: string[] } => {
+    const requiredFields =
+      stepRequiredFields[step as keyof typeof stepRequiredFields] || [];
+    const errors: string[] = [];
+
+    requiredFields.forEach((field) => {
+      const value = formData[field as keyof TouristSpotFormData];
+      if (!value || value.trim() === '') {
+        errors.push(field);
+      }
+    });
+
+    // Additional validation for coordinates in step 1
+    if (step === 1) {
+      if (formData.latitude) {
+        const lat = parseFloat(formData.latitude);
+        if (isNaN(lat) || lat < -90 || lat > 90) {
+          errors.push('latitude');
+        }
+      }
+      if (formData.longitude) {
+        const lng = parseFloat(formData.longitude);
+        if (isNaN(lng) || lng < -180 || lng > 180) {
+          errors.push('longitude');
+        }
+      }
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+    };
+  };
+
   const handleNext = () => {
+    setValidationAttempted(true);
+    const validation = validateStep(currentStep);
+    if (!validation.isValid) {
+      window.alert('Please fill in all required fields before proceeding.');
+      return;
+    }
+    setValidationAttempted(false);
     setCurrentStep((prev) => prev + 1);
   };
 
   const handlePrev = () => {
+    setValidationAttempted(false);
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
   const handleSubmit = async () => {
-    console.log('Submitting new spot:', formData);
+    try {
+      // Validate only the required fields from the database schema
+      const requiredFields = [
+        'name',
+        'description',
+        'spot_type',
+        'address',
+        'latitude',
+        'longitude', // latitude and longitude are required to create the location POINT
+      ];
 
-    // Validate required fields
-    const requiredFields = [
-      'name',
-      'description',
-      'spot_type',
-      'address',
-      'city',
-      'province',
-      'latitude',
-      'longitude',
-    ];
-
-    const validationErrors: string[] = [];
-
-    // Check each required field
-    requiredFields.forEach((field) => {
-      const value = formData[field as keyof TouristSpotFormData];
-      if (!value || value.trim() === '') {
-        validationErrors.push(
-          `• ${field.replace('_', ' ').toUpperCase()} is required`
-        );
-      }
-    });
-
-    // Validate coordinates if they exist
-    if (formData.latitude && formData.longitude) {
-      const lat = parseFloat(formData.latitude);
-      const lng = parseFloat(formData.longitude);
-
-      if (isNaN(lat) || lat < -90 || lat > 90) {
-        validationErrors.push(
-          '• LATITUDE must be a valid number between -90 and 90'
-        );
-      }
-      if (isNaN(lng) || lng < -180 || lng > 180) {
-        validationErrors.push(
-          '• LONGITUDE must be a valid number between -180 and 180'
-        );
-      }
-    }
-
-    // If there are any validation errors, show them all at once
-    if (validationErrors.length > 0) {
-      window.alert(
-        'Please fix the following errors:\n\n' + validationErrors.join('\n')
+      const emptyFields = requiredFields.filter(
+        (field) => !formData[field as keyof TouristSpotFormData]
       );
-      return;
-    }
 
-    // Prepare data for Supabase insertion
-    const {
-      latitude,
-      longitude,
-      entry_fee,
-      opening_time,
-      closing_time,
-      ...rest
-    } = formData;
+      if (emptyFields.length > 0) {
+        window.alert(
+          `Please fill in all required fields: ${emptyFields.join(', ')}`
+        );
+        return;
+      }
 
-    const newSpotData = {
-      ...rest,
-      spot_type: formData.spot_type as TouristSpotType,
-      location: `POINT(${parseFloat(longitude)} ${parseFloat(latitude)})`,
-      entry_fee: entry_fee ? parseFloat(entry_fee) : null,
-      opening_time: opening_time || null,
-      closing_time: closing_time || null,
-      status: 'active' as TouristSpotStatus,
-      google_maps_place_id: null,
-      is_featured: false,
-      average_rating: null,
-      review_count: 0,
-      created_by: null,
-      updated_by: null,
-    };
+      // Format the data for Supabase
+      const spotData = {
+        name: formData.name,
+        description: formData.description,
+        spot_type: formData.spot_type,
+        address: formData.address,
+        location: `POINT(${formData.longitude} ${formData.latitude})`,
+        contact_phone: formData.contact_phone || null,
+        contact_email: formData.contact_email || null,
+        website: formData.website || null,
+        entry_fee: formData.entry_fee ? parseFloat(formData.entry_fee) : null,
+        opening_time: formData.opening_time || null,
+        closing_time: formData.closing_time || null,
+        status: 'pending' as TouristSpotStatus,
+      };
 
-    const { data, error } = await supabase
-      .from('tourist_spots')
-      .insert([newSpotData]);
+      const { error } = await supabase.from('tourist_spots').insert([spotData]);
 
-    if (error) {
-      Alert.alert('Error', 'Failed to add tourist spot: ' + error.message);
-      console.error('Error adding spot:', error.message);
-    } else {
-      Alert.alert('Success', 'Tourist spot added successfully!');
-      console.log('Spot added:', data);
-      onSpotAdded();
-      onClose();
+      if (error) throw error;
+
+      // Reset form data
+      setFormData({
+        name: '',
+        spot_type: 'natural',
+        latitude: '',
+        longitude: '',
+        address: '',
+        contact_phone: '',
+        contact_email: '',
+        website: '',
+        description: '',
+        highlights: '',
+        how_to_get_there: '',
+        best_time_to_visit: '',
+        entry_fee: '',
+        opening_time: '',
+        closing_time: '',
+      });
+
+      // Reset validation state
+      setValidationAttempted(false);
       setCurrentStep(0);
+
+      // Close modal and refresh data
+      onClose();
+      onSpotAdded();
+    } catch (error) {
+      console.error('Error adding spot:', error);
+      window.alert('Error adding spot: ' + (error as Error).message);
     }
   };
 
   const renderStepContent = () => {
+    const validation = validateStep(currentStep);
+
     switch (currentStep) {
       case 0:
-        return <StepSpotBasics data={formData} setData={setFormData} />;
+        return (
+          <StepSpotBasics
+            data={formData}
+            setData={setFormData}
+            errors={validationAttempted ? validation.errors : []}
+          />
+        );
       case 1:
-        return <StepSpotLocation data={formData} setData={setFormData} />;
+        return (
+          <StepSpotLocation
+            data={formData}
+            setData={setFormData}
+            errors={validationAttempted ? validation.errors : []}
+          />
+        );
       case 2:
-        return <StepSpotContact data={formData} setData={setFormData} />;
+        return (
+          <StepSpotContact
+            data={formData}
+            setData={setFormData}
+            errors={validationAttempted ? validation.errors : []}
+          />
+        );
       case 3:
-        return <StepSpotDescription data={formData} setData={setFormData} />;
+        return (
+          <StepSpotDescription
+            data={formData}
+            setData={setFormData}
+            errors={validationAttempted ? validation.errors : []}
+          />
+        );
       case 4:
-        return <StepSpotSubmit data={formData} setData={setFormData} />;
+        return (
+          <StepSpotSubmit
+            data={formData}
+            setData={setFormData}
+            errors={validationAttempted ? validation.errors : []}
+          />
+        );
       default:
         return null;
     }
