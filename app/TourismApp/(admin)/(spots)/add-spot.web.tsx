@@ -55,6 +55,55 @@ const AddSpotForm = ({
   const handleSubmit = async () => {
     console.log('Submitting new spot:', formData);
 
+    // Validate required fields
+    const requiredFields = [
+      'name',
+      'description',
+      'spot_type',
+      'address',
+      'city',
+      'province',
+      'latitude',
+      'longitude',
+    ];
+
+    const validationErrors: string[] = [];
+
+    // Check each required field
+    requiredFields.forEach((field) => {
+      const value = formData[field as keyof TouristSpotFormData];
+      if (!value || value.trim() === '') {
+        validationErrors.push(
+          `• ${field.replace('_', ' ').toUpperCase()} is required`
+        );
+      }
+    });
+
+    // Validate coordinates if they exist
+    if (formData.latitude && formData.longitude) {
+      const lat = parseFloat(formData.latitude);
+      const lng = parseFloat(formData.longitude);
+
+      if (isNaN(lat) || lat < -90 || lat > 90) {
+        validationErrors.push(
+          '• LATITUDE must be a valid number between -90 and 90'
+        );
+      }
+      if (isNaN(lng) || lng < -180 || lng > 180) {
+        validationErrors.push(
+          '• LONGITUDE must be a valid number between -180 and 180'
+        );
+      }
+    }
+
+    // If there are any validation errors, show them all at once
+    if (validationErrors.length > 0) {
+      window.alert(
+        'Please fix the following errors:\n\n' + validationErrors.join('\n')
+      );
+      return;
+    }
+
     // Prepare data for Supabase insertion
     const {
       latitude,

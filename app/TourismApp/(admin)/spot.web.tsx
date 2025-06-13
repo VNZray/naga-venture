@@ -124,11 +124,11 @@ const TouristSpots = () => {
           inputStyle={styles.searchBarInput}
         />
         <TouchableOpacity
-          style={styles.filterButton}
+          style={styles.addButton}
           onPress={() => setAddSpotModalVisible(true)}
         >
           <Ionicons name="add" size={20} color="#FFF" />
-          <ThemedText style={styles.filterButtonText}>Add</ThemedText>
+          <ThemedText style={styles.addButtonText}>Add</ThemedText>
         </TouchableOpacity>
       </View>
 
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     paddingHorizontal: 10,
   },
-  filterButton: {
+  addButton: {
     backgroundColor: '#007bff',
     borderRadius: 8,
     paddingVertical: 10,
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
   },
-  filterButtonText: {
+  addButtonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
