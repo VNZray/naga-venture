@@ -1,32 +1,7 @@
 import { ThemedText } from '@/components/ThemedText';
+import { TouristSpot } from '@/types/TouristSpot';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-
-interface TouristSpot {
-  id: string;
-  name: string;
-  description: string;
-  spot_type: string;
-  address: string;
-  city: string;
-  province: string;
-  location: any;
-  google_maps_place_id: string | null;
-  contact_phone: string | null;
-  contact_email: string | null;
-  website: string | null;
-  opening_time: string | null;
-  closing_time: string | null;
-  entry_fee: number | null;
-  status: string;
-  is_featured: boolean;
-  average_rating: number | null;
-  review_count: number;
-  created_at: string;
-  updated_at: string;
-  created_by: string | null;
-  updated_by: string | null;
-}
 
 interface TouristSpotTableProps {
   spots: TouristSpot[];

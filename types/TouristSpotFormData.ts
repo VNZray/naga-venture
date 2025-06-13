@@ -1,7 +1,9 @@
+import { TouristSpotType } from './TouristSpot';
+
 export interface TouristSpotFormData {
   name: string;
   description: string;
-  spot_type: string;
+  spot_type: TouristSpotType;
   address: string;
   city: string;
   province: string;

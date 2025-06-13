@@ -1,3 +1,4 @@
+import { TouristSpotType } from '@/types/TouristSpot';
 import { TouristSpotFormData } from '@/types/TouristSpotFormData';
 import { Picker } from '@react-native-picker/picker';
 import React from 'react';
@@ -8,13 +9,13 @@ type StepBasicsProps = {
   setData: React.Dispatch<React.SetStateAction<TouristSpotFormData>>;
 };
 
-const categories = [
-  'Historical',
-  'Natural',
-  'Religious Sites',
-  'Museum',
-  'Urban Attractions',
-  'Sports and Recreation',
+const categories: TouristSpotType[] = [
+  'cultural',
+  'historical',
+  'natural',
+  'other',
+  'recreational',
+  'religious',
 ];
 
 const StepSpotBasics: React.FC<StepBasicsProps> = ({ data, setData }) => {
@@ -35,7 +36,10 @@ const StepSpotBasics: React.FC<StepBasicsProps> = ({ data, setData }) => {
         <Picker
           selectedValue={data.spot_type}
           onValueChange={(itemValue: string) =>
-            setData((prev) => ({ ...prev, spot_type: itemValue }))
+            setData((prev) => ({
+              ...prev,
+              spot_type: itemValue as TouristSpotType,
+            }))
           }
           style={styles.picker}
         >

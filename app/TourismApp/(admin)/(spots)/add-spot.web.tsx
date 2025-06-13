@@ -3,10 +3,12 @@ import { ThemedText } from '@/components/ThemedText';
 import { TouristSpotFormData } from '@/types/TouristSpotFormData';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Modal, Pressable, StyleSheet, View } from 'react-native';
 
 // Import step components
 import PressableButton from '@/components/PressableButton';
+import { TouristSpotStatus, TouristSpotType } from '@/types/TouristSpot';
+import { supabase } from '@/utils/supabase';
 import StepSpotBasics from './steps/StepSpotBasics';
 import StepSpotContact from './steps/StepSpotContact';
 import StepSpotDescription from './steps/StepSpotDescription';
@@ -26,7 +28,7 @@ const AddSpotForm = ({
   const [formData, setFormData] = useState<TouristSpotFormData>({
     name: '',
     description: '',
-    spot_type: '',
+    spot_type: '' as TouristSpotType,
     address: '',
     city: '',
     province: '',
@@ -48,60 +50,62 @@ const AddSpotForm = ({
     setCurrentStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log('Submitting new spot:', formData);
-    // Implement actual submission logic here (e.g., API call to Supabase)
-    onClose();
-    setCurrentStep(0); // Reset form for next use
+
+    // Prepare data for Supabase insertion
+    const {
+      latitude,
+      longitude,
+      entry_fee,
+      opening_time,
+      closing_time,
+      ...rest
+    } = formData;
+
+    const newSpotData = {
+      ...rest,
+      spot_type: formData.spot_type as TouristSpotType,
+      location: `POINT(${parseFloat(longitude)} ${parseFloat(latitude)})`,
+      entry_fee: entry_fee ? parseFloat(entry_fee) : null,
+      opening_time: opening_time || null,
+      closing_time: closing_time || null,
+      status: 'active' as TouristSpotStatus,
+      google_maps_place_id: null,
+      is_featured: false,
+      average_rating: null,
+      review_count: 0,
+      created_by: null,
+      updated_by: null,
+    };
+
+    const { data, error } = await supabase
+      .from('tourist_spots')
+      .insert([newSpotData]);
+
+    if (error) {
+      Alert.alert('Error', 'Failed to add tourist spot: ' + error.message);
+      console.error('Error adding spot:', error.message);
+    } else {
+      Alert.alert('Success', 'Tourist spot added successfully!');
+      console.log('Spot added:', data);
+      onClose();
+      setCurrentStep(0);
+    }
   };
 
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
-        return (
-          <StepSpotBasics
-            data={formData}
-            setData={setFormData}
-            onNext={handleNext}
-            onPrev={handlePrev} // onPrev will be disabled on first step
-          />
-        );
+        return <StepSpotBasics data={formData} setData={setFormData} />;
       case 1:
-        return (
-          <StepSpotLocation
-            data={formData}
-            setData={setFormData}
-            onNext={handleNext}
-            onPrev={handlePrev}
-          />
-        );
+        return <StepSpotLocation data={formData} setData={setFormData} />;
       case 2:
-        return (
-          <StepSpotContact
-            data={formData}
-            setData={setFormData}
-            onNext={handleNext}
-            onPrev={handlePrev}
-          />
-        );
+        return <StepSpotContact data={formData} setData={setFormData} />;
       case 3:
-        return (
-          <StepSpotDescription
-            data={formData}
-            setData={setFormData}
-            onNext={handleNext}
-            onPrev={handlePrev}
-          />
-        );
+        return <StepSpotDescription data={formData} setData={setFormData} />;
       case 4:
-        return (
-          <StepSpotSubmit
-            data={formData}
-            setData={setFormData}
-            onNext={handleSubmit}
-            onPrev={handlePrev}
-          />
-        );
+        return <StepSpotSubmit data={formData} setData={setFormData} />;
       default:
         return null;
     }
@@ -114,7 +118,7 @@ const AddSpotForm = ({
       visible={isVisible}
       onRequestClose={() => {
         onClose();
-        setCurrentStep(0); // Reset step on modal close
+        setCurrentStep(0);
       }}
     >
       <View style={styles.centeredView}>
@@ -126,7 +130,7 @@ const AddSpotForm = ({
             <Pressable
               onPress={() => {
                 onClose();
-                setCurrentStep(0); // Reset step on close
+                setCurrentStep(0);
               }}
               style={styles.closeButton}
             >
