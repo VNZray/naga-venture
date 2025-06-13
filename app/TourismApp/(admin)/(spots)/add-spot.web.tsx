@@ -93,7 +93,6 @@ const AddSpotForm = ({
     setValidationAttempted(true);
     const validation = validateStep(currentStep);
     if (!validation.isValid) {
-      window.alert('Please fill in all required fields before proceeding.');
       return;
     }
     setValidationAttempted(false);
