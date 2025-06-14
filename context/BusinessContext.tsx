@@ -25,6 +25,7 @@ type BusinessContextType = {
   filterActiveOnly: () => void;
   filterPendingOnly: () => void;
   showAll: () => void;
+  fetchBusinessById: (id: number) => Promise<Business | null>; // ← Add this
 };
 
 const BusinessContext = createContext<BusinessContextType | undefined>(
@@ -59,6 +60,25 @@ export const BusinessProvider = ({ children }: ProviderProps) => {
   useEffect(() => {
     fetchBusinesses();
   }, []);
+
+  const fetchBusinessById = async (id: number): Promise<Business | null> => {
+    setLoading(true);
+
+    const { data, error } = await supabase
+      .from('Business')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    setLoading(false);
+
+    if (error) {
+      console.error('Failed to fetch business by ID:', error);
+      return null;
+    }
+
+    return data;
+  };
 
   const filterByOwnerId = async (ownerId: number) => {
     setLoading(true);
@@ -112,6 +132,7 @@ export const BusinessProvider = ({ children }: ProviderProps) => {
         filterActiveOnly,
         filterPendingOnly,
         showAll,
+        fetchBusinessById,
       }}
     >
       {children}

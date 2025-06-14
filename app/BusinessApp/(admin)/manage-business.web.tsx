@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useBusiness } from '@/context/BusinessContext';
 import { Business } from '@/types/Business';
 import { supabase } from '@/utils/supabase';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, useColorScheme, View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
@@ -114,16 +114,22 @@ const ManageBusiness = () => {
           />
         ) : filteredBusinesses.length > 0 ? (
           filteredBusinesses.map((business) => (
-            <CardView
-              key={business.owner_id}
-              height={350}
-              radius={10}
-              elevation={1}
-              imageUri={business.image_url}
-              title={business.business_name}
-              subtitle={`${business.barangay}, ${business.city}, ${business.province}`}
-              status={business.status}
-            />
+            <Link
+              key={business.id}
+              href={`/BusinessApp/(admin)/(business)/${business.id}`}
+            >
+              {' '}
+              <CardView
+                key={business.owner_id}
+                height={350}
+                radius={10}
+                elevation={1}
+                imageUri={business.image_url}
+                title={business.business_name}
+                subtitle={`${business.barangay}, ${business.city}, ${business.province}`}
+                status={business.status}
+              />
+            </Link>
           ))
         ) : (
           <ThemedText style={{ textAlign: 'center', marginTop: 40 }}>

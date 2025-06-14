@@ -3,14 +3,14 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/utils/supabase';
 import React, { useEffect, useState } from 'react';
 import { Alert, View } from 'react-native';
-import StepBasics from './(business)/steps/StepBasics';
-import StepContact from './(business)/steps/StepContact';
-import StepDescription from './(business)/steps/StepDescription';
-import StepLinks from './(business)/steps/StepLinks';
-import StepLocation from './(business)/steps/StepLocation';
-import StepPricing from './(business)/steps/StepPricing';
-import StepReview from './(business)/steps/StepReview';
-import StepSubmit from './(business)/steps/StepSubmit';
+import StepBasics from '../../../components/web-components/steps/StepBasics';
+import StepContact from '../../../components/web-components/steps/StepContact';
+import StepDescription from '../../../components/web-components/steps/StepDescription';
+import StepLinks from '../../../components/web-components/steps/StepLinks';
+import StepLocation from '../../../components/web-components/steps/StepLocation';
+import StepPricing from '../../../components/web-components/steps/StepPricing';
+import StepReview from '../../../components/web-components/steps/StepReview';
+import StepSubmit from '../../../components/web-components/steps/StepSubmit';
 
 const BusinessListing = () => {
   const [currentStep, setCurrentStep] = useState(0);

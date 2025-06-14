@@ -40,7 +40,7 @@ const navItems: { name: string; path: string; icon: FontAwesomeIconName }[] = [
     path: '/BusinessApp/(admin)/manage-business',
     icon: 'briefcase',
   },
-  { name: 'Feedback', path: '/BusinessApp/(admin)/feedback', icon: 'comments' },
+  { name: 'Reviews', path: '/BusinessApp/(admin)/reviews', icon: 'comments' },
   { name: 'Map', path: '/BusinessApp/(admin)/maps', icon: 'map' },
   {
     name: 'Profile',

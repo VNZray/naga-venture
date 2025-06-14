@@ -25,6 +25,7 @@ type CardViewProps = {
   height?: number;
   radius?: number;
   elevation?: number;
+  data?: {};
 };
 
 const CardView: React.FC<CardViewProps> = ({
@@ -36,6 +37,7 @@ const CardView: React.FC<CardViewProps> = ({
   height,
   radius,
   elevation,
+  data,
 }) => {
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';

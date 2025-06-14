@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import StarRating from 'react-native-star-rating-widget';
-import { ThemedText } from './ThemedText';
+import { ThemedText } from '../ThemedText';
 
 interface Review {
   rating: number;
@@ -40,11 +40,7 @@ const OverallRating: React.FC<OverallRatingProps> = ({ reviews }) => {
   return (
     <View style={{ flexDirection: 'row' }}>
       <View style={styles.averageContainer}>
-        <ThemedText
-          darkColor="#000"
-          type="defaultSemiBold"
-          style={styles.averageText}
-        >
+        <ThemedText type="defaultSemiBold" style={styles.averageText}>
           {averageRatingRounded}
         </ThemedText>
         <StarRating
