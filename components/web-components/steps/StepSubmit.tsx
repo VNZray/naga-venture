@@ -1,7 +1,7 @@
 import PressableButton from '@/components/PressableButton';
-import ErrorModal from '@/components/web-components/ErrorModal';
-import SuccessModal from '@/components/web-components/SuccessModal';
-import WarningModal from '@/components/web-components/WarningModal';
+import ErrorModal from '@/components/web-components/modals/ErrorModal';
+import SuccessModal from '@/components/web-components/modals/SuccessModal';
+import WarningModal from '@/components/web-components/modals/WarningModal';
 import { Business } from '@/types/Business';
 import { supabase } from '@/utils/supabase';
 import { router } from 'expo-router';

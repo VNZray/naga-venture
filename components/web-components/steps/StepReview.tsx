@@ -1,7 +1,7 @@
 import PressableButton from '@/components/PressableButton';
 import { Business } from '@/types/Business';
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 type StepBasicsProps = {
   data: Business;
@@ -18,7 +18,15 @@ const StepReview: React.FC<StepBasicsProps> = ({ data, onNext, onPrev }) => {
         {Object.entries(data).map(([key, value]) => (
           <View key={key} style={styles.row}>
             <Text style={styles.cellLabel}>{key.replace(/_/g, ' ')}</Text>
-            <Text style={styles.cellValue}>{value || 'N/A'}</Text>
+            {key === 'image_url' && typeof value === 'string' && value ? (
+              <Image
+                source={{ uri: value }}
+                style={styles.image}
+                resizeMode="cover"
+              />
+            ) : (
+              <Text style={styles.cellValue}>{value?.toString() || 'N/A'}</Text>
+            )}
           </View>
         ))}
       </View>
@@ -49,22 +57,25 @@ const styles = StyleSheet.create({
   header: { fontSize: 18, fontWeight: 'bold', marginBottom: 16 },
   table: { marginBottom: 24 },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderColor: '#e0e0e0',
   },
   cellLabel: {
     fontWeight: 'bold',
-    flex: 1,
     textTransform: 'capitalize',
     color: '#333',
+    marginBottom: 4,
   },
   cellValue: {
-    flex: 1,
-    textAlign: 'left',
     color: '#555',
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginTop: 4,
   },
   buttonContainer: {
     flexDirection: 'row',

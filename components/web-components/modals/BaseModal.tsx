@@ -1,7 +1,7 @@
 // components/BaseModal.tsx
 import React from 'react';
 import { Modal, StyleSheet, Text, View } from 'react-native';
-import PressableButton from '../PressableButton';
+import PressableButton from '../../PressableButton';
 
 type BaseModalProps = {
   visible: boolean;

@@ -16,10 +16,15 @@ export type Business = {
   facebook_url: string;
   latitude: string;
   longitude: string;
-  price_range: string;
+  min_price: string;
+  max_price: string;
   owner_id: number;
   status: string;
   image_url: string;
+  business_permit: string;
+  mayors_permit: string;
+  is_business_permit_verified: boolean;
+  is_mayors_permit_verified: boolean;
 };
 
 export type Room = {
@@ -27,10 +32,11 @@ export type Room = {
   room_number: string;
   room_type: string;
   capacity: string;
-  amenities: string[];
+  amenities: string | string[];
   room_price: string;
   description: string;
   business_id: number;
   status: string;
   room_image: string;
+  room_photos: string | string[];
 };

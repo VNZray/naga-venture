@@ -1,6 +1,8 @@
 import PressableButton from '@/components/PressableButton';
+import { provinces } from '@/constants/location';
 import { Business } from '@/types/Business';
-import React from 'react';
+import { Picker } from '@react-native-picker/picker';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 type StepLocationProps = {
@@ -16,47 +18,97 @@ const StepLocation: React.FC<StepLocationProps> = ({
   onNext,
   onPrev,
 }) => {
+  const [cities, setCities] = useState<string[]>([]);
+  const [barangays, setBarangays] = useState<string[]>([]);
+
+  useEffect(() => {
+    const selectedProvince = provinces.find((p) => p.name === data.province);
+    setCities(selectedProvince?.cities.map((c) => c.name) || []);
+
+    const selectedCity = selectedProvince?.cities.find(
+      (c) => c.name === data.city
+    );
+    setBarangays(selectedCity?.barangays || []);
+
+    if (selectedCity) {
+      setData((prev) => ({
+        ...prev,
+        postal_code: selectedCity.postal_code.toString(),
+      }));
+    }
+  }, [data.province, data.city]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Business Address</Text>
 
-      <Text style={styles.label}>Barangay</Text>
-      <TextInput
-        style={styles.input}
-        value={data.barangay}
-        onChangeText={(text) =>
-          setData((prev) => ({ ...prev, barangay: text }))
-        }
-        placeholder="Enter Barangay"
-      />
+      <Text style={styles.label}>Province</Text>
+      <View style={styles.pickerWrapper}>
+        <Picker
+          style={styles.picker}
+          selectedValue={data.province}
+          onValueChange={(value) =>
+            setData((prev) => ({
+              ...prev,
+              province: value,
+              city: '',
+              barangay: '',
+              postal_code: '',
+            }))
+          }
+        >
+          <Picker.Item label="Select Province" value="" />
+          {provinces.map((prov) => (
+            <Picker.Item key={prov.name} label={prov.name} value={prov.name} />
+          ))}
+        </Picker>
+      </View>
 
       <Text style={styles.label}>City</Text>
-      <TextInput
-        style={styles.input}
-        value={data.city}
-        onChangeText={(text) => setData((prev) => ({ ...prev, city: text }))}
-        placeholder="Enter City"
-      />
+      <View style={styles.pickerWrapper}>
+        <Picker
+          style={styles.picker}
+          selectedValue={data.city}
+          onValueChange={(value) => {
+            setData((prev) => ({
+              ...prev,
+              city: value,
+              barangay: '',
+              // We'll set postal_code automatically in useEffect
+            }));
+          }}
+          enabled={!!data.province}
+        >
+          <Picker.Item label="Select City" value="" />
+          {cities.map((city) => (
+            <Picker.Item key={city} label={city} value={city} />
+          ))}
+        </Picker>
+      </View>
 
-      <Text style={styles.label}>Province</Text>
-      <TextInput
-        style={styles.input}
-        value={data.province}
-        onChangeText={(text) =>
-          setData((prev) => ({ ...prev, province: text }))
-        }
-        placeholder="Enter Province"
-      />
+      <Text style={styles.label}>Barangay</Text>
+      <View style={styles.pickerWrapper}>
+        <Picker
+          style={styles.picker}
+          selectedValue={data.barangay}
+          onValueChange={(value) =>
+            setData((prev) => ({ ...prev, barangay: value }))
+          }
+          enabled={!!data.city}
+        >
+          <Picker.Item label="Select Barangay" value="" />
+          {barangays.map((bgy) => (
+            <Picker.Item key={bgy} label={bgy} value={bgy} />
+          ))}
+        </Picker>
+      </View>
 
       <Text style={styles.label}>Postal Code</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { backgroundColor: '#eee' }]}
         value={data.postal_code}
-        onChangeText={(text) =>
-          setData((prev) => ({ ...prev, postal_code: text }))
-        }
-        placeholder="Enter Postal Code"
-        keyboardType="numeric"
+        editable={false}
+        placeholder="Postal Code"
       />
 
       <Text style={styles.label}>Longitude</Text>
@@ -118,6 +170,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: '#fff',
   },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    backgroundColor: '#fff',
+  },
   buttonContainer: {
     marginTop: 24,
     display: 'flex',
@@ -129,6 +187,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 16,
+  },
+  picker: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 6,
+    backgroundColor: '#fff',
   },
 });
 

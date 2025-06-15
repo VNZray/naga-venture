@@ -9,6 +9,7 @@ const steps = [
   'Description',
   'Links',
   'Pricing',
+  'Permits',
   'Review',
   'Submit',
 ];

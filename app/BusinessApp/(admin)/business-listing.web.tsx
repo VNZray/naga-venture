@@ -1,4 +1,5 @@
 import Stepper from '@/components/web-components/StepperComponent';
+import StepPermits from '@/components/web-components/steps/StepPermits';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/utils/supabase';
 import React, { useEffect, useState } from 'react';
@@ -87,8 +88,10 @@ const BusinessListing = () => {
       case 5:
         return <StepPricing {...commonProps} />;
       case 6:
-        return <StepReview {...commonProps} />;
+        return <StepPermits {...commonProps} />;
       case 7:
+        return <StepReview {...commonProps} />;
+      case 8:
         return <StepSubmit {...commonProps} />;
       default:
         return null;

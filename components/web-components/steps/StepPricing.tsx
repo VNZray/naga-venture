@@ -18,15 +18,28 @@ const StepPricing: React.FC<StepBasicsProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Price Range</Text>
+      <Text style={styles.label}>Minimum Price (₱)</Text>
       <TextInput
         style={styles.input}
-        value={data.price_range}
+        value={data.min_price}
         onChangeText={(text) =>
-          setData((prev) => ({ ...prev, price_range: text }))
+          setData((prev) => ({ ...prev, min_price: text }))
         }
-        placeholder="e.g. ₱100 - ₱500"
+        placeholder="e.g. 100"
+        keyboardType="numeric"
       />
+
+      <Text style={styles.label}>Maximum Price (₱)</Text>
+      <TextInput
+        style={styles.input}
+        value={data.max_price}
+        onChangeText={(text) =>
+          setData((prev) => ({ ...prev, max_price: text }))
+        }
+        placeholder="e.g. 500"
+        keyboardType="numeric"
+      />
+
       <View style={styles.buttonContainer}>
         <PressableButton
           type="cancel"

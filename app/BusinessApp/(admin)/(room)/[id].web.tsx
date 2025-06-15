@@ -1,7 +1,7 @@
 import TabSwitcher from '@/components/TabSwitcherComponent';
-import BusinessDetailsTab from '@/components/web-components/profile-tabs/BusinessDetailsTab';
-import ReviewTab from '@/components/web-components/profile-tabs/ReviewTab';
-import RoomListingTab from '@/components/web-components/profile-tabs/RoomListingTab';
+import RoomDetails from '@/components/web-components/room-tabs/RoomDetails';
+import RoomPhotos from '@/components/web-components/room-tabs/RoomPhotos';
+import RoomReviews from '@/components/web-components/room-tabs/RoomReviews';
 import { Business, Room } from '@/types/Business';
 import { supabase } from '@/utils/supabase';
 import { useLocalSearchParams } from 'expo-router';
@@ -17,17 +17,17 @@ import {
 import RoomFormModal from '../../../../components/web-components/modals/RoomFormModal';
 
 const TABS = [
-  { key: 'business', label: 'Business Details' },
-  { key: 'rooms', label: 'Room Listing' },
+  { key: 'Room', label: 'Room Details' },
+  { key: 'Photos', label: 'Room Photos' },
   { key: 'reviews', label: 'Ratings & Review' },
 ];
 
-const BusinessProfile = () => {
-  const [activeTab, setActiveTab] = useState('business');
+const RoomProfile = () => {
+  const [activeTab, setActiveTab] = useState('Room');
+  const [room, setRoom] = useState<Room | null>(null);
   const [business, setBusiness] = useState<Business | null>(null);
   const [loading, setLoading] = useState(true);
   const { id } = useLocalSearchParams();
-  const [rooms, setRooms] = useState<Room[]>([]);
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [roomForm, setRoomForm] = useState<
     Omit<Room, 'id' | 'business_id' | 'status'>
@@ -39,16 +39,14 @@ const BusinessProfile = () => {
     amenities: '',
     description: '',
     room_image: '',
-    room_photos: [],
+    room_photos: '',
   });
 
-  const fetchBusiness = async () => {
-    if (!id) return;
-
+  const fetchBusiness = async (businessId: string) => {
     const { data, error } = await supabase
       .from('Business')
       .select('*')
-      .eq('id', id)
+      .eq('id', businessId)
       .single();
 
     if (error) {
@@ -56,28 +54,31 @@ const BusinessProfile = () => {
     } else {
       setBusiness(data);
     }
-
-    setLoading(false);
-    fetchRooms();
   };
 
-  const fetchRooms = async () => {
+  const fetchRoom = async () => {
     if (!id) return;
 
+    setLoading(true);
     const { data, error } = await supabase
       .from('Room')
       .select('*')
-      .eq('business_id', id);
+      .eq('id', id)
+      .single();
 
     if (error) {
-      console.error('Error fetching rooms:', error);
+      console.error('Error fetching room:', error);
     } else {
-      setRooms(data);
+      setRoom(data);
+      if (data.business_id) {
+        fetchBusiness(data.business_id);
+      }
     }
+    setLoading(false);
   };
 
   useEffect(() => {
-    fetchBusiness();
+    fetchRoom();
   }, [id]);
 
   const renderTabContent = () => {
@@ -86,55 +87,14 @@ const BusinessProfile = () => {
     }
 
     switch (activeTab) {
-      case 'business':
-        return <BusinessDetailsTab business={business} />;
-      case 'rooms':
-        return <RoomListingTab rooms={rooms} />;
+      case 'Room':
+        return <RoomDetails room={room} />;
+      case 'Photos':
+        return <RoomPhotos business={business} room={room} />;
       case 'reviews':
-        return <ReviewTab />;
+        return <RoomReviews />;
       default:
         return null;
-    }
-  };
-
-  const handleRoomSubmit = async () => {
-    if (!business?.id) return;
-
-    const amenitiesArray =
-      typeof roomForm.amenities === 'string'
-        ? roomForm.amenities.split(',').map((item) => item.trim())
-        : roomForm.amenities;
-
-    const { data, error } = await supabase.from('Room').insert([
-      {
-        ...roomForm,
-        room_photos: Array.isArray(roomForm.room_photos)
-          ? roomForm.room_photos
-          : roomForm.room_photos
-          ? [roomForm.room_photos]
-          : [],
-        amenities: amenitiesArray,
-        business_id: business.id,
-        status: 'available',
-      },
-    ]);
-
-    if (error) {
-      console.error('Error adding room:', error);
-    } else {
-      console.log('Room added:', data);
-      setRoomForm({
-        room_number: '',
-        room_type: '',
-        capacity: '',
-        room_price: '',
-        amenities: '',
-        description: '',
-        room_image: '',
-        room_photos: roomForm.room_photos,
-      });
-      setShowRoomModal(false);
-      await fetchRooms();
     }
   };
 
@@ -144,17 +104,18 @@ const BusinessProfile = () => {
       <Image
         source={{
           uri:
-            business?.image_url ||
+            room?.room_image ||
             'https://via.placeholder.com/300x180.png?text=No+Image',
         }}
         style={styles.banner}
       />
 
+      {/* Room Info Header */}
       <View style={styles.profileContainer}>
         <Image
           source={{
             uri:
-              business?.image_url ||
+              room?.room_image ||
               'https://via.placeholder.com/300x180.png?text=No+Image',
           }}
           style={styles.avatar}
@@ -162,26 +123,24 @@ const BusinessProfile = () => {
 
         <View style={styles.businessInfo}>
           <Text style={styles.businessName}>
-            {business?.business_name || 'Business Name'}
+            Room Number {room?.room_number || 'N/A'}
           </Text>
           <Text style={styles.location}>
-            {business?.barangay}, {business?.city}, {business?.province}
+            {room?.room_type || 'Type Unknown'}
           </Text>
         </View>
 
         <View style={styles.buttonGroup}>
-          <Pressable style={styles.button}>
-            <Text style={styles.buttonText}>✏️ Edit Profile</Text>
-          </Pressable>
           <Pressable
             style={styles.button}
             onPress={() => setShowRoomModal(true)}
           >
-            <Text style={styles.buttonText}>➕ Add Room</Text>
+            <Text style={styles.buttonText}>✏️ Edit Room</Text>
           </Pressable>
         </View>
       </View>
 
+      {/* Tabs + Content */}
       <View style={styles.contentContainer}>
         <TabSwitcher
           tabs={TABS}
@@ -198,13 +157,14 @@ const BusinessProfile = () => {
         {renderTabContent()}
       </View>
 
+      {/* Edit Room Modal */}
       <RoomFormModal
         visible={showRoomModal}
         onClose={() => setShowRoomModal(false)}
         form={roomForm}
         setForm={setRoomForm}
-        businessId={business?.id}
-        onSuccess={fetchRooms}
+        businessId={room?.business_id}
+        onSuccess={fetchRoom}
       />
     </ScrollView>
   );
@@ -268,4 +228,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default BusinessProfile;
+export default RoomProfile;
