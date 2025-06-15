@@ -12,6 +12,17 @@ export type TouristSpotType =
   | 'recreational'
   | 'other';
 
+export interface BusinessHour {
+  day: string;
+  open_time: string;
+  close_time: string;
+}
+
+export interface AdmissionFee {
+  type: string;
+  price: string; // Can be a number or "N/A"
+}
+
 export interface TouristSpot {
   id: string;
   name: string;
@@ -36,4 +47,5 @@ export interface TouristSpot {
   updated_at: string;
   created_by: string | null;
   updated_by: string | null;
+  picture: string | null;
 }

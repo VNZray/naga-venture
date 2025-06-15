@@ -18,7 +18,7 @@ const TouristSpotTable: React.FC<TouristSpotTableProps> = ({
         <ThemedText style={[styles.tableHeaderText, { width: '10%' }]}>
           ID
         </ThemedText>
-        <ThemedText style={[styles.tableHeaderText, { width: '25%' }]}>
+        <ThemedText style={[styles.tableHeaderText, { width: '30%' }]}>
           Name
         </ThemedText>
         <ThemedText style={[styles.tableHeaderText, { width: '30%' }]}>
@@ -27,7 +27,7 @@ const TouristSpotTable: React.FC<TouristSpotTableProps> = ({
         <ThemedText style={[styles.tableHeaderText, { width: '20%' }]}>
           Category
         </ThemedText>
-        <ThemedText style={[styles.tableHeaderText, { width: '15%' }]}>
+        <ThemedText style={[styles.tableHeaderText, { width: '10%' }]}>
           Actions
         </ThemedText>
       </View>
@@ -36,7 +36,7 @@ const TouristSpotTable: React.FC<TouristSpotTableProps> = ({
           <ThemedText style={[styles.tableRowText, { width: '10%' }]}>
             {spot.id}
           </ThemedText>
-          <ThemedText style={[styles.tableRowText, { width: '25%' }]}>
+          <ThemedText style={[styles.tableRowText, { width: '30%' }]}>
             {spot.name}
           </ThemedText>
           <ThemedText style={[styles.tableRowText, { width: '30%' }]}>

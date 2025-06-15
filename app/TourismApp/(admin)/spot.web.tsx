@@ -6,6 +6,7 @@ import TouristSpotTable from '@/components/touristSpot/webComponents/TouristSpot
 import { TouristSpot } from '@/types/TouristSpot'; // Import from centralized file
 import { supabase } from '@/utils/supabase';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -26,6 +27,8 @@ const TouristSpots = () => {
   const [error, setError] = useState<string | null>(null);
   const [categories, setCategories] = useState<string[]>(['All']); // State for dynamic categories
   const spotsPerPage = 10;
+
+  const router = useRouter();
 
   const fetchSpotsAndCategories = useCallback(async () => {
     setLoading(true);
@@ -83,7 +86,10 @@ const TouristSpots = () => {
   };
 
   const handleViewDetails = (spot: TouristSpot) => {
-    console.log('View details for spot:', spot);
+    router.push({
+      pathname: '/TourismApp/(admin)/(spots)/[id]',
+      params: { id: spot.id },
+    });
   };
 
   const filteredAndSearchedSpots = useMemo(() => {
@@ -119,7 +125,7 @@ const TouristSpots = () => {
         />
         <SearchBar
           value={searchQuery}
-          onChangeText={setSearchQuery}
+          onChangeText={handleSearch}
           onSearch={() => console.log('Performing search for:', searchQuery)}
           placeholder="Search"
           containerStyle={styles.searchBarContainer}
