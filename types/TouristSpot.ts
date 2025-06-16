@@ -2,7 +2,8 @@ export type TouristSpotStatus =
   | 'active'
   | 'inactive'
   | 'under_maintenance'
-  | 'coming_soon';
+  | 'coming_soon'
+  | 'pending';
 
 export type TouristSpotType =
   | 'natural'

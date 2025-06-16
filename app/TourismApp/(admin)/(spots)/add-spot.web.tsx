@@ -43,6 +43,7 @@ const AddSpotForm = ({
     opening_time: '',
     closing_time: '',
     entry_fee: '',
+    picture: '',
   });
 
   // Define required fields for each step
@@ -141,6 +142,7 @@ const AddSpotForm = ({
         opening_time: formData.opening_time || null,
         closing_time: formData.closing_time || null,
         status: 'pending' as TouristSpotStatus,
+        picture: formData.picture || null,
       };
 
       const { error } = await supabase.from('tourist_spots').insert([spotData]);
@@ -163,6 +165,7 @@ const AddSpotForm = ({
         opening_time: '',
         closing_time: '',
         entry_fee: '',
+        picture: '',
       });
 
       // Reset validation state

@@ -1,8 +1,9 @@
 import { ThemedText } from '@/components/ThemedText';
 import { TouristSpot } from '@/types/TouristSpot';
+import { subscribeToSpotUpdates } from '@/utils/events';
 import { supabase } from '@/utils/supabase';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -45,7 +46,33 @@ const SpotDetails = () => {
     };
 
     fetchSpotDetails();
+    // Subscribe to spot updates
+    const unsubscribe = subscribeToSpotUpdates(() => {
+      fetchSpotDetails();
+    });
+    return () => unsubscribe();
   }, [id]);
+
+  const handleEdit = async () => {
+    if (!spot) return;
+
+    try {
+      const { error } = await supabase
+        .from('tourist_spots')
+        .update({ status: 'pending' })
+        .eq('id', spot.id);
+
+      if (error) {
+        console.error('Error updating spot status:', error);
+        return;
+      }
+
+      // Navigate to edit page
+      router.push(`/TourismApp/(admin)/(spots)/edit/${spot.id}`);
+    } catch (err) {
+      console.error('Error handling edit:', err);
+    }
+  };
 
   if (loading) {
     return (
@@ -148,7 +175,9 @@ const SpotDetails = () => {
                 <ThemedText style={[styles.spotName, { color: 'black' }]}>
                   {spot.name}
                 </ThemedText>
-                <Ionicons name="create-outline" size={24} color="#007bff" />
+                <TouchableOpacity onPress={handleEdit}>
+                  <Ionicons name="create-outline" size={24} color="#007bff" />
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -159,14 +188,9 @@ const SpotDetails = () => {
               <ThemedText style={[styles.sectionTitle, { color: 'black' }]}>
                 About The Attraction
               </ThemedText>
-              <TouchableOpacity>
-                <ThemedText style={[styles.editButtonText, { color: 'black' }]}>
-                  EDIT
-                </ThemedText>
-              </TouchableOpacity>
             </View>
             <ThemedText style={[styles.sectionContent, { color: 'black' }]}>
-              {spot.description}
+              {spot.description || 'Attract Tourist with a short description.'}
             </ThemedText>
           </View>
 
@@ -176,11 +200,6 @@ const SpotDetails = () => {
               <ThemedText style={[styles.sectionTitle, { color: 'black' }]}>
                 Categories
               </ThemedText>
-              <TouchableOpacity>
-                <ThemedText style={[styles.editButtonText, { color: 'black' }]}>
-                  EDIT
-                </ThemedText>
-              </TouchableOpacity>
             </View>
             <ThemedText style={[styles.sectionContent, { color: 'black' }]}>
               {spot.spot_type ||
@@ -199,11 +218,6 @@ const SpotDetails = () => {
               <ThemedText style={[styles.sectionTitle, { color: 'black' }]}>
                 Business Hours
               </ThemedText>
-              <TouchableOpacity>
-                <ThemedText style={[styles.editButtonText, { color: 'black' }]}>
-                  EDIT
-                </ThemedText>
-              </TouchableOpacity>
             </View>
             {spot.opening_time && spot.closing_time ? (
               <View style={styles.businessHourRow}>
@@ -224,10 +238,10 @@ const SpotDetails = () => {
 
         {/* Right Column */}
         <View style={styles.rightColumn}>
-          {/* Shop Information Card */}
+          {/* Tourist Spot Information Card */}
           <View style={styles.shopInfoCard}>
             <ThemedText style={[styles.sectionTitle, { color: 'black' }]}>
-              Shop Information
+              Tourist Spot Information
             </ThemedText>
             {/* Map Placeholder */}
             <View style={styles.mapPlaceholder}>
@@ -270,6 +284,14 @@ const SpotDetails = () => {
                 {'Connect your social media (optional).'}
               </ThemedText>
               <Ionicons name="chevron-forward" size={20} color="#888" />
+            </View>
+            <View style={styles.infoRow}>
+              <ThemedText style={[styles.infoLabel, { color: 'black' }]}>
+                Status
+              </ThemedText>
+              <ThemedText style={[styles.infoValue, { color: 'black' }]}>
+                {spot.status || 'Not set'}
+              </ThemedText>
             </View>
           </View>
         </View>

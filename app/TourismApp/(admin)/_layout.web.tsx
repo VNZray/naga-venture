@@ -20,7 +20,8 @@ type FontAwesomeIconName =
   | 'briefcase'
   | 'comments'
   | 'map'
-  | 'tree';
+  | 'tree'
+  | 'check-circle';
 
 const navItems: { name: string; path: string; icon: FontAwesomeIconName }[] = [
   {
@@ -50,7 +51,13 @@ const navItems: { name: string; path: string; icon: FontAwesomeIconName }[] = [
     path: '/TourismApp/(admin)/maps',
     icon: 'map',
   },
+  {
+    name: 'Approvals',
+    path: '/TourismApp/(admin)/approvals',
+    icon: 'check-circle',
+  },
 ];
+
 export default function AdminLayout() {
   const [headerTitle, setHeaderTitle] = useState('Dashboard');
   const { user } = useAuth();

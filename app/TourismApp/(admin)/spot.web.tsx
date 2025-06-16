@@ -55,7 +55,7 @@ const TouristSpots = () => {
     const { data: spotsData, error: spotsError } = await supabase
       .from('tourist_spots')
       .select('*')
-      .eq('status', 'active')
+      .neq('status', 'pending')
       .order('created_at', { ascending: false });
 
     if (spotsError) {

@@ -61,6 +61,7 @@ const StepSpotBasics: React.FC<StepBasicsProps> = ({
             }
             style={styles.picker}
           >
+            <Picker.Item label="Select a category" value="" enabled={true} />
             {categories.map((category) => (
               <Picker.Item
                 key={category}
@@ -75,6 +76,21 @@ const StepSpotBasics: React.FC<StepBasicsProps> = ({
             Spot type is required
           </ThemedText>
         )}
+      </View>
+
+      <View style={styles.formGroup}>
+        <ThemedText type="subtitle" darkColor="#000">
+          Image URL
+        </ThemedText>
+        <TextInput
+          style={styles.input}
+          value={data.picture}
+          onChangeText={(text) => setData({ ...data, picture: text })}
+          placeholder="Enter image URL"
+        />
+        <ThemedText style={styles.helperText}>
+          Enter a URL for the tourist spot's main image
+        </ThemedText>
       </View>
     </View>
   );
@@ -101,6 +117,11 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
+    fontSize: 12,
+    marginTop: 5,
+  },
+  helperText: {
+    color: '#666',
     fontSize: 12,
     marginTop: 5,
   },
