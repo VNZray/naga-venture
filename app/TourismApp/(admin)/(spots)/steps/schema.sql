@@ -55,6 +55,18 @@ create table public.tourist_spot_edits (
   constraint tourist_spot_edits_created_by_fkey foreign key (created_by) references profiles(id) on delete set null
 ) TABLESPACE pg_default;
 
+create table public.tourist_spot_deletes (
+  id uuid not null default extensions.uuid_generate_v4(),
+  spot_id uuid not null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  created_by uuid null,
+  status public.tourist_spot_status not null default 'pending'::tourist_spot_status,
+  constraint tourist_spot_deletes_pkey primary key (id),
+  constraint tourist_spot_deletes_spot_id_fkey foreign key (spot_id) references tourist_spots(id) on delete cascade,
+  constraint tourist_spot_deletes_created_by_fkey foreign key (created_by) references profiles(id) on delete set null
+) TABLESPACE pg_default;
+
 create index IF not exists idx_tourist_spots_location on public.tourist_spots using gist (location) TABLESPACE pg_default;
 
 create index IF not exists idx_tourist_spots_status on public.tourist_spots using btree (status) TABLESPACE pg_default;
@@ -64,3 +76,7 @@ create index IF not exists idx_tourist_spots_type on public.tourist_spots using 
 create index IF not exists idx_tourist_spot_edits_spot_id on public.tourist_spot_edits using btree (spot_id) TABLESPACE pg_default;
 
 create index IF not exists idx_tourist_spot_edits_status on public.tourist_spot_edits using btree (status) TABLESPACE pg_default;
+
+create index IF not exists idx_tourist_spot_deletes_spot_id on public.tourist_spot_deletes using btree (spot_id) TABLESPACE pg_default;
+
+create index IF not exists idx_tourist_spot_deletes_status on public.tourist_spot_deletes using btree (status) TABLESPACE pg_default;

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 type ApprovalCategory = 'spots' | 'business' | 'accommodation' | 'events';
-type ApprovalType = 'new' | 'edit';
+type ApprovalType = 'new' | 'edit' | 'delete';
 
 interface PendingItem {
   id: string;
@@ -72,6 +72,23 @@ const ApprovalsPage = () => {
 
         if (spotsError) throw spotsError;
 
+        // Fetch delete requests
+        const { data: deletesData, error: deletesError } = await supabase
+          .from('tourist_spot_deletes')
+          .select(
+            `
+            *,
+            tourist_spots (
+              name,
+              description
+            )
+          `
+          )
+          .eq('status', 'pending')
+          .order('created_at', { ascending: false });
+
+        if (deletesError) throw deletesError;
+
         // Combine and format the data
         const formattedEdits = (editsData || []).map((edit) => ({
           ...edit,
@@ -83,16 +100,27 @@ const ApprovalsPage = () => {
           type: 'new' as ApprovalType,
         }));
 
-        // Filter out spots that have pending edits
+        const formattedDeletes = (deletesData || []).map((deleteReq) => ({
+          ...deleteReq,
+          type: 'delete' as ApprovalType,
+          name: deleteReq.tourist_spots.name,
+          description: deleteReq.tourist_spots.description,
+        }));
+
+        // Filter out spots that have pending edits or deletes
         const spotsWithEdits = new Set(
           formattedEdits.map((edit) => edit.spot_id)
         );
+        const spotsWithDeletes = new Set(
+          formattedDeletes.map((deleteReq) => deleteReq.spot_id)
+        );
         const newSpots = formattedSpots.filter(
-          (spot) => !spotsWithEdits.has(spot.id)
+          (spot) =>
+            !spotsWithEdits.has(spot.id) && !spotsWithDeletes.has(spot.id)
         );
 
         setPendingItems(
-          [...formattedEdits, ...newSpots].sort(
+          [...formattedEdits, ...formattedDeletes, ...newSpots].sort(
             (a, b) =>
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
@@ -101,7 +129,8 @@ const ApprovalsPage = () => {
 
         setCategoryCounts((prev) => ({
           ...prev,
-          spots: formattedEdits.length + newSpots.length,
+          spots:
+            formattedEdits.length + formattedDeletes.length + newSpots.length,
         }));
       } else {
         // For other categories, set empty array since they're not implemented
@@ -155,6 +184,31 @@ const ApprovalsPage = () => {
           .eq('id', item.id);
 
         if (statusError) throw statusError;
+      } else if (item.type === 'delete') {
+        // Handle delete approval
+        const { data: deleteData, error: fetchError } = await supabase
+          .from('tourist_spot_deletes')
+          .select('*')
+          .eq('id', item.id)
+          .single();
+
+        if (fetchError) throw fetchError;
+
+        // Delete the spot
+        const { error: deleteError } = await supabase
+          .from('tourist_spots')
+          .delete()
+          .eq('id', deleteData.spot_id);
+
+        if (deleteError) throw deleteError;
+
+        // Update the delete request status to active
+        const { error: statusError } = await supabase
+          .from('tourist_spot_deletes')
+          .update({ status: 'active' })
+          .eq('id', item.id);
+
+        if (statusError) throw statusError;
       } else {
         // Handle new spot approval
         const { error: updateError } = await supabase
@@ -186,6 +240,16 @@ const ApprovalsPage = () => {
       if (item.type === 'edit') {
         const { error } = await supabase
           .from('tourist_spot_edits')
+          .update({
+            status: 'inactive',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', item.id);
+
+        if (error) throw error;
+      } else if (item.type === 'delete') {
+        const { error } = await supabase
+          .from('tourist_spot_deletes')
           .update({
             status: 'inactive',
             updated_at: new Date().toISOString(),
@@ -343,7 +407,11 @@ const ApprovalsPage = () => {
           pendingItems.map((item) => (
             <View key={item.id} style={styles.tableRow}>
               <ThemedText style={styles.tableCell}>
-                {item.type === 'new' ? 'New Spot' : 'Edit'}
+                {item.type === 'new'
+                  ? 'New Spot'
+                  : item.type === 'edit'
+                  ? 'Edit'
+                  : 'Delete'}
               </ThemedText>
               <ThemedText style={styles.tableCell}>{item.name}</ThemedText>
               <ThemedText style={styles.tableCell} numberOfLines={2}>

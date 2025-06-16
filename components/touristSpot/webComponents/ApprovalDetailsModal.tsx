@@ -20,7 +20,7 @@ interface PendingItem {
   created_at: string;
   created_by: string;
   status: string;
-  type: 'new' | 'edit';
+  type: 'new' | 'edit' | 'delete';
   spot_type?: string;
   address?: string;
   contact_phone?: string;

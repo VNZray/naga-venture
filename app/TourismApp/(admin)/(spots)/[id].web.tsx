@@ -57,20 +57,39 @@ const SpotDetails = () => {
     if (!spot) return;
 
     try {
-      const { error } = await supabase
-        .from('tourist_spots')
-        .update({ status: 'pending' })
-        .eq('id', spot.id);
-
-      if (error) {
-        console.error('Error updating spot status:', error);
-        return;
-      }
-
       // Navigate to edit page
       router.push(`/TourismApp/(admin)/(spots)/edit/${spot.id}`);
     } catch (err) {
       console.error('Error handling edit:', err);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!spot) return;
+
+    if (
+      !window.confirm(
+        'Are you sure you want to request deletion of this spot? This action requires approval.'
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from('tourist_spot_deletes').insert({
+        spot_id: spot.id,
+        created_by: spot.updated_by,
+      });
+
+      if (error) {
+        console.error('Error creating delete request:', error);
+        return;
+      }
+
+      // Navigate back to the spots list
+      router.push('/TourismApp/(admin)/(spots)');
+    } catch (err) {
+      console.error('Error handling delete:', err);
     }
   };
 
@@ -172,12 +191,21 @@ const SpotDetails = () => {
                 </ThemedText>
               </View>
               <View style={styles.nameAndEdit}>
-                <ThemedText style={[styles.spotName, { color: 'black' }]}>
-                  {spot.name}
-                </ThemedText>
-                <TouchableOpacity onPress={handleEdit}>
-                  <Ionicons name="create-outline" size={24} color="#007bff" />
-                </TouchableOpacity>
+                <ThemedText style={styles.spotName}>{spot.name}</ThemedText>
+                <View style={styles.actionButtons}>
+                  <TouchableOpacity
+                    onPress={handleEdit}
+                    style={styles.iconButton}
+                  >
+                    <Ionicons name="create-outline" size={24} color="#007bff" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleDelete}
+                    style={styles.iconButton}
+                  >
+                    <Ionicons name="trash-outline" size={24} color="#dc3545" />
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
@@ -389,10 +417,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 10,
   },
   spotName: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
+    color: '#000',
   },
   shopInfoCard: {
     backgroundColor: '#fff',
@@ -486,6 +516,14 @@ const styles = StyleSheet.create({
   businessHourTime: {
     fontSize: 14,
     color: '#333',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 15,
+  },
+  iconButton: {
+    padding: 5,
   },
 });
 
