@@ -5,9 +5,9 @@ import { useAuth } from '@/context/AuthContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FontAwesome } from '@expo/vector-icons';
 import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
+    DarkTheme,
+    DefaultTheme,
+    ThemeProvider,
 } from '@react-navigation/native';
 import { Stack, router } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -43,7 +43,7 @@ const navItems: { name: string; path: string; icon: FontAwesomeIconName }[] = [
     path: '/TourismApp/(admin)/spot',
     icon: 'tree',
   },
-  { name: 'Events', path: '/TourismApp/(admin)/event', icon: 'comments' },
+  { name: 'Events', path: '/TourismApp/(admin)/events/event', icon: 'comments' },
   { name: 'Shops', path: '/TourismApp/(admin)/shop', icon: 'exchange' },
   {
     name: 'Map',
@@ -97,7 +97,10 @@ export default function AdminLayout() {
             />
             <Stack
               screenOptions={{ headerShown: false, headerBackVisible: false }}
-            ></Stack>
+            >
+              <Stack.Screen name="events/edit/[id]" />
+              <Stack.Screen name="events/event" />
+            </Stack>
           </View>
         </View>
       </ThemeProvider>

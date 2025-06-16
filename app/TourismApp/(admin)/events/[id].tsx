@@ -2,7 +2,7 @@ import { ThemedText } from '@/components/ThemedText';
 import React from 'react';
 import { View } from 'react-native';
 
-const Events = () => {
+const EventDetails = () => {
   return (
     <View
       style={{
@@ -14,10 +14,10 @@ const Events = () => {
       }}
     >
       <ThemedText darkColor="#000" type="title">
-        Events
+        Event Details
       </ThemedText>
     </View>
   );
 };
 
-export default Events;
+export default EventDetails; 

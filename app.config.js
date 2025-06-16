@@ -29,7 +29,12 @@ export default {
       favicon: './assets/images/favicon.png',
     },
     plugins: [
-      'expo-router',
+      [
+        'expo-router',
+        {
+          // unstable_exclude: ["**/*.{ts,tsx,js,jsx}", "components/**/*"],
+        },
+      ],
       [
         'expo-splash-screen',
         {

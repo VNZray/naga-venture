@@ -2,11 +2,11 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import React from 'react';
 import {
-  Pressable,
-  StyleSheet,
-  Text,
-  useColorScheme as useRNColorScheme,
-  ViewStyle,
+    Pressable,
+    StyleSheet,
+    Text,
+    useColorScheme as useRNColorScheme,
+    ViewStyle,
 } from 'react-native';
 
 export function useColorScheme() {
@@ -16,7 +16,7 @@ export function useColorScheme() {
 
 type PressableButtonProps = {
   direction?: 'row' | 'column';
-  type?: 'primary' | 'secondary' | 'tertiary' | 'quartary' | 'default';
+  type?: 'primary' | 'secondary' | 'tertiary' | 'quartary' | 'pagination' | 'default';
   gap?: number;
   color?: string;
   width?: string | number;
@@ -129,6 +129,10 @@ const stylesByType = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: '#ccc',
+  },
+  pagination: {
+    backgroundColor: '#E0E0E0',
+    borderRadius: 5,
   },
   default: {},
 });

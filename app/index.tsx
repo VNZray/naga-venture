@@ -2,7 +2,7 @@ import BusinessApp from './BusinessApp';
 import TourismApp from './TourismApp'; // full web
 import TouristApp from './TouristApp';
 
-const CURRENT_APP: 'business' | 'tourism' | 'tourist' = 'tourist';
+const CURRENT_APP: 'business' | 'tourism' | 'tourist' = 'tourism';
 
 export default function App() {
   switch (CURRENT_APP) {
