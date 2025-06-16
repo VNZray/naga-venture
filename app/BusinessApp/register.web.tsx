@@ -94,7 +94,7 @@ const RegistrationPageWeb = () => {
 
     setErrorMessage('');
     Alert.alert('Success', 'Account created!');
-    router.replace('/BusinessApp/(admin)/dashboard');
+    router.replace('/BusinessApp/login');
   };
 
   return (

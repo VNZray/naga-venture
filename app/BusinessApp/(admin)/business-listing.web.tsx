@@ -55,7 +55,8 @@ const BusinessListing = () => {
         facebook_url: '',
         longitude: '',
         latitude: '',
-        price_range: '',
+        min_price: '',
+        max_price: '',
         owner_id: ownerData.id,
         status: 'Pending',
       });
