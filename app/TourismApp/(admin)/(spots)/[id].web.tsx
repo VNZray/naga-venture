@@ -76,20 +76,42 @@ const SpotDetails = () => {
     }
 
     try {
-      const { error } = await supabase.from('tourist_spot_deletes').insert({
-        spot_id: spot.id,
-        created_by: spot.updated_by,
-      });
+      console.log('Attempting to create delete request for spot:', spot.id);
+      console.log('Using created_by:', spot.updated_by || spot.created_by);
+
+      const { data, error } = await supabase
+        .from('tourist_spot_deletes')
+        .insert({
+          spot_id: spot.id,
+          created_by: spot.updated_by || spot.created_by,
+          status: 'pending',
+        })
+        .select()
+        .single();
 
       if (error) {
         console.error('Error creating delete request:', error);
+        console.error(
+          'Error details:',
+          error.message,
+          error.details,
+          error.hint
+        );
         return;
       }
 
-      // Navigate back to the spots list
-      router.push('/TourismApp/(admin)/(spots)');
+      console.log('Delete request created successfully:', data);
+
+      if (data) {
+        alert(
+          'Delete request submitted successfully. Waiting for admin approval.'
+        );
+      }
     } catch (err) {
       console.error('Error handling delete:', err);
+      if (err instanceof Error) {
+        console.error('Error details:', err.message);
+      }
     }
   };
 
