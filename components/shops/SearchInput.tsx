@@ -1,13 +1,23 @@
 import { Ionicons } from '@expo/vector-icons';
 import debounce from 'lodash.debounce';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  StyleSheet,
+  TextInput,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 interface SearchInputProps {
   onSearch: (query: string) => void;
   placeholder?: string;
   value?: string;
   onClear?: () => void;
+  style?: ViewStyle;
+  inputStyle?: TextStyle;
+  searchContainerStyle?: ViewStyle;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({
@@ -15,6 +25,9 @@ const SearchInput: React.FC<SearchInputProps> = ({
   placeholder = 'Search shops...',
   value = '',
   onClear,
+  style,
+  inputStyle,
+  searchContainerStyle,
 }) => {
   const [inputValue, setInputValue] = useState(value);
 
@@ -48,8 +61,8 @@ const SearchInput: React.FC<SearchInputProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
+    <View style={[styles.container, style]}>
+      <View style={[styles.searchContainer, searchContainerStyle]}>
         <Ionicons
           name="search"
           size={20}
@@ -57,7 +70,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
           style={styles.searchIcon}
         />
         <TextInput
-          style={styles.input}
+          style={[styles.input, inputStyle]}
           value={inputValue}
           onChangeText={setInputValue}
           placeholder={placeholder}

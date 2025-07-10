@@ -343,7 +343,6 @@ const ApprovalsPage = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <ThemedText style={styles.title}>Approvals</ThemedText>
         <ThemedText style={styles.subtitle}>
           Review and manage pending changes
         </ThemedText>

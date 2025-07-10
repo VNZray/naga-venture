@@ -28,7 +28,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: false, // Required for Expo/React Native
   },
 });
-
 // Test function to check Supabase connection
 export const testSupabaseConnection = async () => {
   try {
