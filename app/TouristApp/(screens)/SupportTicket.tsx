@@ -1,9 +1,11 @@
 import { getAllTouristSpots } from '@/app/TouristApp/(tabs)/(home)/(touristSpots)/TouristSpotData';
 import SearchInput from '@/components/shops/SearchInput';
 import { ThemedText } from '@/components/ThemedText';
-import { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useState } from 'react';
 import {
   Alert,
+  BackHandler,
   Button,
   FlatList,
   Text,
@@ -11,6 +13,18 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+
+const Breadcrumb = ({ path, onBack }: { path: string; onBack: () => void }) => (
+  <View
+    style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 16 }}
+  >
+    <TouchableOpacity onPress={onBack}>
+      <Text style={{ color: '#007AFF', fontWeight: 'bold' }}>Support</Text>
+    </TouchableOpacity>
+    <Text style={{ color: '#888', marginHorizontal: 8 }}>{'>'}</Text>
+    <Text style={{ color: '#333', fontWeight: 'bold' }}>{path}</Text>
+  </View>
+);
 
 const SupportTicket = () => {
   const [view, setView] = useState<'menu' | 'new' | 'records'>('menu');
@@ -133,9 +147,27 @@ const SupportTicket = () => {
     }, 1000);
   };
 
+  // Intercept the hardware back button and header back button
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (view !== 'menu') {
+          setView('menu');
+          return true; // Prevent default back
+        }
+        return false; // Allow default back
+      };
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress
+      );
+      return () => subscription.remove();
+    }, [view])
+  );
+
   if (view === 'menu') {
     return (
-      <View style={{ flex: 1, padding: 24, marginTop: 32 }}>
+      <View style={{ flex: 1, padding: 24 }}>
         <TouchableOpacity
           style={{
             borderWidth: 1,
@@ -171,15 +203,8 @@ const SupportTicket = () => {
 
   if (view === 'new') {
     return (
-      <View style={{ flex: 1, padding: 24, marginTop: 32 }}>
-        <TouchableOpacity
-          onPress={() => setView('menu')}
-          style={{ marginBottom: 16 }}
-        >
-          <Text style={{ color: '#007AFF', fontSize: 16 }}>
-            {'< Back to Support'}
-          </Text>
-        </TouchableOpacity>
+      <View style={{ flex: 1, padding: 24 }}>
+        <Breadcrumb path="New Report" onBack={() => setView('menu')} />
         <ThemedText type="title" style={{ marginBottom: 24 }}>
           New Report / Feedback
         </ThemedText>
@@ -334,6 +359,12 @@ const SupportTicket = () => {
           onPress={handleSubmit}
           disabled={submitting}
         />
+        <TouchableOpacity
+          style={{ marginTop: 16, alignSelf: 'center' }}
+          onPress={() => setView('menu')}
+        >
+          <Text style={{ color: '#007AFF', fontSize: 16 }}>Cancel</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -344,18 +375,10 @@ const SupportTicket = () => {
         style={{
           flex: 1,
           padding: 24,
-          marginTop: 32,
           backgroundColor: '#f7f7f7',
         }}
       >
-        <TouchableOpacity
-          onPress={() => setView('menu')}
-          style={{ marginBottom: 16 }}
-        >
-          <Text style={{ color: '#007AFF', fontSize: 16 }}>
-            {'< Back to Support'}
-          </Text>
-        </TouchableOpacity>
+        <Breadcrumb path="Reports" onBack={() => setView('menu')} />
         <ThemedText type="title" style={{ marginBottom: 24 }}>
           Reports
         </ThemedText>
