@@ -169,7 +169,7 @@ const ApprovalsPage = () => {
             opening_time: editData.opening_time,
             closing_time: editData.closing_time,
             picture: editData.picture,
-            status: editData.status,
+            status: 'active',
             updated_at: new Date().toISOString(),
             updated_by: editData.created_by,
           })

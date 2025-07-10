@@ -205,7 +205,7 @@ const TouristSpotDetails: React.FC = () => {
           <View
             style={[
               styles.fixedButtonContainer,
-              { bottom: insets.bottom + 80 },
+              { bottom: insets.bottom + 40 },
             ]}
           >
             <TouchableOpacity

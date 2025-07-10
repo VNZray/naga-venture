@@ -43,68 +43,66 @@ const StepSpotDescription: React.FC<StepDescriptionProps> = ({
       </View>
 
       <View style={styles.detailsContainer}>
-        <View style={styles.detailColumn}>
-          <ThemedText type="subtitle" darkColor="#000">
-            Opening Time
-          </ThemedText>
-          <TextInput
-            style={[
-              styles.input,
-              isFieldError('opening_time') && styles.inputError,
-            ]}
-            value={data.opening_time}
-            onChangeText={(text) => setData({ ...data, opening_time: text })}
-            placeholder="e.g., 08:00 AM"
-          />
-          {isFieldError('opening_time') && (
-            <ThemedText style={styles.errorText}>
-              Please enter a valid time
+        {/* Opening and Closing Time side by side */}
+        <View style={styles.timeRow}>
+          <View style={styles.timeColumn}>
+            <ThemedText type="subtitle" darkColor="#000">
+              Opening Time
             </ThemedText>
-          )}
-
-          <ThemedText
-            type="subtitle"
-            darkColor="#000"
-            style={styles.fieldSpacing}
-          >
-            Closing Time
-          </ThemedText>
-          <TextInput
-            style={[
-              styles.input,
-              isFieldError('closing_time') && styles.inputError,
-            ]}
-            value={data.closing_time}
-            onChangeText={(text) => setData({ ...data, closing_time: text })}
-            placeholder="e.g., 05:00 PM"
-          />
-          {isFieldError('closing_time') && (
-            <ThemedText style={styles.errorText}>
-              Please enter a valid time
+            <TextInput
+              style={[
+                styles.input,
+                isFieldError('opening_time') && styles.inputError,
+              ]}
+              value={data.opening_time}
+              onChangeText={(text) => setData({ ...data, opening_time: text })}
+              placeholder="e.g., 08:00 AM"
+            />
+            {isFieldError('opening_time') && (
+              <ThemedText style={styles.errorText}>
+                Please enter a valid time
+              </ThemedText>
+            )}
+          </View>
+          <View style={styles.timeColumn}>
+            <ThemedText type="subtitle" darkColor="#000">
+              Closing Time
             </ThemedText>
-          )}
+            <TextInput
+              style={[
+                styles.input,
+                isFieldError('closing_time') && styles.inputError,
+              ]}
+              value={data.closing_time}
+              onChangeText={(text) => setData({ ...data, closing_time: text })}
+              placeholder="e.g., 05:00 PM"
+            />
+            {isFieldError('closing_time') && (
+              <ThemedText style={styles.errorText}>
+                Please enter a valid time
+              </ThemedText>
+            )}
+          </View>
         </View>
+      </View>
 
-        <View style={styles.detailColumn}>
-          <ThemedText type="subtitle" darkColor="#000">
-            Entry Fee
+      {/* Entry Fee in its own row */}
+      <View style={styles.formGroup}>
+        <ThemedText type="subtitle" darkColor="#000">
+          Entry Fee
+        </ThemedText>
+        <TextInput
+          style={[styles.input, isFieldError('entry_fee') && styles.inputError]}
+          value={data.entry_fee}
+          onChangeText={(text) => setData({ ...data, entry_fee: text })}
+          placeholder="e.g., 100.00 (PHP)"
+          keyboardType="numeric"
+        />
+        {isFieldError('entry_fee') && (
+          <ThemedText style={styles.errorText}>
+            Please enter a valid amount
           </ThemedText>
-          <TextInput
-            style={[
-              styles.input,
-              isFieldError('entry_fee') && styles.inputError,
-            ]}
-            value={data.entry_fee}
-            onChangeText={(text) => setData({ ...data, entry_fee: text })}
-            placeholder="e.g., 100.00 (PHP)"
-            keyboardType="numeric"
-          />
-          {isFieldError('entry_fee') && (
-            <ThemedText style={styles.errorText}>
-              Please enter a valid amount
-            </ThemedText>
-          )}
-        </View>
+        )}
       </View>
     </View>
   );
@@ -140,6 +138,14 @@ const styles = StyleSheet.create({
   detailsContainer: {
     flexDirection: 'row',
     gap: 20,
+  },
+  timeRow: {
+    flex: 2,
+    flexDirection: 'row',
+    gap: 10,
+  },
+  timeColumn: {
+    flex: 1,
   },
   detailColumn: {
     flex: 1,

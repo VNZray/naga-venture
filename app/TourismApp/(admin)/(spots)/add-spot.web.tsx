@@ -29,21 +29,23 @@ const AddSpotForm = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [validationAttempted, setValidationAttempted] = useState(false);
   const [formData, setFormData] = useState<TouristSpotFormData>({
-    name: '',
-    description: '',
+    name: 'University of Nueva Caceres',
+    description:
+      'The University of Nueva Caceres is a private non-sectarian university in Naga City, Bicol Region, Philippines. It is ran by iPeople, Inc., a joint venture of Ayala Corporation and Yuchengco Group of Companies. It is the oldest and the first university in southern Luzon. Founded in 1948, it offers pre-school, elementary, junior high school, senior high school, undergraduate, and graduate programs.',
     spot_type: 'Historical' as TouristSpotType,
-    address: '',
+    address: 'J. Hernandez Ave.',
     city: 'Naga City',
     province: 'Camarines Sur',
-    latitude: '',
-    longitude: '',
-    contact_phone: '',
-    contact_email: '',
-    website: '',
-    opening_time: '',
-    closing_time: '',
+    latitude: '13.624759498077708',
+    longitude: '123.182560186507',
+    contact_phone: '054-472-1000',
+    contact_email: 'info@unc.edu.ph',
+    website: 'https://unc.edu.ph',
+    opening_time: '08:00',
+    closing_time: '17:00',
     entry_fee: '',
-    picture: '',
+    picture:
+      'https://imgs.search.brave.com/u8wS6BTukyGtF9azq9J10Ct6POew4rFoexv5xfsjKr0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy9k/L2QxL1VuaXZlcnNp/dHlfb2ZfTnVldmFf/Q2FjZXJlc19BcmNo/LmpwZw',
   });
 
   // Define required fields for each step
@@ -307,7 +309,7 @@ const styles = StyleSheet.create({
     margin: 20,
     backgroundColor: 'white',
     borderRadius: 20,
-    padding: 35,
+    padding: 30,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

@@ -14,7 +14,7 @@ const StepSpotSubmit: React.FC<StepSubmitProps> = ({ data, errors }) => {
 
   const renderField = (label: string, value: string, fieldName: string) => (
     <View style={styles.fieldContainer}>
-      <ThemedText type="subtitle" darkColor="#000">
+      <ThemedText type="subtitle" style={styles.fieldLabel} darkColor="#0A1B47">
         {label}{' '}
         {isFieldError(fieldName) && (
           <ThemedText style={{ color: 'red' }}>*</ThemedText>
@@ -103,6 +103,9 @@ const styles = StyleSheet.create({
   },
   fieldError: {
     color: 'red',
+  },
+  fieldLabel: {
+    color: '#0A1B47',
   },
 });
 
