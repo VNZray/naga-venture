@@ -1,8 +1,9 @@
 import { getAllTouristSpots } from '@/app/TouristApp/(tabs)/(home)/(touristSpots)/TouristSpotData';
 import SearchInput from '@/components/shops/SearchInput';
 import { ThemedText } from '@/components/ThemedText';
+import { supabase } from '@/utils/supabase';
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   BackHandler,
@@ -40,83 +41,32 @@ const SupportTicket = () => {
   const [selectedReport, setSelectedReport] = useState<any>(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const [expandedReportId, setExpandedReportId] = useState<string | null>(null);
+  const [reportRecords, setReportRecords] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [timeline, setTimeline] = useState<any[]>([]);
 
-  // Placeholder for report records
-  const reportRecords = [
-    {
-      id: '1',
-      subject: 'Report: Malabsay Falls cleanliness',
-      status: 'In review',
-      summary:
-        'Your report about trash and cleanliness at Malabsay Falls is being reviewed by our team.',
-      timeline: [
-        {
-          date: '4/20/2025 10:15 AM',
-          title: 'Report submitted',
-          description:
-            'You reported Malabsay Falls for cleanliness issues (trash, littering).',
-        },
-        {
-          date: '4/20/2025 10:20 AM',
-          title: 'Review started',
-          description:
-            'Our team is reviewing your report and will coordinate with local authorities if needed.',
-        },
-      ],
-    },
-    {
-      id: '2',
-      subject: 'Feedback: Add dark mode feature',
-      status: 'Resolved',
-      summary:
-        'Thank you for your feedback! Dark mode is now available in the latest app update.',
-      timeline: [
-        {
-          date: '4/10/2025 2:30 PM',
-          title: 'Feedback submitted',
-          description: 'You suggested adding a dark mode option to the app.',
-        },
-        {
-          date: '4/12/2025 9:00 AM',
-          title: 'Feature planned',
-          description:
-            'Our development team has added dark mode to the roadmap.',
-        },
-        {
-          date: '4/18/2025 5:00 PM',
-          title: 'Feature released',
-          description:
-            'Dark mode is now available! Update your app to try it out.',
-        },
-      ],
-    },
-    {
-      id: '3',
-      subject: 'Report: Broken signage at Naga Metropolitan Cathedral',
-      status: 'Resolved',
-      summary:
-        'The broken signage at Naga Metropolitan Cathedral has been fixed. Thank you for your report!',
-      timeline: [
-        {
-          date: '4/05/2025 11:00 AM',
-          title: 'Report submitted',
-          description:
-            'You reported a broken tourist information sign at Naga Metropolitan Cathedral.',
-        },
-        {
-          date: '4/06/2025 8:30 AM',
-          title: 'Issue confirmed',
-          description:
-            'Our team confirmed the issue and notified the site management.',
-        },
-        {
-          date: '4/08/2025 3:00 PM',
-          title: 'Issue resolved',
-          description: 'The signage has been repaired by the site management.',
-        },
-      ],
-    },
-  ];
+  const fetchTimeline = async (ticketId: number) => {
+    const { data, error } = await supabase
+      .from('support_ticket_timelines')
+      .select('*')
+      .eq('ticket_id', ticketId)
+      .order('event_time', { ascending: true });
+    setTimeline(data || []);
+  };
+
+  useEffect(() => {
+    if (view === 'records') {
+      setLoading(true);
+      supabase
+        .from('support_tickets')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .then(({ data, error }) => {
+          setLoading(false);
+          if (!error) setReportRecords(data || []);
+        });
+    }
+  }, [view]);
 
   const touristSpots = getAllTouristSpots();
   const filteredLocations = locationQuery
@@ -125,7 +75,7 @@ const SupportTicket = () => {
       )
     : touristSpots;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (formType === 'report' && !selectedLocation) {
       Alert.alert('Error', 'Please select a location.');
       return;
@@ -135,8 +85,34 @@ const SupportTicket = () => {
       return;
     }
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+
+    // Use a placeholder user_id for now
+    const user_id = 1;
+    const location_id = formType === 'report' ? selectedLocation?.id : null;
+
+    const { data, error } = await supabase
+      .from('support_tickets')
+      .insert([
+        {
+          user_id,
+          type: formType,
+          subject,
+          message,
+          location_id,
+          status: 'In review',
+        },
+      ])
+      .select()
+      .single();
+
+    if (!error && data) {
+      await supabase.from('support_ticket_timelines').insert([
+        {
+          ticket_id: data.id,
+          title: 'Ticket submitted',
+          description: message,
+        },
+      ]);
       setSubject('');
       setMessage('');
       setSelectedLocation(null);
@@ -144,7 +120,10 @@ const SupportTicket = () => {
       setFormType('feedback');
       Alert.alert('Success', 'Your ticket has been submitted!');
       setView('menu');
-    }, 1000);
+    } else {
+      Alert.alert('Error', error?.message || 'Failed to submit ticket.');
+    }
+    setSubmitting(false);
   };
 
   // Intercept the hardware back button and header back button
@@ -382,105 +361,116 @@ const SupportTicket = () => {
         <ThemedText type="title" style={{ marginBottom: 24 }}>
           Reports
         </ThemedText>
-        <FlatList
-          data={reportRecords}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <View style={{ marginBottom: 16 }}>
-              <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={() =>
-                  setExpandedReportId(
-                    expandedReportId === item.id ? null : item.id
-                  )
-                }
-                style={{
-                  backgroundColor: '#fff',
-                  borderRadius: 12,
-                  padding: 20,
-                  borderWidth: 1,
-                  borderColor: '#eee',
-                }}
-              >
-                <Text
-                  style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 4 }}
-                >
-                  {item.subject}
-                </Text>
-                <Text style={{ color: '#888', fontSize: 15, marginBottom: 4 }}>
-                  Status: {item.status}
-                </Text>
-                <Text style={{ color: '#333', fontSize: 15 }}>
-                  {item.summary}
-                </Text>
-                <Text style={{ color: '#007AFF', fontSize: 15, marginTop: 8 }}>
-                  {expandedReportId === item.id
-                    ? 'Hide details'
-                    : 'View details'}
-                </Text>
-              </TouchableOpacity>
-              {expandedReportId === item.id && item.timeline && (
-                <View
+        {loading ? (
+          <Text style={{ color: '#aaa' }}>Loading reports...</Text>
+        ) : (
+          <FlatList
+            data={reportRecords}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={{ marginBottom: 16 }}>
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  onPress={() => {
+                    setExpandedReportId(
+                      expandedReportId === item.id ? null : item.id
+                    );
+                    if (expandedReportId === item.id) {
+                      setTimeline([]);
+                      fetchTimeline(item.id);
+                    }
+                  }}
                   style={{
                     backgroundColor: '#fff',
                     borderRadius: 12,
                     padding: 20,
-                    marginTop: 8,
                     borderWidth: 1,
                     borderColor: '#eee',
                   }}
                 >
-                  {item.timeline.map((event: any, idx: number) => (
-                    <View
-                      key={idx}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'flex-start',
-                        marginBottom: 16,
-                      }}
-                    >
-                      <View style={{ width: 16, alignItems: 'center' }}>
-                        <View
-                          style={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: 4,
-                            backgroundColor: '#bbb',
-                            marginTop: 6,
-                          }}
-                        />
-                        {idx < item.timeline.length - 1 && (
+                  <Text
+                    style={{
+                      fontWeight: 'bold',
+                      fontSize: 18,
+                    }}
+                  >
+                    {item.subject}
+                  </Text>
+                  <Text style={{ color: '#888', fontSize: 15 }}>
+                    Status: {item.status}
+                  </Text>
+
+                  <Text
+                    style={{ color: '#007AFF', fontSize: 15, marginTop: 8 }}
+                  >
+                    {expandedReportId === item.id
+                      ? 'Hide details'
+                      : 'View details'}
+                  </Text>
+                </TouchableOpacity>
+                {expandedReportId === item.id && timeline && (
+                  <View
+                    style={{
+                      backgroundColor: '#fff',
+                      borderRadius: 12,
+                      padding: 20,
+                      marginTop: 8,
+                      borderWidth: 1,
+                      borderColor: '#eee',
+                    }}
+                  >
+                    {timeline.map((event: any, idx: number) => (
+                      <View
+                        key={idx}
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'flex-start',
+                          marginBottom: 16,
+                        }}
+                      >
+                        <View style={{ width: 16, alignItems: 'center' }}>
                           <View
                             style={{
-                              width: 2,
-                              height: 48,
-                              backgroundColor: '#eee',
-                              marginTop: 0,
+                              width: 8,
+                              height: 8,
+                              borderRadius: 4,
+                              backgroundColor: '#bbb',
+                              marginTop: 6,
                             }}
                           />
-                        )}
+                          {idx < timeline.length - 1 && (
+                            <View
+                              style={{
+                                width: 2,
+                                height: 48,
+                                backgroundColor: '#eee',
+                                marginTop: 0,
+                              }}
+                            />
+                          )}
+                        </View>
+                        <View style={{ flex: 1, marginLeft: 8 }}>
+                          <Text style={{ color: '#888', fontSize: 13 }}>
+                            {event.event_time}
+                          </Text>
+                          <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
+                            {event.title}
+                          </Text>
+                          <Text style={{ color: '#333', fontSize: 15 }}>
+                            {event.description}
+                          </Text>
+                        </View>
                       </View>
-                      <View style={{ flex: 1, marginLeft: 8 }}>
-                        <Text style={{ color: '#888', fontSize: 13 }}>
-                          {event.date}
-                        </Text>
-                        <Text style={{ fontWeight: 'bold', fontSize: 15 }}>
-                          {event.title}
-                        </Text>
-                        <Text style={{ color: '#333', fontSize: 15 }}>
-                          {event.description}
-                        </Text>
-                      </View>
-                    </View>
-                  ))}
-                </View>
-              )}
-            </View>
-          )}
-          ListEmptyComponent={
-            <Text style={{ color: '#aaa' }}>No reports found.</Text>
-          }
-        />
+                    ))}
+                  </View>
+                )}
+              </View>
+            )}
+            ListEmptyComponent={
+              <Text style={{ color: '#aaa' }}>No reports found.</Text>
+            }
+          />
+        )}
       </View>
     );
   }

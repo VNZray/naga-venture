@@ -47,9 +47,9 @@ const navItems: { name: string; path: string; icon: FontAwesomeIconName }[] = [
   { name: 'Events', path: '/TourismApp/(admin)/event', icon: 'comments' },
   { name: 'Shops', path: '/TourismApp/(admin)/shop', icon: 'exchange' },
   {
-    name: 'Map',
-    path: '/TourismApp/(admin)/maps',
-    icon: 'map',
+    name: 'Reports/Feedback',
+    path: '/TourismApp/(admin)/SupportTickets',
+    icon: 'comments',
   },
   {
     name: 'Approvals',
