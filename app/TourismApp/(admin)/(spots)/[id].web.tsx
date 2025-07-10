@@ -3,7 +3,7 @@ import { TouristSpot } from '@/types/TouristSpot';
 import { subscribeToSpotUpdates } from '@/utils/events';
 import { supabase } from '@/utils/supabase';
 import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -17,6 +17,7 @@ import {
 
 const SpotDetails = () => {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
   const [spot, setSpot] = useState<TouristSpot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -146,7 +147,7 @@ const SpotDetails = () => {
         <View style={styles.metricCard}>
           <Ionicons name="star" size={24} color="#FFD700" />
           <ThemedText style={[styles.metricValue, { color: 'black' }]}>
-            4.8
+            -
           </ThemedText>
           <ThemedText style={[styles.metricLabel, { color: 'black' }]}>
             Average Rating
@@ -155,7 +156,7 @@ const SpotDetails = () => {
         <View style={styles.metricCard}>
           <Ionicons name="eye" size={24} color="#4CAF50" />
           <ThemedText style={[styles.metricValue, { color: 'black' }]}>
-            356
+            -
           </ThemedText>
           <ThemedText style={[styles.metricLabel, { color: 'black' }]}>
             Profile Views
@@ -164,21 +165,26 @@ const SpotDetails = () => {
         <View style={styles.metricCard}>
           <Ionicons name="share" size={24} color="#2196F3" />
           <ThemedText style={[styles.metricValue, { color: 'black' }]}>
-            1823
+            -
           </ThemedText>
           <ThemedText style={[styles.metricLabel, { color: 'black' }]}>
             Socials Click
           </ThemedText>
         </View>
-        <View style={styles.metricCard}>
+        <TouchableOpacity
+          style={styles.metricCard}
+          onPress={() =>
+            router.push(`/TourismApp/(admin)/(spots)/${id}/reviews`)
+          }
+        >
           <Ionicons name="chatbox-ellipses" size={24} color="#9C27B0" />
           <ThemedText style={[styles.metricValue, { color: 'black' }]}>
-            26
+            -
           </ThemedText>
           <ThemedText style={[styles.metricLabel, { color: 'black' }]}>
             Total Reviews
           </ThemedText>
-        </View>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.contentContainer}>
@@ -203,13 +209,13 @@ const SpotDetails = () => {
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Ionicons
                     key={i}
-                    name={i < Math.floor(4.8) ? 'star' : 'star-outline'}
+                    name={i < Math.floor(0) ? 'star' : 'star-outline'}
                     size={20}
                     color="#FFD700"
                   />
                 ))}
                 <ThemedText style={[styles.reviewsText, { color: 'black' }]}>
-                  317 Reviews
+                  - Reviews
                 </ThemedText>
               </View>
               <View style={styles.nameAndEdit}>
