@@ -72,9 +72,35 @@ const StepEventSubmit: React.FC<StepSubmitProps> = ({ data, errors }) => {
         <ThemedText type="title" darkColor="#000" style={styles.sectionTitle}>
           Additional Details
         </ThemedText>
+        {renderField('Start Date', data.start_date, 'start_date')}
         {renderField('Start Time', data.start_time, 'start_time')}
+        {renderField('End Date', data.end_date, 'end_date')}
         {renderField('End Time', data.end_time, 'end_time')}
         {renderField('Entry Fee', data.entry_fee, 'entry_fee')}
+      </View>
+
+      <View style={styles.section}>
+        <ThemedText type="title" darkColor="#000" style={styles.sectionTitle}>
+          Permits & Clearances
+        </ThemedText>
+        <ThemedText style={styles.fieldValue}>
+          Barangay Clearance: {data.permits?.barangay_clearance ? data.permits.barangay_clearance.name : 'Not uploaded'}
+        </ThemedText>
+        <ThemedText style={styles.fieldValue}>
+          Mayor’s Special Permit: {data.permits?.mayor_special_permit ? data.permits.mayor_special_permit.name : 'Not uploaded'}
+        </ThemedText>
+        <ThemedText style={styles.fieldValue}>
+          Fire Safety Inspection Certificate: {data.permits?.fire_safety_certificate ? data.permits.fire_safety_certificate.name : 'Not uploaded'}
+        </ThemedText>
+        <ThemedText style={styles.fieldValue}>
+          Sanitary Permit: {data.permits?.sanitary_permit ? data.permits.sanitary_permit.name : 'Not uploaded'}
+        </ThemedText>
+        <ThemedText style={styles.fieldValue}>
+          Locational/Zoning Clearance: {data.permits?.zoning_clearance ? data.permits.zoning_clearance.name : 'Not uploaded'}
+        </ThemedText>
+        <ThemedText style={styles.fieldValue}>
+          Others: {data.permits?.others && data.permits.others.length > 0 ? `${data.permits.others.length} file(s)` : 'None'}
+        </ThemedText>
       </View>
     </ScrollView>
   );

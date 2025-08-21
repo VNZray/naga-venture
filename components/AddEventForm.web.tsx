@@ -14,6 +14,7 @@ import StepEventBasics from './events/steps/StepEventBasics';
 import StepEventContact from './events/steps/StepEventContact';
 import StepEventDescription from './events/steps/StepEventDescription';
 import StepEventLocation from './events/steps/StepEventLocation';
+import StepEventPermits from './events/steps/StepEventPermits.web';
 import StepEventSubmit from './events/steps/StepEventSubmit';
 
 const steps = [
@@ -21,6 +22,7 @@ const steps = [
   'Location',
   'Contact',
   'Description',
+  'Permits & Clearances',
   'Review & Submit',
 ];
 
@@ -44,12 +46,24 @@ const AddEventForm = ({
     province: '',
     latitude: '',
     longitude: '',
+    additional_locations: [],
     contact_phone: '',
     contact_email: '',
     website: '',
+    start_date: '',
     start_time: '',
+    end_date: '',
     end_time: '',
     entry_fee: '',
+    social_media: '',
+    permits: {
+      barangay_clearance: null,
+      mayor_special_permit: null,
+      fire_safety_certificate: null,
+      sanitary_permit: null,
+      zoning_clearance: null,
+      others: [],
+    },
   });
 
   const stepRequiredFields = {
@@ -57,7 +71,20 @@ const AddEventForm = ({
     1: ['address', 'city', 'province', 'latitude', 'longitude'],
     2: [],
     3: ['description'],
-    4: ['name', 'description', 'event_type', 'address', 'latitude', 'longitude'],
+    // Step 4 validation handled explicitly below for nested permit fields
+    4: [],
+    5: [
+      'name',
+      'description',
+      'event_type',
+      'address',
+      'latitude',
+      'longitude',
+      'start_date',
+      'end_date',
+      'start_time',
+      'end_time',
+    ],
   };
 
   const validateStep = (
@@ -69,7 +96,11 @@ const AddEventForm = ({
 
     requiredFields.forEach((field) => {
       const value = formData[field as keyof EventFormData];
-      if (!value || value.trim() === '') {
+      if (
+        (typeof value === 'string' && !value.trim()) ||
+        (typeof value === 'number' && isNaN(value)) ||
+        (value === null || value === undefined)
+      ) {
         errors.push(field);
       }
     });
@@ -87,6 +118,12 @@ const AddEventForm = ({
           errors.push('longitude');
         }
       }
+    }
+
+    if (step === 4) {
+      const p = formData.permits;
+      if (!p || !p.barangay_clearance) errors.push('permits.barangay_clearance');
+      if (!p || !p.mayor_special_permit) errors.push('permits.mayor_special_permit');
     }
 
     return {
@@ -126,9 +163,12 @@ const AddEventForm = ({
         contact_phone: formData.contact_phone || null,
         contact_email: formData.contact_email || null,
         website: formData.website || null,
+        start_date: formData.start_date || null,
         start_time: formData.start_time || null,
+        end_date: formData.end_date || null,
         end_time: formData.end_time || null,
         entry_fee: formData.entry_fee ? parseFloat(formData.entry_fee) : null,
+        permits: formData.permits,
         status: 'pending' as EventStatus,
       };
 
@@ -147,9 +187,20 @@ const AddEventForm = ({
         contact_phone: '',
         contact_email: '',
         website: '',
+        start_date: '',
         start_time: '',
+        end_date: '',
         end_time: '',
         entry_fee: '',
+        social_media: '',
+        permits: {
+          barangay_clearance: null,
+          mayor_special_permit: null,
+          fire_safety_certificate: null,
+          sanitary_permit: null,
+          zoning_clearance: null,
+          others: [],
+        },
       });
 
       setValidationAttempted(false);
@@ -200,6 +251,14 @@ const AddEventForm = ({
           />
         );
       case 4:
+        return (
+          <StepEventPermits
+            data={formData}
+            setData={setFormData}
+            errors={validationAttempted ? validation.errors : []}
+          />
+        );
+      case 5:
         return (
           <StepEventSubmit
             data={formData}
@@ -298,9 +357,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
-    width: '90%',
-    maxWidth: 1000,
-    height: 650,
+    width: 1100,
+    maxWidth: 1100,
+    height: 720,
     flexDirection: 'column',
     justifyContent: 'space-between',
   },
@@ -318,10 +377,15 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     width: '100%',
+    // Allow children to define scroll areas properly
+    minHeight: 0,
   },
   stepFormContainer: {
     flex: 1,
     paddingHorizontal: 20,
+    // Make step content scrollable within modal
+    overflow: 'scroll',
+    minHeight: 0,
   },
   buttonContainer: {
     flexDirection: 'row',

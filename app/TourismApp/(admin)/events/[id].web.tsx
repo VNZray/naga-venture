@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/ThemedText';
+import { useEventContext } from '@/context/EventContext';
 import { EventFormData } from '@/types/event'; // Reusing EventFormData, might need to extend it later
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -17,79 +18,28 @@ import {
 const EventDetails = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const { findEvent } = useEventContext();
   const [event, setEvent] = useState<EventFormData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchEventDetails = async () => {
-      if (!id) {
-        setError('Event ID is missing.');
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      setError(null);
-
-      // Simulate fetching from local storage. In a real app, you'd get this from a global state/context or actual local storage.
-      // For now, let's assume a dummy data structure similar to what we have in event.web.tsx
-      const dummyEvents = [
-        {
-          id: 'e1a2b3c4-d5e6-7890-1234-567890abcdef',
-          name: 'Naga City Arts Festival',
-          address: 'Plaza Quince Martires, Naga City',
-          category: 'cultural',
-          description: 'A vibrant festival showcasing the rich culture and arts of Naga City.',
-          contact_phone: '09123456789',
-          contact_email: 'artsfest@example.com',
-          website: 'www.nagacityarts.com',
-          opening_time: '09:00 AM',
-          closing_time: '05:00 PM',
-          picture: 'https://picsum.photos/id/237/200/300',
-          event_type: 'cultural',
-          city: 'Naga City',
-          province: 'Camarines Sur',
-          latitude: '13.6213',
-          longitude: '123.1870',
-          start_time: '2024-06-01T09:00:00Z',
-          end_time: '2024-06-07T17:00:00Z',
-          entry_fee: '0',
-        },
-        {
-            id: 'f1g2h3i4-j5k6-7890-1234-567890ghijkl',
-            name: 'Bicol Food Fair',
-            address: 'SM City Naga, Naga City',
-            category: 'food',
-            description: 'Experience the authentic flavors of Bicol in this annual food fair.',
-            contact_phone: '09987654321',
-            contact_email: 'foodfair@example.com',
-            website: 'www.bicolfoodfair.com',
-            opening_time: '10:00 AM',
-            closing_time: '09:00 PM',
-            picture: 'https://picsum.photos/id/238/200/300',
-            event_type: 'food',
-            city: 'Naga City',
-            province: 'Camarines Sur',
-            latitude: '13.6200',
-            longitude: '123.1890',
-            start_time: '2024-07-10T10:00:00Z',
-            end_time: '2024-07-15T21:00:00Z',
-            entry_fee: '50',
-          },
-      ];
-
-      const foundEvent = dummyEvents.find((e) => e.id === id);
-
-      if (!foundEvent) {
-        setError('Event not found.');
-      } else {
-        setEvent(foundEvent as EventFormData);
-      }
+    if (!id) {
+      setError('Event ID is missing.');
       setLoading(false);
-    };
-
-    fetchEventDetails();
-  }, [id]);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    const foundEvent = findEvent(id as string);
+    if (!foundEvent) {
+      setError('Event not found.');
+      setEvent(null);
+    } else {
+      setEvent(foundEvent);
+    }
+    setLoading(false);
+  }, [id, findEvent]);
 
   const handleDelete = () => {
     // In a real application, you would implement the actual deletion logic here
@@ -247,17 +197,81 @@ const EventDetails = () => {
                 Event Hours
               </ThemedText>
             </View>
-            {event.start_time && event.end_time ? (
+            {(event.start_date || event.end_date || event.start_time || event.end_time) ? (
               <View style={styles.businessHourRow}>
                 <ThemedText
                   style={[styles.businessHourTime, { color: 'black' }]}>
-                  {`${event.start_time} - ${event.end_time}`}
+                  {`${event.start_date ?? ''} ${event.start_time ?? ''} ${event.end_date || event.end_time ? '—' : ''} ${event.end_date ?? ''} ${event.end_time ?? ''}`.trim()}
                 </ThemedText>
               </View>
             ) : (
               <ThemedText style={[styles.sectionContent, { color: 'black' }]}>
                 Set your event hours to let people know when this Event is open.
               </ThemedText>
+            )}
+          </View>
+
+          {/* Permits & Clearances */}
+          <View style={styles.sectionCard}>
+            <View style={styles.sectionHeader}>
+              <ThemedText style={[styles.sectionTitle, { color: 'black' }]}>Permits & Clearances</ThemedText>
+            </View>
+            {event.permits ? (
+              <View>
+                <View style={styles.permitRow}>
+                  <ThemedText style={[styles.infoLabel, { color: 'black' }]}>Barangay Clearance</ThemedText>
+                  {event.permits.barangay_clearance ? (
+                    <a href={event.permits.barangay_clearance.uri} target="_blank" rel="noreferrer">View</a>
+                  ) : (
+                    <ThemedText style={[styles.infoValue, { color: 'black' }]}>Not uploaded</ThemedText>
+                  )}
+                </View>
+                <View style={styles.permitRow}>
+                  <ThemedText style={[styles.infoLabel, { color: 'black' }]}>Mayor’s Special Permit</ThemedText>
+                  {event.permits.mayor_special_permit ? (
+                    <a href={event.permits.mayor_special_permit.uri} target="_blank" rel="noreferrer">View</a>
+                  ) : (
+                    <ThemedText style={[styles.infoValue, { color: 'black' }]}>Not uploaded</ThemedText>
+                  )}
+                </View>
+                <View style={styles.permitRow}>
+                  <ThemedText style={[styles.infoLabel, { color: 'black' }]}>Fire Safety Inspection Certificate</ThemedText>
+                  {event.permits.fire_safety_certificate ? (
+                    <a href={event.permits.fire_safety_certificate.uri} target="_blank" rel="noreferrer">View</a>
+                  ) : (
+                    <ThemedText style={[styles.infoValue, { color: 'black' }]}>Not uploaded</ThemedText>
+                  )}
+                </View>
+                <View style={styles.permitRow}>
+                  <ThemedText style={[styles.infoLabel, { color: 'black' }]}>Sanitary Permit</ThemedText>
+                  {event.permits.sanitary_permit ? (
+                    <a href={event.permits.sanitary_permit.uri} target="_blank" rel="noreferrer">View</a>
+                  ) : (
+                    <ThemedText style={[styles.infoValue, { color: 'black' }]}>Not uploaded</ThemedText>
+                  )}
+                </View>
+                <View style={styles.permitRow}>
+                  <ThemedText style={[styles.infoLabel, { color: 'black' }]}>Locational/Zoning Clearance</ThemedText>
+                  {event.permits.zoning_clearance ? (
+                    <a href={event.permits.zoning_clearance.uri} target="_blank" rel="noreferrer">View</a>
+                  ) : (
+                    <ThemedText style={[styles.infoValue, { color: 'black' }]}>Not uploaded</ThemedText>
+                  )}
+                </View>
+                {(event.permits.others && event.permits.others.length > 0) && (
+                  <View style={{ marginTop: 10 }}>
+                    <ThemedText style={[styles.infoLabel, { color: 'black', marginBottom: 6 }]}>Others</ThemedText>
+                    {event.permits.others.map((doc, idx) => (
+                      <View key={idx} style={styles.permitRow}>
+                        <ThemedText style={[styles.infoValue, { color: 'black' }]}>{doc.name}</ThemedText>
+                        <a href={doc.uri} target="_blank" rel="noreferrer">View</a>
+                      </View>
+                    ))}
+                  </View>
+                )}
+              </View>
+            ) : (
+              <ThemedText style={[styles.sectionContent, { color: 'black' }]}>No permits uploaded.</ThemedText>
             )}
           </View>
         </View>
@@ -466,6 +480,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
+  },
+  permitRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
   },
   editButtonText: {
     color: '#fff',

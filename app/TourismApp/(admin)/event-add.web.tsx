@@ -23,9 +23,15 @@ const AddEventForm = ({
     name: '',
     address: '',
     category: '',
+    start_time: '',
+    end_time: '',
   });
 
   const handleSave = () => {
+    if (!formData.name || !formData.address || !formData.category || !formData.start_time || !formData.end_time) {
+      alert('Please fill in all required fields, including start and end date/time.');
+      return;
+    }
     console.log('New Event:', formData);
     // Here you would typically save the data to your backend
     // After saving, navigate back to the events list
@@ -85,6 +91,24 @@ const AddEventForm = ({
                   setFormData({ ...formData, category: text })
                 }
                 placeholder="Enter event category"
+              />
+            </View>
+            <View style={styles.formGroup}>
+              <ThemedText style={styles.label}>Start Date & Time</ThemedText>
+              <TextInput
+                style={styles.input}
+                value={formData.start_time}
+                onChangeText={(text) => setFormData({ ...formData, start_time: text })}
+                placeholder="YYYY-MM-DD HH:MM"
+              />
+            </View>
+            <View style={styles.formGroup}>
+              <ThemedText style={styles.label}>End Date & Time</ThemedText>
+              <TextInput
+                style={styles.input}
+                value={formData.end_time}
+                onChangeText={(text) => setFormData({ ...formData, end_time: text })}
+                placeholder="YYYY-MM-DD HH:MM"
               />
             </View>
           </View>

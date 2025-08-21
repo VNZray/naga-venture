@@ -3,19 +3,20 @@ import { ThemedText } from '@/components/ThemedText';
 import { EventFormData } from '@/types/event';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
     Pressable,
-    ScrollView,
     StyleSheet,
     TextInput,
-    View,
+    View
 } from 'react-native';
 
 const EventsCMS = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const [events, setEvents] = useState([
     {
       id: 'e1a2b3c4-d5e6-7890-1234-567890abcdef',
@@ -41,6 +42,20 @@ const EventsCMS = () => {
       address: 'Naga River, Naga City',
       category: 'religious',
     },
+    // Added from provided list
+    { id: 'evt-feb-pagtalubo', name: 'Pagtalubo Art Exhibit, AMA Street Art', address: 'Naga City', category: 'cultural' },
+    { id: 'evt-feb-artstruck', name: '"ARTSTRUCK" Exhibition', address: 'Naga City', category: 'cultural' },
+    { id: 'evt-feb-buklad-karaw', name: 'Buklad Fest, KARAW Art Market & Banchetto', address: 'Naga City', category: 'cultural' },
+    { id: 'evt-mar-drag-queer', name: 'Drag & Queer Celebration (March 22)', address: 'Naga City', category: 'other' },
+    { id: 'evt-apr-arc-hackathon-2025', name: 'ARC Hackathon 2025', address: 'Naga City', category: 'other' },
+    { id: 'evt-may-kaogma-pili', name: 'Kaogma Festival (Pili)', address: 'Pili, Camarines Sur', category: 'cultural' },
+    { id: 'evt-jun-fabex', name: 'FABEX 2025, Bicol Agri Summit', address: 'Naga City', category: 'food' },
+    { id: 'evt-jul-aug-cscci', name: 'CSCCI 23rd Anniversary, Gamefowl Expo', address: 'Naga City', category: 'other' },
+    { id: 'evt-oct-youth-entrepreneurship', name: 'Youth Entrepreneurship Congress', address: 'Naga City', category: 'other' },
+    { id: 'evt-sep-penafrancia', name: 'Peñafrancia Festival', address: 'Naga City', category: 'religious' },
+    { id: 'evt-dec-kamundagan', name: 'Kamundagan Festival', address: 'Naga City', category: 'cultural' },
+    { id: 'evt-charter-kinalas', name: 'Kinalas Festival', address: 'Naga City', category: 'food' },
+    { id: 'evt-mar-2ndsat-river-day', name: 'Naga River Day (2nd Saturday of March)', address: 'Naga River, Naga City', category: 'other' },
   ]);
   const router = useRouter();
 
@@ -52,6 +67,25 @@ const EventsCMS = () => {
       activeCategory === 'All' || event.category === activeCategory.toLowerCase();
     return matchesSearch && matchesCategory;
   });
+
+  const totalPages = Math.max(1, Math.ceil(filteredEvents.length / pageSize));
+  const displayedEvents = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+    return filteredEvents.slice(start, end);
+  }, [filteredEvents, currentPage]);
+
+  useEffect(() => {
+    // Reset to first page when filters/search change
+    setCurrentPage(1);
+  }, [searchQuery, activeCategory]);
+
+  useEffect(() => {
+    // Clamp current page if total pages decreased
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
 
   const categories = ['All', 'Cultural', 'Food', 'Adventure', 'Religious'];
 
@@ -119,16 +153,20 @@ const EventsCMS = () => {
         </View>
       </View>
 
-      <ScrollView style={styles.tableScrollView}>
-        <View style={styles.table}>
-          <View style={styles.tableHeader}>
-            <ThemedText style={styles.columnHeader}>ID</ThemedText>
-            <ThemedText style={styles.columnHeader}>Name</ThemedText>
-            <ThemedText style={styles.columnHeader}>Address</ThemedText>
-            <ThemedText style={styles.columnHeader}>Category</ThemedText>
-            <ThemedText style={styles.columnHeader}>Actions</ThemedText>
+      <View style={styles.table}>
+        <View style={styles.tableHeader}>
+          <ThemedText style={styles.columnHeader}>ID</ThemedText>
+          <ThemedText style={styles.columnHeader}>Name</ThemedText>
+          <ThemedText style={styles.columnHeader}>Address</ThemedText>
+          <ThemedText style={styles.columnHeader}>Category</ThemedText>
+          <ThemedText style={styles.columnHeader}>Actions</ThemedText>
+        </View>
+        {displayedEvents.length === 0 ? (
+          <View style={styles.tableRow}>
+            <ThemedText style={styles.columnData}>No events found</ThemedText>
           </View>
-          {filteredEvents.map((event) => (
+        ) : (
+          displayedEvents.map((event) => (
             <View key={event.id} style={styles.tableRow}>
               <ThemedText style={styles.columnData}>{event.id}</ThemedText>
               <ThemedText style={styles.columnData}>{event.name}</ThemedText>
@@ -143,17 +181,31 @@ const EventsCMS = () => {
                 </ThemedText>
               </Pressable>
             </View>
-          ))}
-        </View>
-      </ScrollView>
+          ))
+        )}
+      </View>
 
       <View style={styles.paginationContainer}>
-        <Pressable style={styles.paginationButton}>
-          <ThemedText>{"< Previous"}</ThemedText>
+        <Pressable
+          style={[
+            styles.paginationButton,
+            currentPage === 1 && styles.paginationButtonDisabled,
+          ]}
+          onPress={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+        >
+          <ThemedText style={styles.paginationButtonText}>{"< Previous"}</ThemedText>
         </Pressable>
-        <ThemedText style={styles.pageNumber}>1</ThemedText>
-        <Pressable style={styles.paginationButton}>
-          <ThemedText>{"Next >"}</ThemedText>
+        <ThemedText style={styles.pageNumber}>{`Page ${currentPage} of ${totalPages}`}</ThemedText>
+        <Pressable
+          style={[
+            styles.paginationButton,
+            currentPage === totalPages && styles.paginationButtonDisabled,
+          ]}
+          onPress={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          disabled={currentPage === totalPages}
+        >
+          <ThemedText style={styles.paginationButtonText}>{"Next >"}</ThemedText>
         </Pressable>
       </View>
       <AddEventForm

@@ -2,6 +2,7 @@ import AdminHeader from '@/components/AdminHeader';
 import { ThemedText } from '@/components/ThemedText';
 import { AccommodationProvider } from '@/context/AccommodationContext';
 import { useAuth } from '@/context/AuthContext';
+import { EventProvider } from '@/context/EventContext';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FontAwesome } from '@expo/vector-icons';
 import {
@@ -62,48 +63,50 @@ export default function AdminLayout() {
   const colorScheme = useColorScheme();
   return (
     <AccommodationProvider>
-      <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
-        <View style={styles.container}>
-          {/* Sidebar */}
-          <View style={styles.sidebar}>
-            <Text style={styles.logo}>Naga Venture</Text>
-            {navItems.map((item) => (
-              <Pressable
-                key={item.name}
-                style={styles.navItem}
-                onPress={() => {
-                  setHeaderTitle(item.name);
-                  router.push(item.path as any);
-                }}
-              >
-                <View style={styles.navRow}>
-                  <FontAwesome
-                    name={item.icon}
-                    size={20}
-                    color="#fff"
-                    style={styles.navIcon}
-                  />
-                  <ThemedText style={styles.navText}>{item.name}</ThemedText>
-                </View>
-              </Pressable>
-            ))}
-          </View>
+      <EventProvider>
+        <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
+          <View style={styles.container}>
+            {/* Sidebar */}
+            <View style={styles.sidebar}>
+              <Text style={styles.logo}>Naga Venture</Text>
+              {navItems.map((item) => (
+                <Pressable
+                  key={item.name}
+                  style={styles.navItem}
+                  onPress={() => {
+                    setHeaderTitle(item.name);
+                    router.push(item.path as any);
+                  }}
+                >
+                  <View style={styles.navRow}>
+                    <FontAwesome
+                      name={item.icon}
+                      size={20}
+                      color="#fff"
+                      style={styles.navIcon}
+                    />
+                    <ThemedText style={styles.navText}>{item.name}</ThemedText>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
 
-          <View style={styles.content}>
-            <AdminHeader
-              headerTitle={headerTitle}
-              headerUserName={user?.name ?? ''}
-              headerUserEmail={user?.email ?? ''}
-            />
-            <Stack
-              screenOptions={{ headerShown: false, headerBackVisible: false }}
-            >
-              <Stack.Screen name="events/edit/[id]" />
-              <Stack.Screen name="events/event" />
-            </Stack>
+            <View style={styles.content}>
+              <AdminHeader
+                headerTitle={headerTitle}
+                headerUserName={user?.name ?? ''}
+                headerUserEmail={user?.email ?? ''}
+              />
+              <Stack
+                screenOptions={{ headerShown: false, headerBackVisible: false }}
+              >
+                <Stack.Screen name="events/edit/[id]" />
+                <Stack.Screen name="events/event" />
+              </Stack>
+            </View>
           </View>
-        </View>
-      </ThemeProvider>
+        </ThemeProvider>
+      </EventProvider>
     </AccommodationProvider>
   );
 }

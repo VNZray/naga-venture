@@ -45,48 +45,6 @@ const StepEventDescription: React.FC<StepDescriptionProps> = ({
       <View style={styles.detailsContainer}>
         <View style={styles.detailColumn}>
           <ThemedText type="subtitle" darkColor="#000">
-            Start Time
-          </ThemedText>
-          <TextInput
-            style={[
-              styles.input,
-              isFieldError('start_time') && styles.inputError,
-            ]}
-            value={data.start_time}
-            onChangeText={(text) => setData({ ...data, start_time: text })}
-            placeholder="e.g., 08:00 AM"
-          />
-          {isFieldError('start_time') && (
-            <ThemedText style={styles.errorText}>
-              Please enter a valid time
-            </ThemedText>
-          )}
-
-          <ThemedText
-            type="subtitle"
-            darkColor="#000"
-            style={styles.fieldSpacing}
-          >
-            End Time
-          </ThemedText>
-          <TextInput
-            style={[
-              styles.input,
-              isFieldError('end_time') && styles.inputError,
-            ]}
-            value={data.end_time}
-            onChangeText={(text) => setData({ ...data, end_time: text })}
-            placeholder="e.g., 05:00 PM"
-          />
-          {isFieldError('end_time') && (
-            <ThemedText style={styles.errorText}>
-              Please enter a valid time
-            </ThemedText>
-          )}
-        </View>
-
-        <View style={styles.detailColumn}>
-          <ThemedText type="subtitle" darkColor="#000">
             Entry Fee
           </ThemedText>
           <TextInput
@@ -102,6 +60,28 @@ const StepEventDescription: React.FC<StepDescriptionProps> = ({
           {isFieldError('entry_fee') && (
             <ThemedText style={styles.errorText}>
               Please enter a valid amount
+            </ThemedText>
+          )}
+        </View>
+        <View style={styles.detailColumn}>
+          <ThemedText type="subtitle" darkColor="#000">
+            Social Media Links
+          </ThemedText>
+          <TextInput
+            style={[
+              styles.input,
+              isFieldError('social_media') && styles.inputError,
+            ]}
+            value={data.social_media}
+            onChangeText={(text) => setData({ ...data, social_media: text })}
+            placeholder="Facebook, Instagram, etc."
+            multiline
+            numberOfLines={3}
+            textAlignVertical="top"
+          />
+          {isFieldError('social_media') && (
+            <ThemedText style={styles.errorText}>
+              Please enter social media links
             </ThemedText>
           )}
         </View>
